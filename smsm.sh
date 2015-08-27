@@ -1,0 +1,1 @@
+java -classpath .:./target/ca.magenta.causalityAnalyser-0.0.1-SNAPSHOT-jar-with-dependencies.jar -Dlog4j.configuration=log4j.properties ca.magenta.correlation.tools.SendMessage -smartsFormat -msgServerAddr=127.0.0.1 -msgServerPort=9292 -eventFile=SmartsEvents.xlsx $@

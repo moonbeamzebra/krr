@@ -1,0 +1,49 @@
+package ca.magenta.krr.fact
+ 
+import ca.magenta.krr.engine.Engine;
+import ca.magenta.krr.ruleEngin.CausalityAnalyser;
+
+declare StateNew
+	@role( event )
+end
+
+declare StateUpdate
+	@role( event )
+end
+
+declare StateClear
+	@role( event )
+end
+
+
+
+rule "StateNew Check4RootCauseAndDispatch"
+salience 1
+    when
+        sn : StateNew(    )
+    then
+        CausalityAnalyser.check4RootCauseAndDispatch(sn);
+
+end
+
+rule "StateUpdate Check4RootCauseAndDispatch"
+salience 1
+    when
+        su : StateUpdate(    )
+    then
+        CausalityAnalyser.check4RootCauseAndDispatch(su);
+
+end
+
+rule "StateClear Check4RootCauseAndDispatch"
+salience 1
+    when
+        sc : StateClear(    )
+    then
+        CausalityAnalyser.check4RootCauseAndDispatch(sc);
+
+end
+
+
+
+

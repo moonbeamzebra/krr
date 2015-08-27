@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE log4j:configuration PUBLIC "-//APACHE//DTD LOG4J 1.2//EN" "log4j.dtd">
+<log4j:configuration xmlns:log4j="http://jakarta.apache.org/log4j/">
+
+<!-- see http://stackoverflow.com/questions/8489551/logging-error-to-stderr-and-debug-info-to-stdout-with-log4j -->
+
+	<!-- Appenders -->
+
+	<appender name="stderr" class="org.apache.log4j.ConsoleAppender">
+		<param name="threshold" value="warn" />
+		<param name="target" value="System.err" />
+		<layout class="org.apache.log4j.PatternLayout">
+			<param name="ConversionPattern" value="%-5p %d{ABSOLUTE} [%t][%F:%L] : %m%n" />
+		</layout>
+	</appender>
+	<appender name="stdout" class="org.apache.log4j.ConsoleAppender">
+		<param name="threshold" value="trace" />
+		<param name="target" value="System.out" />
+		<layout class="org.apache.log4j.PatternLayout">
+			<param name="ConversionPattern" value="%-5p %d{ABSOLUTE} [%t][%F:%L] : %m%n" />
+		</layout>
+		<filter class="org.apache.log4j.varia.LevelRangeFilter">
+			<param name="LevelMin" value="trace" />
+			<param name="LevelMax" value="info" />
+		</filter>
+	</appender>
+
+	<appender name="fileAppender" class="org.apache.log4j.RollingFileAppender">
+		<param name="File" value="./krr.log" />
+		<param name="MaxFileSize" value="10MB" />
+		<param name="MaxBackupIndex" value="10" />
+		<layout class="org.apache.log4j.PatternLayout">
+			<param name="ConversionPattern" value="%d  %-5p  [%c{1}] %m %n" />
+		</layout>
+	</appender>
+
+	<appender name="daily-appender" class="ca.ogr.utils.DateFormatFileAppender">
+		<param name="File" value="'./'yyyyMMdd'.krr.log'" />
+		<param name="Separate" value="true" />
+		<layout class="org.apache.log4j.PatternLayout">
+			<param name="ConversionPattern" value="%d{yyyyMMdd HH:mm:ss}>%p: %c - %m%n" />
+		</layout>
+	</appender>
+
+	<!-- Application Loggers -->
+
+	<logger name="ca.magenta.correlation.tools" additivity="false">
+		<level value="error" />
+		<appender-ref ref="stderr" />
+		<appender-ref ref="stdout" />
+	</logger>
+	
+	<logger name="ca.magenta.correlation.test" additivity="false">
+		<level value="info" />
+		<appender-ref ref="stderr" />
+		<appender-ref ref="stdout" />
+	</logger>
+
+	<logger name="ca.magenta" additivity="false">
+		<level value="all" />
+		<appender-ref ref="stderr" />
+		<appender-ref ref="stdout" />
+	</logger>
+
+	<root>
+		<!-- <priority value="debug"></priority> -->
+		<appender-ref ref="stderr" />
+		<appender-ref ref="stdout" />
+	</root>
+</log4j:configuration>

@@ -1,0 +1,1 @@
+java -classpath .:./target/ca.magenta.krr.common-0.0.1-SNAPSHOT-jar-with-dependencies.jar -Dlog4j.configuration=log4j.properties ca.magenta.krr.tools.SendMessage -simpleFormat -msgServerAddr=127.0.0.1 -msgServerPort=9292 -eventFile=SimpleMessages.xlsx $@

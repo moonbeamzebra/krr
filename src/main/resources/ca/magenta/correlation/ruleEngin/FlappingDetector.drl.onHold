@@ -1,0 +1,217 @@
+package ca.magenta.correlation.fact
+ 
+/**
+ * @author jean-paul.laberge <jplaberge@magenta.ca>
+ * @version 0.1
+ * @since 2014-06-03
+ */  
+import ca.magenta.correlation.Engine;
+import ca.magenta.correlation.common.Severity;
+import ca.magenta.correlation.ruleEngin.FlappingDetector;
+import ca.magenta.correlation.ruleEngin.FlappingDetectorConfig;
+import java.util.HashMap;
+
+declare StateClear
+	@role( event )
+end
+
+declare State
+	@role( fact )
+end
+
+declare Signal
+	@role( event )
+end
+
+declare Ticker
+	@role( event )
+end
+ 
+ 
+rule "Got a Ticker"
+salience -999
+    when
+        now : Ticker(  )
+    then
+        Engine.logger.trace("Default:Got a Ticker: [" + now.getTimestamp() + "]" );
+        //retract(m);
+end
+
+
+
+rule "Got Episodic Flapping"
+salience 0
+    when
+    	 State( 	
+				isCleared() == false,
+				$mn : getMostSpecificManagedNode(),
+				$originalLinkKey : getSpecificProperties().get(FlappingDetector.ORIGINAL_LINK_KEY_PROPERTY),
+				FlappingDetector.EPISODIC_LABEL.equals(getSpecificProperties().get(FlappingDetector.FLAPPING_TYPE_PROPERTY)),
+				$owner : getMostSpecificManagedNode().getFqdName(),
+				getStateDescr().equals(FlappingDetector.STATE_DESCR),
+				FlappingDetector.SOURCE_TYPE.equals(getSourceType())
+					)
+    then
+        Engine.logger.trace("Got Episodic Flapping; owner: " +  $owner + ":" + $originalLinkKey);
+end
+
+
+rule "Episodic Flapping RAISING"
+salience 0
+    when
+    	config : FlappingDetectorConfig(
+    									FlappingDetector.EPISODIC_LABEL.equals(getFlappingType()),
+    									$windowTimeInMilliSecStr : getWindowTimeInMilliSecStr(),
+										$raisedMaximumTimeInMilliSec : getRaisedMaximumTimeInMilliSec(),  
+										$raisingFlappingCount : getRaisingFlappingCount(),
+										$fallingFlappingCount : getFallingFlappingCount(),
+										$severity : getSeverity()
+    									)
+    	flapper : StateClear( 	getStateRef().raisedDuration() < $raisedMaximumTimeInMilliSec,
+    							$linkKeyOfFlapper : getStateRef().getLinkKey(),
+	    						$stateDescrOfFlapper :  getStateRef().getStateDescr(),
+	    						$managedNodeChainOfFlapper : getStateRef().getManagedNodeChain(),
+	    						! getStateRef().getSourceType().equals(FlappingDetector.SOURCE_TYPE) /* no episodic flapping of flapping allows */)
+    	Number( doubleValue > $raisingFlappingCount ) from accumulate(
+			StateClear( $linkKeyOfFlapper.equals(getStateRef().getLinkKey())  ) over window:time( 30s ),
+            sum( 1 ) )
+        not Signal(				 	
+					isCleared() == Signal.RAISING_EDGE,
+					FlappingDetector.EPISODIC_LABEL.equals(getSpecificProperties().get(FlappingDetector.FLAPPING_TYPE_PROPERTY)),
+					$linkKeyOfFlapper.equals(getSpecificProperties().get(FlappingDetector.ORIGINAL_LINK_KEY_PROPERTY))
+					)	
+		not State( 	
+					isCleared() == State.IS_RAISED,
+					FlappingDetector.EPISODIC_LABEL.equals(getSpecificProperties().get(FlappingDetector.FLAPPING_TYPE_PROPERTY)),
+					$linkKeyOfFlapper.equals(getSpecificProperties().get(FlappingDetector.ORIGINAL_LINK_KEY_PROPERTY))
+					) 
+    then
+        Engine.logger.trace("RAISING Episodic Flapping" );
+        
+        FlappingDetector.raiseEpesodicFlapping( $managedNodeChainOfFlapper,
+								$linkKeyOfFlapper,
+								$stateDescrOfFlapper,
+								$severity);
+        
+ 
+end
+
+rule "Episodic Flapping CLEARING"
+salience 0
+    when
+       config : FlappingDetectorConfig(
+    									FlappingDetector.EPISODIC_LABEL.equals(getFlappingType()),
+    									$windowTimeInMilliSecStr : getWindowTimeInMilliSecStr(),
+										$raisedMaximumTimeInMilliSec : getRaisedMaximumTimeInMilliSec(),  
+										$raisingFlappingCount : getRaisingFlappingCount(),
+										$fallingFlappingCount : getFallingFlappingCount(),
+										$severity : getSeverity()
+    									) 
+		episodicFlapping : State( 	
+				isCleared() == State.IS_RAISED,
+				$managedNodeChain : getManagedNodeChain(),
+				$originalLinkKey : getSpecificProperties().get(FlappingDetector.ORIGINAL_LINK_KEY_PROPERTY),
+				FlappingDetector.EPISODIC_LABEL.equals(getSpecificProperties().get(FlappingDetector.FLAPPING_TYPE_PROPERTY)),
+				$stateDescr : getStateDescr(),
+				$linkKey : getLinkKey(),
+				FlappingDetector.SOURCE_TYPE.equals(getSourceType())
+			)
+        not Signal(				 	
+					isCleared() == Signal.FALLING_EDGE,
+					$linkKey.equals(getLinkKey())
+					)	
+    	Number( doubleValue < $fallingFlappingCount ) from accumulate(
+				StateClear( 
+						getStateRef().getLinkKey().equals($originalLinkKey)  ) over window:time( 60000ms ),
+            sum( 1 ) )
+    then
+        Engine.logger.trace("CLEAR Episodic Flapping" );
+        
+       	FlappingDetector.clearEpesodicFlapping(	episodicFlapping);
+ 
+end
+
+
+
+rule "Intermittent Flapping RAISING"
+salience 0
+    when
+    	config : FlappingDetectorConfig(
+    									FlappingDetector.INTERMITTENT_LABEL.equals(getFlappingType()),
+    									$windowTimeInMilliSecStr : getWindowTimeInMilliSecStr(),
+										$raisedMaximumTimeInMilliSec : getRaisedMaximumTimeInMilliSec(),  
+										$raisingFlappingCount : getRaisingFlappingCount(),
+										$fallingFlappingCount : getFallingFlappingCount(),
+										$severity : getSeverity()
+    									)
+    	flapper : StateClear( 	getStateRef().raisedDuration() < $raisedMaximumTimeInMilliSec,
+    							$linkKeyOfFlapper : getStateRef().getLinkKey(),
+	    						$stateDescrOfFlapper :  getStateRef().getStateDescr(),
+	    						$managedNodeChainOfFlapper : getStateRef().getManagedNodeChain(),
+	    						$originalLinkKey : getStateRef().getSpecificProperties().get(FlappingDetector.ORIGINAL_LINK_KEY_PROPERTY),
+	    						$originalStateDescr : getStateRef().getSpecificProperties().get(FlappingDetector.ORIGINAL_STATE_DESCR_PROPERTY),
+	    						FlappingDetector.EPISODIC_LABEL.equals(getStateRef().getSpecificProperties().get(FlappingDetector.FLAPPING_TYPE_PROPERTY))
+	    					)
+    	Number( doubleValue > $raisingFlappingCount ) from accumulate(
+			StateClear( $linkKeyOfFlapper.equals(getStateRef().getLinkKey())  ) over window:time( 60s ),
+            sum( 1 ) )
+        not Signal(				 	
+					isCleared() == Signal.RAISING_EDGE,
+					FlappingDetector.INTERMITTENT_LABEL.equals(getSpecificProperties().get(FlappingDetector.FLAPPING_TYPE_PROPERTY)),
+					$linkKeyOfFlapper.equals(getSpecificProperties().get(FlappingDetector.ORIGINAL_LINK_KEY_PROPERTY))
+					)	
+		not State( 	
+					isCleared() == State.IS_RAISED,
+					FlappingDetector.INTERMITTENT_LABEL.equals(getSpecificProperties().get(FlappingDetector.FLAPPING_TYPE_PROPERTY)),
+					$linkKeyOfFlapper.equals(getSpecificProperties().get(FlappingDetector.ORIGINAL_LINK_KEY_PROPERTY))
+					) 
+    then
+        Engine.logger.trace("RAISING Intermittent Flapping" );
+        
+/*
+        FlappingDetector.raiseIntermittentFlapping( $managedNodeChainOfFlapper,
+								$originalLinkKey,
+								$originalStateDescr,
+								$severity);
+  */      
+ end
+
+
+rule "Promote Episodic Flapping to Constant Flapping"
+salience 0
+    when
+    	now : Ticker()
+		episodicFlapping : State( 	
+				isCleared() == State.IS_RAISED,
+				(now.getTimestamp() - getLastRaiseTime()) > 3600000, // Last > 1 hour 
+				FlappingDetector.EPISODIC_LABEL.equals(getSpecificProperties().get(FlappingDetector.FLAPPING_TYPE_PROPERTY)),
+				$linkKey : getLinkKey(),
+				FlappingDetector.SOURCE_TYPE.equals(getSourceType())
+			)
+
+    then
+        Engine.logger.trace("Promote Episodic Flapping to Constant Flapping: " + $linkKey);
+        
+       	FlappingDetector.promoteToConstantFlapping(episodicFlapping, Severity.CRITICAL);
+end
+
+/*
+rule "Promote Episodic Flapping to Constant Flapping"
+salience 0
+    when
+    	now : Ticker()
+		episodicFlapping : State( 	
+				isCleared() == State.IS_RAISED,
+				(now.getTimestamp() - getLastRaiseTime()) > 3600000, // Last > 1 hour 
+				FlappingDetector.EPISODIC_LABEL.equals(getSpecificProperties().get(FlappingDetector.FLAPPING_TYPE_PROPERTY)),
+				$linkKey : getLinkKey(),
+				FlappingDetector.SOURCE_TYPE.equals(getSourceType())
+			)
+
+    then
+        Engine.logger.trace("Promote Episodic Flapping to Constant Flapping: " + $linkKey);
+        
+       	FlappingDetector.promoteToConstantFlapping(episodicFlapping, Severity.CRITICAL);
+end
+*/
+

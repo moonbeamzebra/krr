@@ -1,0 +1,36 @@
+package ca.magenta.krr.fact
+
+/**
+ * @author jean-paul.laberge <jplaberge@magenta.ca>
+ * @version 0.1
+ * @since 2014-05-06
+ */  
+import ca.magenta.krr.engine.Engine;
+
+declare State
+	@role( fact )
+end
+
+rule "State Scom-Smarts Heartbeat failed"
+salience 0
+    when
+        scomState : State( 	
+        						isCleared() == false,
+        						getSourceType().equals("Scom"), 
+        						getStateDescr().equals("Heartbeat_failed"),
+        						$scomGroundNodeFqdName : getGroundManagedNode().getFqdName(),
+        						$scomLinkKey : getLinkKey() 			 
+        					)
+       	smartsState : State(	
+       							isCleared() == false, 	
+       							getSourceType().equals("Smarts"), 
+        						getStateDescr().equals("Unresponsive"),
+        						$scomGroundNodeFqdName.equals(getMostSpecificManagedNode().getFqdName()),
+        						$smartsLinkKey : getLinkKey()
+        					)
+        
+    then
+        Engine.logger.trace("Hit for [" + $scomLinkKey + "] and [" + $smartsLinkKey + "]" );
+        scomState.addCausedBy(smartsState);
+end 
+

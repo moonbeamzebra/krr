@@ -1,0 +1,66 @@
+package ca.magenta.krr.fact
+ 
+import ca.magenta.krr.engine.Engine;
+
+/**
+ * @author jean-paul.laberge <jplaberge@magenta.ca>
+ * @version 0.1
+ * @since 2014-02-04
+ */
+ 
+declare Signal
+	@role( event )
+end
+ 
+rule "Signal"
+salience -999
+    when
+        signal : Signal(    )
+    then
+        Engine.logger.trace("Got Signal: " + signal.toString(false));
+        //retract(signal);
+end
+
+rule "Signal New State"
+salience 0
+    when
+        signal : Signal( $linkKey :  getLinkKey()  )
+        not State( getLinkKey() == $linkKey)
+    then
+        Engine.logger.trace("No alarm with linkKey == [" + $linkKey + "]" );
+        State.insertNew(signal);
+end
+
+rule "Signal Already State no change for cleared state"
+salience 0
+    when
+        newSignal : Signal( $linkKey :  getLinkKey(), $cleared : isCleared()  )
+        currentAlarm : State( getLinkKey() == $linkKey ,
+        					isCleared() == $cleared )
+    then
+        Engine.logger.trace("Already alarm with linkKey == [" + $linkKey + "]" );
+        State.updateExisting(newSignal, currentAlarm);
+end
+
+rule "Signal Already State going cleared"
+salience 0
+    when
+        newSignal : Signal( $linkKey :  getLinkKey(), isCleared()  )
+        currentAlarm : State( getLinkKey() == $linkKey ,
+        					!isCleared() )
+    then
+        Engine.logger.trace("Already alarm with linkKey == [" + $linkKey + "]" );
+        State.updateGoingCleared(newSignal, currentAlarm);
+end
+
+rule "Signal Already State going not cleared"
+salience 0
+    when
+        newSignal : Signal( $linkKey :  getLinkKey(), !isCleared()  )
+        currentAlarm : State( getLinkKey() == $linkKey ,
+        					isCleared() )
+    then
+        Engine.logger.trace("Already alarm with linkKey == [" + $linkKey + "]" );
+        State.updateGoingNotCleared(newSignal, currentAlarm);
+end
+

@@ -1,0 +1,133 @@
+package ca.magenta.krr.fact
+
+/**
+ * @author jean-paul.laberge <jplaberge@magenta.ca>
+ * @version 0.1
+ * @since 2014-02-16
+ */ 
+import ca.magenta.krr.engine.Engine;
+import ca.magenta.krr.ruleEngin.Aggregator;
+
+declare State
+	@role( fact )
+end
+
+declare Signal
+	@role( event )
+end
+
+
+
+rule "New Aggregator"
+salience 0
+    when
+        state1 : State (
+        				isCleared() == false,
+        				isTop() == true,
+        				isRoot() == true,
+        				isAggregated() == false,
+        				isAggregator() == false,
+        				$state1GroundNodeFqdName : getGroundManagedNode().getFqdName()
+            		)
+            		
+        state2 : State (
+        				this != state1,
+        				isCleared() == false,
+        				isTop() == true,
+        				isRoot() == true,
+        				isAggregated() == false,
+        				isAggregator() == false,
+        				$state1GroundNodeFqdName.equals(getGroundManagedNode().getFqdName())
+        				
+            		)
+         not Signal(
+         			$state1GroundNodeFqdName.equals(getGroundManagedNode().getFqdName()),
+    				isAggregator() == true
+         			)
+         not State( 
+         			isCleared() == false,
+         			$state1GroundNodeFqdName.equals(getGroundManagedNode().getFqdName()),
+    				isAggregator() == true
+         			)
+            		
+    then
+        Engine.logger.trace("New Aggregator Got Hit" );
+    	Aggregator.insertNew(state1, state2);
+
+end
+
+rule "Got Aggregator !isCleared with only 1 aggregate - must be cleared"
+salience 0
+	when
+        aggregator : State( 
+        			isCleared() == false,
+        			getAggregates().size() < 2,
+    				isAggregator() == true,
+         			$aggregatorLinkKey : getLinkKey()
+         			)
+	then
+       Engine.logger.trace("Must be cleared [" + $aggregatorLinkKey + "]" );
+       Aggregator.doClear(aggregator);
+end
+
+rule "Got Aggregator !isCleared"
+salience 0
+	when
+        aggregator : State( 
+        			isCleared() == false,
+    				isAggregator() == true,
+         			$aggregatorLinkKey : getLinkKey()
+         			)
+	then
+       Engine.logger.trace("Just GOT Aggregator [" + $aggregatorLinkKey + "]" );
+       Engine.logger.trace("Just GOT getStateDescr() [" + aggregator.getStateDescr() + "]" );
+       Engine.logger.trace("Just GOT isAggregator()  [" + aggregator.isAggregator()  + "]" );
+       Engine.logger.trace("Just GOT !isCleared() [" + !aggregator.isCleared() + "]" );
+       Engine.logger.trace("Just GOT getGroundManagedNode().getFqdName() [" + aggregator.getGroundManagedNode().getFqdName() + "]" );
+end
+
+rule "Update Aggregator"
+salience 0
+    when
+    
+        aggregator : State( 
+    				isCleared() == false,
+         			hasAggregate() == true,
+    				isAggregator() == true,
+         			$aggregatorGroundNodeFqdName : getGroundManagedNode().getFqdName()
+         			)
+		not Signal(
+         			$aggregatorGroundNodeFqdName.equals(getGroundManagedNode().getFqdName()),
+         			isAggregator() == true
+         			)
+        newAggregate : State (
+        				isCleared() == false,
+        				isTop() == true,
+        				isRoot() == true,
+        				isAggregated() == false,
+        				isAggregator() == false,
+        				$aggregatorGroundNodeFqdName.equals(getGroundManagedNode().getFqdName())
+            		)
+    then
+        Engine.logger.trace("Update Aggregator Got Hit" );
+    	Aggregator.addAggregate(aggregator, newAggregate);
+
+end
+
+
+rule "Is Aggregated, but not (top or root)"
+salience 0
+    when
+        aggregate : State (
+        				isCleared() == false,
+        				(	isTop() == false ||
+        					isRoot() == false
+        				),
+        				isAggregated() == true,
+        				isAggregator() == false
+            		)
+    then
+        Engine.logger.trace("GOT Is Aggregated, but not (top or root)" );
+        Aggregator.removeAggregate(aggregate);
+end
+

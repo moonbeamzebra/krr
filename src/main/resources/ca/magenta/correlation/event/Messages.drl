@@ -1,0 +1,78 @@
+package ca.magenta.krr.fact
+
+/**
+ * @author jean-paul.laberge <jplaberge@magenta.ca>
+ * @version 0.1
+ * @since 2014-02-04
+ */
+ 
+import ca.magenta.krr.engine.Engine;
+import ca.magenta.krr.connector.*;
+ 
+ declare Message
+	@role( event )
+end
+ 
+ 
+rule "Message"
+salience -999
+    when
+        m : Message(  )
+    then
+        Engine.logger.trace("Default:Got Message: " + m.getId() + "::" +   m.getType() );
+        //retract(m);
+end
+
+
+
+rule "Message::KrrSimpleConnector"
+salience 0
+    when
+        m : Message( getType() == "KrrSimple"   )
+    then
+    	
+        Engine.logger.trace("Got Message::KrrSimple: " + m.getId() + "::" +   m.getType() );
+
+    	KrrSimpleConnector.insertAsSignalInWM(m);
+
+end
+
+rule "Message::ICS_Notification"
+salience 0
+    when
+        m : Message( getType() == "ICS_Notification"   )
+    then
+    	
+        Engine.logger.trace("Smarts:Got Message::ICS_Notification: " + m.getId() + "::" +   m.getType() );
+
+    	Signal.insertInWMFromWorksheet(m, "Smarts");
+    	//Signal.insertInWMFromIcsNotification(m);
+
+end
+
+rule "Message::ScomAlarm"
+salience 0
+    when
+        m : Message( getType() == "ScomAlarm"   )
+    then
+    	
+        Engine.logger.trace("SCOM:Got Message::ScomAlarm: " + m.getId() + "::" +   m.getType() );
+
+    	Signal.insertInWMFromWorksheet(m, "Scom");
+    	//Signal.insertInWMFromScomState(m);
+
+end
+
+rule "Message::NASAlarm"
+salience 0
+    when
+        m : Message( getType() == "NASAlarm"   )
+    then
+    	
+        Engine.logger.trace("Nimsoft:Got Message::NASAlarm: " + m.getId() + "::" +   m.getType() );
+
+    	Signal.insertInWMFromWorksheet(m, "Nimsoft");
+
+end
+
+

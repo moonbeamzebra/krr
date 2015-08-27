@@ -1,0 +1,43 @@
+package ca.magenta.krr.fact
+
+/**
+ * @author jean-paul.laberge <jplaberge@magenta.ca>
+ * @version 0.1
+ * @since 2014-02-04
+ */ 
+import ca.magenta.krr.engine.Engine;
+
+declare StateClear
+	@role( event )
+end
+
+rule "StateClear"
+salience -999
+    when
+        sc : StateClear( 
+        				$lastRaiseTime : getStateRef().getLastRaiseTime(),
+        				$lastClearTime : getStateRef().getLastClearTime()
+           )
+    then
+    	long last = $lastClearTime - $lastRaiseTime;
+        Engine.logger.trace("Got StateClear:; last: " + last + " ms; " + sc.getStateRef().getLinkKey() + " "  + sc.toString(false));
+        // TODO Verify that it is retracted auto by the stream machanism
+        //retract(sc)
+end
+
+
+rule "StateClear Update Database"
+salience 0
+    when
+        sc : StateClear(    )
+    then
+    	sc.getStateRef().updatDBRow();
+end
+
+rule "StateClear Published"
+salience 0
+    when
+         sc : StateClear(    )
+    then
+    	Engine.stateChangePublisher().publish(sc);
+end

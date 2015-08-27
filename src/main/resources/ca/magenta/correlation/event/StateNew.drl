@@ -1,0 +1,38 @@
+package ca.magenta.krr.fact
+
+/**
+ * @author jean-paul.laberge <jplaberge@magenta.ca>
+ * @version 0.1
+ * @since 2014-02-04
+ */ 
+import ca.magenta.krr.engine.Engine;
+
+declare StateNew
+	@role( event )
+end
+
+ 
+rule "StateNew"
+salience -999
+    when
+        sn : StateNew(    )
+    then
+        Engine.logger.trace("Got StateNew: " + sn.toString(false) );
+        //retract(sn)
+end
+
+rule "StateNew Update Database"
+salience 0
+    when
+        sn : StateNew(    )
+    then
+    	sn.getStateRef().updatDBRow();
+end
+
+rule "StateNew Published"
+salience 0
+    when
+        sn : StateNew(    )
+    then
+    	Engine.stateChangePublisher().publish(sn);
+end

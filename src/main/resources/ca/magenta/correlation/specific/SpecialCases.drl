@@ -1,0 +1,176 @@
+package ca.magenta.krr.fact
+
+/**
+ * @author jean-paul.laberge <jplaberge@magenta.ca>
+ * @version 0.1
+ * @since 2014-05-27
+ */   
+import ca.magenta.krr.engine.Engine;
+import java.util.HashSet;
+import ca.magenta.krr.common.Severity;
+import ca.magenta.krr.ruleEngin.CausalityAnalyser;
+import ca.magenta.krr.data.Chain;
+import ca.magenta.krr.data.ManagedNode;
+
+declare State
+	@role( fact )
+end
+
+declare Signal
+	@role( event )
+end
+
+
+rule "Case - Hypochondriac - RAISE"
+salience 0
+    when
+        avoirMalTete : State( 	
+        						isCleared() == false,
+        						getStateDescr().equals("AvoirMal"),
+        						getMostSpecificManagedNode().getFqdName().equals("tete"),
+        						$teteOwner : getGroundManagedNode().getFqdName()
+        					)
+        avoirMalVentre : State( 	
+        						isCleared() == false,
+        						getStateDescr().equals("AvoirMal"),
+        						getMostSpecificManagedNode().getFqdName().equals("ventre"),
+        						$ventreOwner : getGroundManagedNode().getFqdName()
+        					)
+        avoirMalPied : State( 	
+        						isCleared() == false,
+        						getStateDescr().equals("AvoirMal"),
+        						getMostSpecificManagedNode().getFqdName().equals("pied"),
+        						$groundMN : getGroundManagedNode(),
+        						$piedOwner : getGroundManagedNode().getFqdName(),
+        						$piedOwner.equals($teteOwner),
+        						$piedOwner.equals($ventreOwner)
+        					)
+        not Signal( 	
+	    						isCleared() == false,
+	    						getStateDescr().equals("Hypochondriac"),
+	    						$piedOwner.equals(getGroundManagedNode().getFqdName())
+					)	
+		not State( 	
+	    						isCleared() == false,
+	    						getStateDescr().equals("Hypochondriac"),
+	    						$piedOwner.equals(getGroundManagedNode().getFqdName())
+					)
+        
+    then
+        Engine.logger.trace("RAISE Hypochondriac" );
+        Chain<ManagedNode> managedNodeChain = new Chain<ManagedNode>();
+        managedNodeChain.insertGround($groundMN);
+        HashSet<State> symptoms = new HashSet<State>();
+        symptoms.add(avoirMalTete); 
+        symptoms.add(avoirMalVentre); 
+        symptoms.add(avoirMalPied); 
+        CausalityAnalyser.insertNew(managedNodeChain, 
+			"Hypochondriac" /* stateDescr */,
+			Severity.MINOR, 
+			"Very Hypochondriac" /* shortDescr */, 
+			"Very Very Hypochondriac" /* descr */,
+			null /* categories */,
+			false /* isConsumerView */, 
+			false /* isProviderView */,
+			null /* causedBy */,
+			symptoms /* causes */,
+			null /* aggregates */);
+
+end 
+
+rule "Case - Hypochondriac - CLEAR"
+salience 0
+    when
+    	hypo :  State( 	
+	    						isCleared() == false,
+	    						getStateDescr().equals("Hypochondriac"),
+	    						getCauses().size() < 3,
+	    						$linkKey : getLinkKey()
+					)
+        not Signal( 	
+	    						isCleared() == true,
+	    						getStateDescr().equals("Hypochondriac"),
+	    						$linkKey.equals(getLinkKey())
+					)	
+        
+    then
+        Engine.logger.trace("CLEAR Hypochondriac" );
+        Signal.insertInWM_Clear(hypo);
+
+end 
+
+
+
+rule "Case - Grippe"
+salience 0
+    when
+        fievreux : State( 	
+        						isCleared() == false,
+        						getStateDescr().equals("Fievreux"),
+        						$fievreOwner : getGroundManagedNode().getFqdName()
+        					)
+        courbatureux : State( 	
+        						isCleared() == false,
+        						getStateDescr().equals("Courbatureux"),
+        						$courbatureuxOwner : getGroundManagedNode().getFqdName()
+        					)
+        congestionneux : State( 	
+        						isCleared() == false,
+        						getStateDescr().equals("Congestionneux"),
+        						$groundMN : getGroundManagedNode(),
+        						$congestionneuxOwner : getGroundManagedNode().getFqdName(),
+        						$congestionneuxOwner.equals($fievreOwner),
+        						$congestionneuxOwner.equals($courbatureuxOwner)
+        						
+        					)
+        not Signal(
+         			getStateDescr().equals("Grippeux"),
+	    			$congestionneuxOwner.equals(getGroundManagedNode().getFqdName())
+         			)
+        not State( 	
+	    						isCleared() == false,
+	    						getStateDescr().equals("Grippeux"),
+	    						$congestionneuxOwner.equals(getGroundManagedNode().getFqdName())
+					)
+    then
+        Engine.logger.trace("GOT Grippeux" );
+        Chain<ManagedNode> managedNodeChain = new Chain<ManagedNode>();
+        managedNodeChain.insertGround($groundMN);
+        HashSet<State> symptoms = new HashSet<State>();
+        symptoms.add(fievreux); 
+        symptoms.add(courbatureux); 
+        symptoms.add(congestionneux); 
+        CausalityAnalyser.insertNew(managedNodeChain, 
+			"Grippeux" /* stateDescr */,
+			Severity.MINOR, 
+			"Very Grippeux" /* shortDescr */, 
+			"Very Very Grippeux" /* descr */,
+			null /* categories */,
+			false /* isConsumerView */, 
+			false /* isProviderView */,
+			null /* causedBy */,
+			symptoms /* causes */,
+			null /* aggregates */);
+
+end 
+
+rule "Case - Grippe - CLEAR"
+salience 0
+    when
+    	Grippeux :  State( 	
+	    						isCleared() == false,
+	    						getStateDescr().equals("Grippeux"),
+	    						getCauses().size() < 3,
+	    						$linkKey : getLinkKey()
+					)
+        not Signal( 	
+	    						isCleared() == true,
+	    						getStateDescr().equals("Grippeux"),
+	    						$linkKey.equals(getLinkKey())
+					)	
+        
+    then
+        Engine.logger.trace("CLEAR Grippeux" );
+        Signal.insertInWM_Clear(Grippeux);
+
+end 

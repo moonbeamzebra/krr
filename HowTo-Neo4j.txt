@@ -1,0 +1,24 @@
+Via web
+See all nodes:
+	START mn=node(*) RETURN mn
+See all relations:
+	START r=relationship(*) RETURN r
+Delete all nodes:
+	START mn=node(*) DELETE mn
+Delete all relations:
+	START r=relationship(*) DELETE r
+
+
+Show index:
+curl -X GET http://localhost:7474/db/data/schema/index/ManagedNode
+Delete index:
+curl -X DELETE http://localhost:7474/db/data/schema/index/ManagedNode/fqdName
+curl -X DELETE http://localhost:7474/db/data/schema/index/Host/fqdName
+curl -X DELETE http://localhost:7474/db/data/schema/index/Switch/fqdName
+Get all constraints for a label:
+curl -X GET http://localhost:7474/db/data/schema/constraint/ManagedNode
+Drop constraint:
+curl -X DELETE http://localhost:7474/db/data/schema/constraint/ManagedNode/uniqueness/fqdName
+
+Web:
+http://stackoverflow.com/questions/22955951/neo4j-web-interface-make-permanent-custom-scripts

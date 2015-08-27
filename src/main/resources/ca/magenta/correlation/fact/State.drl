@@ -1,0 +1,66 @@
+package ca.magenta.krr.fact
+
+/**
+ * @author jean-paul.laberge <jplaberge@magenta.ca>
+ * @version 0.1
+ * @since 2014-02-04
+ */ 
+import ca.magenta.krr.engine.Engine;
+
+declare State
+	@role( fact )
+end
+ 
+rule "State"
+salience -999
+    when
+        state : State(    )
+    then
+        Engine.logger.trace("Got State: " + state.toString(false) );
+        //retract(state);
+end
+
+rule "State Nimsoft-Smarts Robot No Answer"
+salience 0
+    when
+        nimsoftState : State( 	
+        						isCleared() == false,
+        						getSourceType().equals("Nimsoft"), 
+        						getStateDescr().equals("RobotNoAnswer"),
+        						$nimsoftGroundNodeFqdName : getGroundManagedNode().getFqdName(),
+        						$nimsoftLinkKey : getLinkKey() 			 
+        					)
+       	smartsState : State(	
+       							isCleared() == false, 	
+       							getSourceType().equals("Smarts"), 
+        						getStateDescr().equals("Unresponsive"),
+        						$nimsoftGroundNodeFqdName.equals(getMostSpecificManagedNode().getFqdName()),
+        						$smartsLinkKey : getLinkKey()
+        					)
+        
+    then
+        Engine.logger.trace("Hit for [" + $nimsoftLinkKey + "] and [" + $smartsLinkKey + "]" );
+        nimsoftState.addCausedBy(smartsState);
+end 
+
+rule "State ServiceConsumer-ServiceProvider dependency"
+salience 0
+    when
+        consumerState : State( 	
+        						isCleared() == false,
+        						isConsumerView(),
+        						$consumerNodeFqdName : getMostSpecificManagedNode().getFqdName(),
+        						$consumerLinkKey : getLinkKey() 			 
+        					)
+       	providerState : State(	
+       							isCleared() == false, 	
+        						isProviderView(),
+        						$consumerNodeFqdName.equals(getMostSpecificManagedNode().getFqdName()),
+        						areSharingSameCategory(consumerState),
+        						$providerLinkKey : getLinkKey()
+        					)
+        
+    then
+        Engine.logger.trace("Hit for  [" + $consumerNodeFqdName + "] and [" + $providerLinkKey + "]" );
+        consumerState.addCausedBy(providerState);
+end 
