@@ -1,6 +1,6 @@
 # KRR
 
-Knowledge Representation and Reasoning (KKR) is a correlation engine using Drools and Neo4j. Able to do event-based correlation and topology-based correlation.
+Knowledge Representation and Reasoning (KRR) is a correlation engine using Drools and Neo4j. Able to do event-based correlation and topology-based correlation.
 
 ******
 ##AUTHOR
