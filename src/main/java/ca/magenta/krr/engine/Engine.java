@@ -133,8 +133,8 @@ public class Engine {
 		statesByLinkKey.remove(linkKey);
 	}
 
-	public static void neo4jRegister(String hostname, int port) {
-		graphDB = Neo4jManager.getInstance(hostname, port);
+	public static void neo4jRegister(String hostname, int port, String user, String password) {
+		graphDB = Neo4jManager.getInstance(hostname, port, user, password);
 	}
 	
 	public static void dbConnect(String hostname, int port, boolean dbTest) throws SQLException {

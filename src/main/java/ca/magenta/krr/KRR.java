@@ -175,7 +175,7 @@ public class KRR implements Runnable {
 			}
 			Engine.setEventCategoryMappings(eventCategoryMappings);
 
-			Engine.neo4jRegister(props.neo4jHost, props.neo4jPort);
+			Engine.neo4jRegister(props.neo4jHost, props.neo4jPort, props.neo4jUser, props.neo4jPassword);
 
 			if (props.dbHost != null) {
 				Engine.dbConnect(props.dbHost, props.dbPort, props.dbTest);
@@ -276,6 +276,12 @@ public class KRR implements Runnable {
 						logger.error("Bad dbPortStr: [" + dbPortStr + "]");
 						paramsOptions = null;
 					}
+                } else if (a_sArgs[i].startsWith("-neo4jUser=")) {
+                	paramsOptions.neo4jUser = a_sArgs[i].substring(11);
+                    logger.info("neo4jUser: [" + paramsOptions.neo4jUser + "]");
+                } else if (a_sArgs[i].startsWith("-neo4jPassword=")) {
+                	paramsOptions.neo4jPassword = a_sArgs[i].substring(15);
+                    logger.info("neo4jPassword: [" + paramsOptions.neo4jPassword + "]");
 				} else if (a_sArgs[i].startsWith("-dbTest")) {
 					paramsOptions.dbTest = true;
 					logger.info("dbTest: [" + paramsOptions.dbTest + "]");
@@ -290,15 +296,15 @@ public class KRR implements Runnable {
 			}
 		}
 
-		if ((paramsOptions == null) || (paramsOptions.neo4jHost == null) || (paramsOptions.neo4jPort == -1) || (paramsOptions.dependencyRuleFile == null)) {
+		if ((paramsOptions == null) || (paramsOptions.neo4jHost == null) || (paramsOptions.neo4jPort == -1) || (paramsOptions.neo4jUser == null) || (paramsOptions.neo4jPassword == null) || (paramsOptions.dependencyRuleFile == null)) {
 			System.err
-					.println("Usage: KKR -neo4jHost=neo4jHost -neo4jPort=neo4jPort -dependencyRuleFile=dependencyRuleFile [-dbHost=dbHost -dbPort=dbPort [-dbTest]]");
+					.println("Usage: KKR -neo4jHost=neo4jHost -neo4jPort=neo4jPort -neo4jUser=neo4jUser -neo4jPassword=neo4jPassword -dependencyRuleFile=dependencyRuleFile [-dbHost=dbHost -dbPort=dbPort [-dbTest]]");
 			System.err
-					.println("Ex:    KKR -neo4jHost=127.0.0.1 -neo4jPort=7474 -dbHost=julia -dbPort=9393 -dependencyRuleFile=../ca.magenta.correlation.tools/DependencyRule.xlsx");
+					.println("Ex:    KKR -neo4jHost=127.0.0.1 -neo4jPort=7474 -neo4jUser=neo4j -neo4jPassword=lab1 -dbHost=julia -dbPort=9393 -dependencyRuleFile=../ca.magenta.correlation.tools/DependencyRule.xlsx");
 			System.err
-					.println("Ex:    KKR -neo4jHost=127.0.0.1 -neo4jPort=7474 -dbHost=127.0.0.1 -dbPort=9092 -dependencyRuleFile=../ca.magenta.correlation.tools/DependencyRule.xlsx");
+					.println("Ex:    KKR -neo4jHost=127.0.0.1 -neo4jPort=7474 -neo4jUser=neo4j -neo4jPassword=lab1 -dbHost=127.0.0.1 -dbPort=9092 -dependencyRuleFile=../ca.magenta.correlation.tools/DependencyRule.xlsx");
 			System.err
-					.println("Ex:    KKR -neo4jHost=127.0.0.1 -neo4jPort=7474 -dbHost=127.0.0.1 -dbPort=9092 -dbTest -dependencyRuleFile=../ca.magenta.correlation.tools/DependencyRule.xlsx");
+					.println("Ex:    KKR -neo4jHost=127.0.0.1 -neo4jPort=7474 -neo4jUser=neo4j -neo4jPassword=lab1 -dbHost=127.0.0.1 -dbPort=9092 -dbTest -dependencyRuleFile=../ca.magenta.correlation.tools/DependencyRule.xlsx");
 
 			paramsOptions = null;
 		}
@@ -371,6 +377,8 @@ public class KRR implements Runnable {
 		}
 		public String neo4jHost = null;
 		public int neo4jPort = -1;
+		public String neo4jUser = null;
+		public String neo4jPassword = null;
 		public String dbHost = null;
 		public int dbPort = -1;
 		public boolean dbTest = true;

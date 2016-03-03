@@ -26,6 +26,7 @@ import com.google.gson.reflect.TypeToken;
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.WebResource;
+import com.sun.jersey.api.client.filter.HTTPBasicAuthFilter;
 
 public class Neo4jManager {
 	
@@ -36,8 +37,16 @@ public class Neo4jManager {
 	
 	private static volatile Neo4jManager instance = null;
 
-	private Neo4jManager(String host, int port) {
+	private static String user = null; 
+	private static String password = null;
+
+	private Neo4jManager(	String host, 
+							int port,
+							String user, 
+							String password) {
 		super();
+		this.user = user; 
+		this.password = password;
 		HOST = "http://" + host + ":" + port;
 		SERVER_ROOT_URI = HOST + "/db/data/";
 		logger.info("Neo4j host:" + HOST);
@@ -45,12 +54,15 @@ public class Neo4jManager {
 		
 	}
 
-	public static Neo4jManager getInstance(String host, int port) {
+	public static Neo4jManager getInstance(	String host, 
+											int port, 
+											String user, 
+											String password) {
 		if (instance == null) {
 			synchronized (Neo4jManager.class) {
 				// Double check
 				if (instance == null) {
-					instance = new Neo4jManager(host, port);
+					instance = new Neo4jManager(host, port, user, password);
 				}
 			}
 		}
@@ -88,6 +100,7 @@ public class Neo4jManager {
 
         WebResource resource = Client.create()
                 .resource( nodeEntryPointUri );
+        resource.addFilter(new HTTPBasicAuthFilter(user, password));
         // POST {} to the node entry point URI
         ClientResponse response = resource.accept( MediaType.APPLICATION_JSON )
                 .type( MediaType.APPLICATION_JSON )
@@ -142,6 +155,10 @@ public class Neo4jManager {
 
         WebResource resource = Client.create()
                 .resource( cypherUri );
+        resource.addFilter(new HTTPBasicAuthFilter(user, password));
+//        logger.debug(String.format(
+//              "NEO4J user [%s], password [%s]",
+//              user, password ));
         // POST {} to the node entry point URI
         ClientResponse response = resource.accept( MediaType.APPLICATION_JSON )
                 .type( MediaType.APPLICATION_JSON )
@@ -180,6 +197,7 @@ public class Neo4jManager {
         
         WebResource resource = Client.create()
                 .resource( propertyUri );
+        resource.addFilter(new HTTPBasicAuthFilter(user, password));
         ClientResponse response = resource.accept( MediaType.APPLICATION_JSON )
                 .type( MediaType.APPLICATION_JSON )
                 .entity( "\"" + propertyValue + "\"" )
@@ -211,6 +229,7 @@ public class Neo4jManager {
         
         WebResource resource = Client.create()
                 .resource( labelUri );
+        resource.addFilter(new HTTPBasicAuthFilter(user, password));
         // POST {} to the node entry point URI
         ClientResponse response = resource.accept( MediaType.APPLICATION_JSON )
                 .type( MediaType.APPLICATION_JSON )
@@ -240,6 +259,7 @@ public class Neo4jManager {
         
         WebResource resource = Client.create()
                 .resource( listIndexesForALabelUri );
+        resource.addFilter(new HTTPBasicAuthFilter(user, password));
         ClientResponse response = resource.accept( MediaType.APPLICATION_JSON )
                 .type( MediaType.APPLICATION_JSON )
                 .get( ClientResponse.class );
@@ -292,6 +312,7 @@ public class Neo4jManager {
         
         WebResource resource = Client.create()
                 .resource( getConstraintUri );
+        resource.addFilter(new HTTPBasicAuthFilter(user, password));
         // POST {} to the node entry point URI
         ClientResponse response = resource.accept( MediaType.APPLICATION_JSON )
                 .type( MediaType.APPLICATION_JSON )
@@ -346,6 +367,7 @@ public class Neo4jManager {
         
         WebResource resource = Client.create()
                 .resource( createIndexUri );
+        resource.addFilter(new HTTPBasicAuthFilter(user, password));
         // POST {} to the node entry point URI
         ClientResponse response = resource.accept( MediaType.APPLICATION_JSON )
                 .type( MediaType.APPLICATION_JSON )
@@ -380,6 +402,7 @@ public class Neo4jManager {
         
         WebResource resource = Client.create()
                 .resource( createUniquenessConstraintUri );
+        resource.addFilter(new HTTPBasicAuthFilter(user, password));
         // POST {} to the node entry point URI
         ClientResponse response = resource.accept( MediaType.APPLICATION_JSON )
                 .type( MediaType.APPLICATION_JSON )
@@ -427,6 +450,7 @@ public class Neo4jManager {
         //logger.debug(entity);
         
         WebResource resource = Client.create().resource( createRelationshipUri );
+        resource.addFilter(new HTTPBasicAuthFilter(user, password));
         // POST {} to the node entry point URI
         ClientResponse response = resource.accept( MediaType.APPLICATION_JSON )
                 .type( MediaType.APPLICATION_JSON )

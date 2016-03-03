@@ -34,6 +34,8 @@ ca.magenta.krr.tools.Neo4jManip \
 -cleanNodesRels \
 -neo4jHost=127.0.0.1 \
 -neo4jPort=7474 \
+-neo4jUser=neo4j \
+-neo4jPassword=lab1 \
 -managedNodeFile=AutoManagedNodes.xlsx \
 -managedNodeFile=ManManagedNodes.xlsx \
 -relationFile=ManRelations.xlsx
@@ -63,6 +65,8 @@ java -classpath \
 ca.magenta.krr.KRR \
 -neo4jHost=127.0.0.1 \
 -neo4jPort=7474 \
+-neo4jUser=neo4j \
+-neo4jPassword=lab1 \
 -dbHost=127.0.0.1 \
 -dbPort=9092 \
 -dbTest \

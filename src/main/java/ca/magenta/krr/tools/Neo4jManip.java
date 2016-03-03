@@ -29,6 +29,8 @@ public class Neo4jManip {
 	
 	private static String neo4jHost = null;
 	private static int neo4jPort = -1;
+	private static String neo4jUser = null;
+	private static String neo4jPassword = null;
 	private static Vector<String> managedNodeFiles = new Vector<String>();
 	private static String relationFile = null;
 	private static boolean cleanNodesRels = false;
@@ -51,7 +53,7 @@ public class Neo4jManip {
         if (rc == 0) {
         	
 			try {
-				graphDB = Neo4jManager.getInstance(neo4jHost, neo4jPort);
+				graphDB = Neo4jManager.getInstance(neo4jHost, neo4jPort, neo4jUser, neo4jPassword);
 				
 				if (cleanNodesRels)
 				{
@@ -212,6 +214,12 @@ public class Neo4jManip {
                 		logger.error("Bad msgServerPort: [" + neo4jPort + "]");
                 		rc = 1;
                 	}
+                } else if (a_sArgs[i].startsWith("-neo4jUser=")) {
+                	neo4jUser = a_sArgs[i].substring(11);
+                    logger.info("neo4jUser: [" + neo4jUser + "]");
+                } else if (a_sArgs[i].startsWith("-neo4jPassword=")) {
+                	neo4jPassword = a_sArgs[i].substring(15);
+                    logger.info("neo4jPassword: [" + neo4jPassword + "]");
                 } else if (a_sArgs[i].startsWith("-cleanNodesRels")) {
                 	cleanNodesRels = true;
                     logger.info("cleanNodesRels: [" + cleanNodesRels + "]");
@@ -233,9 +241,9 @@ public class Neo4jManip {
         if ((neo4jHost == null) || (neo4jPort == -1)
                || (rc != 0)) {
             System.err
-                    .println("Usage: Neo4jManip [-cleanNodesRels] -neo4jHost=neo4jHost -neo4jPort=neo4jPort { [-managedNodeFile=managedNodeFile] [-relationFile=relationFile] }");
+                    .println("Usage: Neo4jManip [-cleanNodesRels] -neo4jHost=neo4jHost -neo4jPort=neo4jPort -neo4jUser=neo4jUser -neo4jPassword=neo4jPassword { [-managedNodeFile=managedNodeFile] [-relationFile=relationFile] }");
             System.err
-                    .println("Ex:    Neo4jManip -neo4jHost=127.0.0.1 -neo4jPort=7474 -managedNodeFile=AutoManagedNodes.xlsx -relationFile=ManRelations.xlsx");
+                    .println("Ex:    Neo4jManip -neo4jHost=127.0.0.1 -neo4jPort=7474 -neo4jUser=neo4j -neo4jPassword=lab1 -managedNodeFile=AutoManagedNodes.xlsx -relationFile=ManRelations.xlsx");
 
             rc = 1;
         }
