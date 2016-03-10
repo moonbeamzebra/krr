@@ -8,6 +8,7 @@ import java.util.Random;
 import java.util.Vector;
 
 import org.apache.log4j.Logger;
+import org.kie.api.runtime.rule.FactHandle;
 
 import ca.magenta.krr.common.LogicalOperator;
 import ca.magenta.krr.common.Severity;

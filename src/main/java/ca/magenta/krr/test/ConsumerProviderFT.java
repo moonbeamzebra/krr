@@ -70,12 +70,38 @@ public class ConsumerProviderFT {
 				expectedResults.clear();								
 				
 				expectedResults
-					.add("Pinger::Pinger01:::Switch::switch07::Unresponsive,MAJOR,[Availability],isRoot=true,CausedBy=[],Causes=[server12::Impacted],AggregatedBy=[],Aggregates=[],[Unresponsive]");
+					.add("Pinger::Pinger01:::Switch::switch07::Unresponsive,MAJOR,[Availability],"
+							+ "isRoot=true,CausedBy=[],Causes=[server12::Impacted],AggregatedBy=[],Aggregates=[],[Unresponsive]");
 				expectedResults
-					.add("CausalityAnalyser::local:::Host::server12::Impacted,MAJOR,[HiAvailability],isRoot=false,CausedBy=[switch07::Unresponsive],Causes=[],AggregatedBy=[],Aggregates=[],[Losing resource]");
+					.add("CausalityAnalyser::local:::Host::server12::Impacted,MAJOR,[HiAvailability],"
+							+ "isRoot=false,CausedBy=[switch07::Unresponsive],Causes=[],AggregatedBy=[],Aggregates=[],[Losing resource]");
 				
 				resultOK = TestToolKit.testEachExistOnceNotCleared(expectedResults);
 				
+			}
+			
+			if (resultOK) {
+
+				// 44	KrrSimple	Pinger	Pinger01	:::Switch::switch08	Unresponsive	MAJOR
+				TestToolKit.sendMessage_simpleFormat(44, Globals.RAISING);
+
+				logger.info("Sleep ...");
+				Thread.sleep(2000);
+
+				expectedResults.clear();
+				expectedResults
+					.add("Pinger::Pinger01:::Switch::switch07::Unresponsive,MAJOR,[Availability],"
+							+ "isRoot=true,CausedBy=[],Causes=[server12::Impacted],AggregatedBy=[],Aggregates=[],[Unresponsive]");
+				expectedResults
+					.add("Pinger::Pinger01:::Switch::switch08::Unresponsive,MAJOR,[Availability],"
+							+ "isRoot=true,CausedBy=[],Causes=[server12::Impacted],AggregatedBy=[],Aggregates=[],[Unresponsive]");
+				expectedResults
+					.add("CausalityAnalyser::local:::Host::server12::Impacted,CRITICAL,[Availability],"
+						+ "isRoot=false,CausedBy=[switch07::Unresponsive switch08::Unresponsive],Causes=[],AggregatedBy=[],Aggregates=[],[Losing resource]");
+
+				resultOK = TestToolKit.testEachExistOnceNotCleared(expectedResults);
+
+
 			}
 
 			if (resultOK) {
@@ -86,11 +112,20 @@ public class ConsumerProviderFT {
 				logger.info("Sleep ...");
 				Thread.sleep(2000);
 
+				
 				expectedResults.clear();
 				expectedResults
-						.add("Pinger::Pinger01:::Host::server12::Unresponsive,MAJOR,[Availability],isRoot=true,CausedBy=[],Causes=[],AggregatedBy=[],Aggregates=[],[Unresponsive]");
+					.add("CausalityAnalyser::local:::Host::server12::Impacted,CRITICAL,[Availability],"
+							+ "isRoot=false,CausedBy=[switch07::Unresponsive switch08::Unresponsive],Causes=[server12::Unresponsive],AggregatedBy=[],Aggregates=[],[Losing resource]");
 				expectedResults
-						.add("CausalityAnalyser::local:::Host::server12::Impacted,MAJOR,[HiAvailability],isRoot=false,CausedBy=[switch07::Unresponsive],Causes=[],AggregatedBy=[],Aggregates=[],[Losing resource]");
+					.add("Pinger::Pinger01:::Host::server12::Unresponsive,MAJOR,[Availability],"
+							+ "isRoot=false,CausedBy=[server12::Impacted],Causes=[],AggregatedBy=[],Aggregates=[],[Unresponsive]");
+				expectedResults
+					.add("Pinger::Pinger01:::Switch::switch07::Unresponsive,MAJOR,[Availability],"
+							+ "isRoot=true,CausedBy=[],Causes=[server12::Impacted],AggregatedBy=[],Aggregates=[],[Unresponsive]");
+				expectedResults
+					.add("Pinger::Pinger01:::Switch::switch08::Unresponsive,MAJOR,[Availability],"
+							+ "isRoot=true,CausedBy=[],Causes=[server12::Impacted],AggregatedBy=[],Aggregates=[],[Unresponsive]");
 
 				resultOK = TestToolKit.testEachExistOnceNotCleared(expectedResults);
 
@@ -98,11 +133,13 @@ public class ConsumerProviderFT {
 			}
 
 			if (resultOK) {
-				// 44	KrrSimple	Pinger	Pinger01	:::Switch::switch08	Unresponsive	MAJOR
-				TestToolKit.sendMessage_simpleFormat(44, Globals.RAISING);
+				// 43	KrrSimple	Pinger	Pinger01	:::Switch::switch07	Unresponsive	MAJOR
+				TestToolKit.sendMessage_simpleFormat(43, Globals.CLEARING);
 
 				logger.info("Sleep ...");
 				Thread.sleep(2000);
+
+				System.exit(0);
 
 				expectedResults.clear();
 				expectedResults

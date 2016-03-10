@@ -10,7 +10,7 @@ lsof -i -n -P | grep LISTEN
 mvn clean install
 
 // To start  neo4j:
-cd /Users/jplaberge/softwares/neo4j-community-2.1.2/bin
+cd /Users/jplaberge/softwares/neo4j-community-2.3.2/bin
 ./neo4j start 
 
 /*
@@ -52,6 +52,14 @@ START mn=node(*) RETURN mn
 // Just Neo4j
 // java -classpath ./target/ca.magenta.krr-0.0.1-SNAPSHOT-jar-with-dependencies.jar ca.magenta.krr.KRR
 // -neo4jHost=127.0.0.1 -neo4jPort=7474 -dbHost=127.0.0.1 -dbPort=9092 -dependencyRuleFile=./DependencyRule.xlsx
+java -classpath \
+./target/ca.magenta.krr-0.0.1-SNAPSHOT-jar-with-dependencies.jar  \
+ca.magenta.krr.KRR \
+-neo4jHost=127.0.0.1 \
+-neo4jPort=7474 \
+-neo4jUser=neo4j \
+-neo4jPassword=lab1 \
+-dependencyRuleFile=./DependencyRule.xlsx
 
 // Neo4j + Database
 // java -classpath ./target/ca.magenta.krr-0.0.1-SNAPSHOT-jar-with-dependencies.jar ca.magenta.krr.KRR
@@ -74,6 +82,13 @@ ca.magenta.krr.KRR \
 
 
 */
+/////////////////////////////
+//Sending synthetic events
+///////////////////////////
+java -classpath \
+./target/ca.magenta.krr-0.0.1-SNAPSHOT-jar-with-dependencies.jar \
+ca.magenta.krr.tools.SendMessage \
+-simpleFormat -msgServerAddr=127.0.0.1 -msgServerPort=9292 -eventFile=SimpleMessages.xlsx 43
 
 
 

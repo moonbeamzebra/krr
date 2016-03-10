@@ -430,8 +430,12 @@ public class State extends NormalizedProperties {
 	// This function is static and synchronized
 	// This transaction must be complete in total before changing any
 	// CausedByAndCauses of any other States
-	synchronized private static State updateCausedByAndCauses(State state, FactHandle stateFactHandle, HashSet<String> causedByStrs, HashSet<FactHandle> causedByHdles,
-			HashSet<String> causesStrs, HashSet<FactHandle> causesHdles) {
+	synchronized private static State updateCausedByAndCauses(	State state, 
+																FactHandle stateFactHandle, 
+																HashSet<String> causedByStrs, 
+																HashSet<FactHandle> causedByHdles,
+																HashSet<String> causesStrs, 
+																HashSet<FactHandle> causesHdles) {
 
 		if (causedByHdles != null) {
 			for (FactHandle causedByHdle : causedByHdles) {
