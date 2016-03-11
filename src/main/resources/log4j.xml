@@ -17,7 +17,7 @@
 		<param name="threshold" value="trace" />
 		<param name="target" value="System.out" />
 		<layout class="org.apache.log4j.PatternLayout">
-			<param name="ConversionPattern" value="%-5p %d{ABSOLUTE} [%t][%F:%L] : %m%n" />
+			<param name="ConversionPattern" value="%-5p %d{ABSOLUTE} [%t][%C:%L] : %m%n" />
 		</layout>
 		<filter class="org.apache.log4j.varia.LevelRangeFilter">
 			<param name="LevelMin" value="trace" />
@@ -43,6 +43,57 @@
 	</appender>
 
 	<!-- Application Loggers -->
+	
+	<logger name="ca.magenta.utils.TCPServer" additivity="false">
+		<level value="info" />
+		<appender-ref ref="stderr" />
+		<appender-ref ref="stdout" />
+	</logger>
+
+	<logger name="ca.magenta.krr.connector" additivity="false">
+		<level value="debug" />
+		<appender-ref ref="stderr" />
+		<appender-ref ref="stdout" />
+	</logger>
+
+
+	<logger name="ca.magenta.krr.data" additivity="false">
+		<level value="debug" />
+		<appender-ref ref="stderr" />
+		<appender-ref ref="stdout" />
+	</logger>
+
+
+	<logger name="ca.magenta.krr.KRR" additivity="false">
+		<level value="debug" />
+		<appender-ref ref="stderr" />
+		<appender-ref ref="stdout" />
+	</logger>
+
+	<logger name="ca.magenta.krr.data.ManagedNode" additivity="false">
+		<level value="info" />
+		<appender-ref ref="stderr" />
+		<appender-ref ref="stdout" />
+	</logger>
+
+	<logger name="ca.magenta.krr.ruleEngin.CausalityAnalyser" additivity="false">
+		<level value="debug" />
+		<appender-ref ref="stderr" />
+		<appender-ref ref="stdout" />
+	</logger>
+	
+	<!-- Logs from Drools rules -->
+	<logger name="ca.magenta.krr.engine" additivity="false">
+		<level value="info" />
+		<appender-ref ref="stderr" />
+		<appender-ref ref="stdout" />
+	</logger>
+	
+	<logger name="ca.magenta.krr.connector.common.Publisher" additivity="false">
+		<level value="info" />
+		<appender-ref ref="stderr" />
+		<appender-ref ref="stdout" />
+	</logger>
 
 	<logger name="ca.magenta.correlation.tools" additivity="false">
 		<level value="error" />

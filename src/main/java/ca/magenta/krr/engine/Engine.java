@@ -290,7 +290,6 @@ public class Engine {
 					}
 				}
 			}
-			logger.info("");
 			
 			out.close();
 			

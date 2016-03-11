@@ -61,6 +61,6 @@ salience 0
         					)
         
     then
-        Engine.logger.trace("Hit for  [" + $consumerNodeFqdName + "] and [" + $providerLinkKey + "]" );
+        Engine.logger.trace("Hit for  [" + $consumerNodeFqdName + " : "+$consumerLinkKey+" ] and [" + $providerLinkKey + "]" );
         consumerState.addCausedBy(providerState);
 end 

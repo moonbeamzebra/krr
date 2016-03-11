@@ -30,7 +30,7 @@ public class KrrSimpleConnector {
 		try {
 			HashMap<String, String> atts = message.getAttributes();
 
-			logger.debug("atts:" + (new Gson()).toJson(atts));
+			logger.trace("atts:" + (new Gson()).toJson(atts));
 
 			String sourceType = atts.get("sourceType");
 			String source = atts.get("source");

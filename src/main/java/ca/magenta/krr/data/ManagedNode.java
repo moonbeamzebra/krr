@@ -245,7 +245,7 @@ public class ManagedNode extends Node implements FqdNamed {
 
 		CypherQueryOutput cypherQueryOutput = neo4jManager.doCypherQuery(query.toString(), params);
 
-		logger.info(String.format("cypherQueryOutput: [%s]", cypherQueryOutput));
+		logger.debug(String.format("cypherQueryOutput: [%s]", cypherQueryOutput));
 
 		if ((cypherQueryOutput.getData() != null)) {
 			startingRelations = new Vector<CategorizedRelation>();
@@ -253,7 +253,7 @@ public class ManagedNode extends Node implements FqdNamed {
 			for (List<HashMap<String, Object>> line : cypherQueryOutput.getData()) {
 				HashMap<String, Object> relation = line.get(0);
 
-				logger.info(String.format("Relation: [%s]", relation));
+				logger.debug(String.format("Relation: [%s]", relation));
 
 				try {
 					String rStart = (String) relation.get("start");
