@@ -47,7 +47,7 @@ public class KrrSimpleConnector {
 			String categorySignature = sourceType + "::" + stateDescr;
 
 			HashSet<String> categories = null;
-			logger.debug("categorySignature:" + categorySignature);
+			logger.debug("categorySignature:[" + categorySignature + "]");
 			EventCategory eventCategory = Engine.getEventCategoryByCategorySignature(categorySignature);
 			if (eventCategory == null) {
 				eventCategory = new EventCategory();
@@ -94,7 +94,7 @@ public class KrrSimpleConnector {
 				for (String causedBy : causedBys) {
 					String causedByString = sourceName + ":::" + causedBy;
 					as.getCausedByStrs().add(causedByString);
-					logger.debug("as.causedByStrs=" + causedByString);
+					logger.debug("as.causedByStrs:[" + causedByString + "]");
 				}
 			}
 			String causeStr = atts.get("causes");
@@ -103,7 +103,7 @@ public class KrrSimpleConnector {
 				for (String cause : causes) {
 					String causeString = sourceName + ":::" + cause;
 					as.getCausesStrs().add(causeString);
-					logger.debug("as.causesStrs=" + causeString);
+					logger.debug("as.causesStrs:[" + causeString + "]");
 				}
 			}
 

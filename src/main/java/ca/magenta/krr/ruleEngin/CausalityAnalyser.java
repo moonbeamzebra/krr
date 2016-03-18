@@ -137,14 +137,14 @@ public class CausalityAnalyser implements Runnable {
 		Chain<ManagedNode> managedNodeChain = new Chain<ManagedNode>();
 		managedNodeChain.addMostSpecific(mn);
 		
-		logger.debug("MN:[" + mn + "]; cat:[" + stateCategory + "]");
+		logger.debug("Durty MN:[" + mn + "]; cat:[" + stateCategory + "]");
 		
 		HashMap<String, DependencyRule> dependencyRuleBySeverity = mn.getDependencyRuleBySeverityForCategory(stateCategory);
 		
 		HashSet<State> causedBy = new HashSet<State>();
 		if (dependencyRuleBySeverity != null)
 		{
-			logger.debug("Has dependency rule:" + dependencyRuleBySeverity.size());
+			logger.debug("Has dependency rule:(" + dependencyRuleBySeverity.size() + ")");
 			Vector<CategorizedRelation> startRels = mn.getStartingRelations();
 			
 			int outOf = 0;
@@ -153,7 +153,7 @@ public class CausalityAnalyser implements Runnable {
 			int good = 0;
 			for (CategorizedRelation startRel : startRels )
 			{
-				logger.debug("End:" + startRel.getEnd());
+				logger.debug("Depend of:[" + startRel.getEnd()+"]");
 				ManagedNode endMN = (ManagedNode) startRel.getEnd();
 				if (endMN != null)
 				{
@@ -161,6 +161,7 @@ public class CausalityAnalyser implements Runnable {
 					float relationWeight = startRel.getWeight();
 					if (relationWeight > 0)
 					{
+						// TODO Should not be outOf = outOf + relationWeight  ?
 						outOf++;
 						
 						boolean foundActiveStateOfCategory = false;
@@ -173,37 +174,41 @@ public class CausalityAnalyser implements Runnable {
 							{
 								foundActiveStateOfCategory = true;
 								causedBy.add(state);
-								logger.debug("AddCausedBy:" + state.getCategories().toString());
+								logger.debug("Active state for:" + state.getCategories().toString());
 							}
 						}
 						
 						if (!foundActiveStateOfCategory)
 						{
 							straight = straight + relationWeight;
+							
+							// TODO Should not be good = good + relationWeight  ?
 							good++;
 						}
 					}
 				}
 			}
-			logger.debug("Straight:" + straight);
+			logger.debug("Straight:[" + straight+"]");
+			logger.debug("Good:[" + good+"]");
+			logger.debug("OutOf:[" + outOf+"]");
 			
 			DependencyRule dependencyRule = null;
 			
 			Severity testedSeverity = Severity.MOST_SEVERE;
 			
-			logger.debug("Testing1:" + testedSeverity.toString());
+			logger.trace("Start Testing:" + testedSeverity.toString());
 			
 			boolean impactFound = false;
 			HashSet<String> toClearCategories = new HashSet<String>();
 			while (true)
 			{	
-				logger.debug("Testing:" + testedSeverity.toString());
+				logger.debug("Testing severity:[" + testedSeverity.toString() + "]");
 				dependencyRule = dependencyRuleBySeverity.get(testedSeverity.toString());
 				
 				if (dependencyRule != null)
 				{
 					toClearCategories.add(dependencyRule.getStateCategory());
-					logger.debug("DependencyRule:" + dependencyRule);
+					logger.debug("DependencyRule:" + dependencyRule.toString(true /*pretty*/));
 					LogicalOperator logicalOperator = dependencyRule.getOperator();
 					boolean isInPercent = dependencyRule.isInPercent();
 					if (logicalOperator != null)
@@ -223,6 +228,8 @@ public class CausalityAnalyser implements Runnable {
 							logger.debug("Impact found for:" + testedSeverity.toString());
 							HashSet<String> categories = new HashSet<String>();
 							categories.add(dependencyRule.getStateCategory());
+							logger.debug("Add impact state for:[" + managedNodeChain + "]" + 
+									      categories);
 							// Add or update
 							Signal.raising(CausalityAnalyser.SOURCE_TYPE,
 									CausalityAnalyser.SOURCE, 
@@ -413,7 +420,7 @@ public class CausalityAnalyser implements Runnable {
 				HashSet<SimpleImmutableEntry<ManagedNode, String>> managedNodesToCheck = giveMeSomeWork(threadNumber);
 				for (SimpleImmutableEntry<ManagedNode, String> fqdNameEntry : managedNodesToCheck)
 				{
-					logger.debug(fqdNameEntry.getKey() + "," + fqdNameEntry.getValue());
+					logger.trace(fqdNameEntry.getKey() + "," + fqdNameEntry.getValue());
 					checkImpacts(fqdNameEntry.getKey(), fqdNameEntry.getValue());
 				}
 				try {

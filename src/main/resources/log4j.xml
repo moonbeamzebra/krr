@@ -13,11 +13,12 @@
 			<param name="ConversionPattern" value="%-5p %d{ABSOLUTE} [%t][%F:%L] : %m%n" />
 		</layout>
 	</appender>
+	
 	<appender name="stdout" class="org.apache.log4j.ConsoleAppender">
 		<param name="threshold" value="trace" />
 		<param name="target" value="System.out" />
 		<layout class="org.apache.log4j.PatternLayout">
-			<param name="ConversionPattern" value="%-5p %d{ABSOLUTE} [%t][%C:%L] : %m%n" />
+			<param name="ConversionPattern" value="%-5p %d{ABSOLUTE} [%t][%F:%L] : %m%n" />
 		</layout>
 		<filter class="org.apache.log4j.varia.LevelRangeFilter">
 			<param name="LevelMin" value="trace" />
@@ -44,6 +45,14 @@
 
 	<!-- Application Loggers -->
 	
+	
+	<logger name="ca.magenta.krr.common.LogicalOperator" additivity="false">
+		<level value="info" />
+		<appender-ref ref="stderr" />
+		<appender-ref ref="stdout" />
+	</logger>
+
+
 	<logger name="ca.magenta.utils.TCPServer" additivity="false">
 		<level value="info" />
 		<appender-ref ref="stderr" />
