@@ -41,7 +41,13 @@ public class TestToolKit {
 	private static Pattern dumpString_Pattern = Pattern.compile(DUMP_STRING_PATTERN);
 
 
-	public static boolean testEachExistOnceNotCleared(Vector<String> dumpStrings) throws SQLException {
+	public static boolean testEachExistOnceNotCleared(Vector<String> expectedResults) throws SQLException {
+
+		return testEachExistOnceNotCleared(expectedResults, -1 /* Don't check count */);
+	
+	}
+
+	public static boolean testEachExistOnceNotCleared(Vector<String> dumpStrings, int count) throws SQLException {
 		
 		boolean ok = false;
 		
@@ -49,7 +55,7 @@ public class TestToolKit {
 		{
 			ok = testForOnlyOneNotClearedImplementation(dumpString);
 			if (ok)
-			{
+			{				
 				logger.info("SubTest : SUCCESS");
 			}
 			else
@@ -60,6 +66,11 @@ public class TestToolKit {
 				
 		}
 		
+		if (ok) {
+			if (count >= 0)
+				ok = TestToolKit.testForTotalCount_NOT_CLEARED(count /* expectedCount */);
+		}
+			
 		if (ok)
 			logger.info("SUCCESS");
 		else
@@ -436,5 +447,6 @@ public class TestToolKit {
 		TestToolKit.messageServerPrintWriter = messageServerPrintWriter;
 		TestToolKit.messageFileData = messageFileData;
 	}
+
 
 }

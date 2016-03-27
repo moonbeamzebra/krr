@@ -43,6 +43,7 @@ salience 0
         nimsoftState.addCausedBy(smartsState);
 end 
 
+/*
 rule "State ServiceConsumer-ServiceProvider dependency"
 salience 0
     when
@@ -64,3 +65,4 @@ salience 0
         Engine.logger.trace("Hit for  [" + $consumerNodeFqdName + " : "+$consumerLinkKey+" ] and [" + $providerLinkKey + "]" );
         consumerState.addCausedBy(providerState);
 end 
+*/

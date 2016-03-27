@@ -269,7 +269,48 @@ public class State extends NormalizedProperties {
 
 	}
 	
+	
+	public void flushCausedBy() {
+		
+		for (FactHandle impactingStateFactHandle : causedByLocal) {
+			
+			Fact impactingFact = Engine.getStreamKS().getFact(impactingStateFactHandle);
+			if ((impactingFact != null) && impactingFact instanceof State) {
+				State impactingState = (State) impactingFact;
+				State.removeCausedBy(this, impactingState);
+			}
+		}
+		
+	}
 
+	synchronized private static void removeCausedBy(State impactedState, State impactingState) {
+		
+		FactHandle impactedStateFactHandle = Engine.getStreamKS().getFactHandle(impactedState);
+		FactHandle impactingStateFactHandle = Engine.getStreamKS().getFactHandle(impactingState);
+		
+		if (impactingStateFactHandle != null)
+		{
+			boolean changed = impactedState.removeCausedBy_local(impactingStateFactHandle);
+			if (changed) {
+				HashSet<String> changes = new HashSet<String>();
+				changes.add(State.CAUSED_BY_LABEL);
+				Engine.getStreamKS().update(impactedStateFactHandle, impactedState);
+				StateUpdate.insertInWM(impactedState, changes);
+			}
+		}
+		
+		if (impactedStateFactHandle != null)
+		{
+			boolean changed = impactingState.removeCauses_local(impactedStateFactHandle);
+			if (changed) {
+				HashSet<String> changes = new HashSet<String>();
+				changes.add(State.CAUSES_LABEL);
+				Engine.getStreamKS().update(impactingStateFactHandle, impactingState);
+				StateUpdate.insertInWM(impactingState, changes);
+			}
+		}
+		
+	}
 
 	synchronized public void addCausedBy(State causingState)
 	{
@@ -950,5 +991,6 @@ public class State extends NormalizedProperties {
 		}
 
 	}
+
 
 }

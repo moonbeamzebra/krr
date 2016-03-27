@@ -51,7 +51,7 @@ public class CausalityAnalyser implements Runnable {
 	private static int waitTime;
 	private static int randomMax;
 	
-	private static Vector<HashSet<SimpleImmutableEntry<ManagedNode, String>>> buckets = new Vector<HashSet<SimpleImmutableEntry<ManagedNode, String>>>();
+	private static Vector<HashSet<DirtyNodeInfo>> buckets = new Vector<HashSet<DirtyNodeInfo>>();
 	private static Vector<CausalityAnalyser> runners = new Vector<CausalityAnalyser>();
 	private static Vector<Thread> threads = new Vector<Thread>();
 	
@@ -77,7 +77,7 @@ public class CausalityAnalyser implements Runnable {
 		boolean hasChangesOfInterest = hasChangesOfInterest(stateLifecycle);
 		
 		State stateRef = stateLifecycle.getStateRef();
-		ManagedNode me = stateRef.getMostSpecificManagedNode();
+		ManagedNode causingMN = stateRef.getMostSpecificManagedNode();
 		HashSet<String> cats = stateRef.getCategories();
 		for(String cat : cats)
 		{
@@ -86,7 +86,7 @@ public class CausalityAnalyser implements Runnable {
 
 		if ( !isStateUpdateInstance || hasChangesOfInterest)
 		{
-			Vector<CategorizedRelation> endRels = me.getEndingRelations();
+			Vector<CategorizedRelation> endRels = causingMN.getEndingRelations();
 			
 			for (CategorizedRelation endRel : endRels )
 			{
@@ -100,8 +100,8 @@ public class CausalityAnalyser implements Runnable {
 					String category = endRel.getCategory();
 					if (cats.contains(category) || hasChangesOfInterest )
 					{
-						
-						CausalityAnalyser.addDirtyNode(new SimpleImmutableEntry<ManagedNode, String>(startEN, category));
+												
+						CausalityAnalyser.addDirtyNode(new DirtyNodeInfo(startEN, category, DirtyNodeInfo.CHECK_ROOT_CAUSE_AND_SIGNAL_IMPACT));
 						logger.trace("In check4RootCauseAndDispatch; addDirtyNode");
 					}
 					logger.trace("CategorizedRelation:[" + endRel +"]");
@@ -110,6 +110,12 @@ public class CausalityAnalyser implements Runnable {
 			
 			logger.trace(stateRef);
 		}
+		
+		for(String cat : cats)
+		{
+			CausalityAnalyser.addDirtyNode(new DirtyNodeInfo(causingMN, cat, DirtyNodeInfo.CHECK_ROOT_CAUSE_ONLY));
+		}
+
 	}
 
 	private static boolean hasChangesOfInterest(StateLifecycle stateLifecycle) {
@@ -130,7 +136,7 @@ public class CausalityAnalyser implements Runnable {
 		return false;
 	}
 
-	public void checkImpacts(ManagedNode mn, String stateCategory) {
+	private void checkImpacts(ManagedNode mn, String stateCategory, boolean signalImpact) {
 	 
 		logger.trace("In checkImpacts");
 		
@@ -141,7 +147,7 @@ public class CausalityAnalyser implements Runnable {
 		
 		HashMap<String, DependencyRule> dependencyRuleBySeverity = mn.getDependencyRuleBySeverityForCategory(stateCategory);
 		
-		HashSet<State> causedBy = new HashSet<State>();
+		HashSet<State> causedBys = new HashSet<State>();
 		if (dependencyRuleBySeverity != null)
 		{
 			logger.debug("Has dependency rule:(" + dependencyRuleBySeverity.size() + ")");
@@ -173,7 +179,7 @@ public class CausalityAnalyser implements Runnable {
 							if ( !state.isCleared() )
 							{
 								foundActiveStateOfCategory = true;
-								causedBy.add(state);
+								causedBys.add(state);
 								logger.debug("Active state for:" + state.getCategories().toString());
 							}
 						}
@@ -226,32 +232,70 @@ public class CausalityAnalyser implements Runnable {
 						if (impactFound)
 						{
 							logger.debug("Impact found for:" + testedSeverity.toString());
-							HashSet<String> categories = new HashSet<String>();
-							categories.add(dependencyRule.getStateCategory());
-							logger.debug("Add impact state for:[" + managedNodeChain + "]" + 
-									      categories);
-							// Add or update
-							Signal.raising(CausalityAnalyser.SOURCE_TYPE,
-									CausalityAnalyser.SOURCE, 
-									managedNodeChain,
-									CausalityAnalyser.STATE_DESCR,
-									testedSeverity, 
-									"Losing resource" /* TODO nice shortDescr */,
-									"Losing resource" /* TODO nice descr */, 
-									categories, 
-									false /* NOT isConsumerView */,
-									true /*isProviderView*/,
-									causedBy, 
-									null /* causes */, 
-									null /* aggregates */,
-									null /* specificProperties */);
+							
+							if (signalImpact)
+							{
+								HashSet<String> categories = new HashSet<String>();
+								categories.add(dependencyRule.getStateCategory());
+								logger.debug("Add impact state for:[" + managedNodeChain + "]" + 
+										      categories);
+								// Add or update
+								Signal.raising(CausalityAnalyser.SOURCE_TYPE,
+										CausalityAnalyser.SOURCE, 
+										managedNodeChain,
+										CausalityAnalyser.STATE_DESCR,
+										testedSeverity, 
+										"Losing resource" /* TODO nice shortDescr */,
+										"Losing resource" /* TODO nice descr */, 
+										categories, 
+										false /* NOT isConsumerView */,
+										true /*isProviderView*/,
+										causedBys, 
+										null /* causes */, 
+										null /* aggregates */,
+										null /* specificProperties */);
+							}
+							
+							// Apply the same impact to other states of this manage node
+							Vector<State> thisNodeStates = Engine.getStateByNodeByCategory(mn, dependencyRule.getStateCategory());
+							if (thisNodeStates != null) {
+								for (State state : thisNodeStates) {
+									if (	! ( state.getStateDescr().equals(STATE_DESCR) && 
+											state.getSourceName().equals(CausalityAnalyser.getSourceName()) ) )
+									{
+										if (logger.isDebugEnabled())
+											logger.debug("Other state on same node:[" + state.getLinkKey() + "]-" +  state.getCategories());
+
+										for (State causedBy : causedBys) {
+											state.addCausedBy(causedBy);
+										}
+									}
+								}
+							}
+							
+							if (! dependencyRule.getStateCategory().equals(stateCategory)){
+								// Remove all causedBy to other states of this manage node
+								Vector<State> thisNodeStatesOfTestedCategory = Engine.getStateByNodeByCategory(mn, stateCategory);
+								if (thisNodeStatesOfTestedCategory != null) {
+									for (State state : thisNodeStatesOfTestedCategory) {
+										if (	! ( state.getStateDescr().equals(STATE_DESCR) && 
+												state.getSourceName().equals(CausalityAnalyser.getSourceName()) ) )
+										{
+											if (logger.isDebugEnabled())
+												logger.debug("Other state on same node:[" + state.getLinkKey() + "]-" +  state.getCategories());
+
+											state.flushCausedBy();
+										}
+									}
+								}
+
+							}
+								
 							break;
 							
 						}
 					}
 				}
-				
-				
 				
 				
 				if (testedSeverity.equals(Severity.LESS_SEVERE))
@@ -264,7 +308,8 @@ public class CausalityAnalyser implements Runnable {
 						for (State state : allStatesForANode) {
 							boolean toClear = false;
 							if (	state.getStateDescr().equals(STATE_DESCR) && 
-									state.getSourceName().equals(CausalityAnalyser.getSourceName()) )
+									state.getSourceName().equals(CausalityAnalyser.getSourceName()) &&
+									signalImpact )
 							{
 								HashSet<String> cats = state.getCategories();
 								for (String cat : cats)
@@ -277,6 +322,9 @@ public class CausalityAnalyser implements Runnable {
 								}
 								if (toClear)
 								{
+									if (logger.isDebugEnabled())
+										logger.debug("Will clear:[" + state.getLinkKey() + "]-" +  state.getCategories());
+									
 									Signal.insertInWM_Clear(state);
 								}
 							}
@@ -291,8 +339,11 @@ public class CausalityAnalyser implements Runnable {
 		}
 		else 
 		{
-			// Clear everyone that could have been raised
-			clearAllOtherImpactAnalyserStateForThatNode_but(mn, STATE_DESCR, null,null); 
+			if (signalImpact)
+			{
+				// Clear everyone that could have been raised
+				clearAllOtherImpactAnalyserStateForThatNode_but(mn, STATE_DESCR, null,null);
+			}
 		}
 		
 	}
@@ -312,11 +363,17 @@ public class CausalityAnalyser implements Runnable {
 				{
 					if ((targetSeverity == null) && (targetCategories == null)) 
 					{
+						if (logger.isDebugEnabled())
+							logger.debug("Will clear:[" + state.getLinkKey() + "]-" +  state.getCategories());
+
 						Signal.insertInWM_Clear(state);
 					}
 					else if (	!state.getSeverity().equals(targetSeverity) ||
 								!state.getCategories().equals(targetCategories) 	)
 					{
+						if (logger.isDebugEnabled())
+							logger.debug("Will clear:[" + state.getLinkKey() + "]-" +  state.getCategories());
+
 						Signal.insertInWM_Clear(state);
 					}
 				}
@@ -355,29 +412,29 @@ public class CausalityAnalyser implements Runnable {
 	}
 
 
-	synchronized private HashSet<SimpleImmutableEntry<ManagedNode, String>> giveMeSomeWork(int threadNumber)
+	synchronized private HashSet<DirtyNodeInfo> giveMeSomeWork(int threadNumber)
 	{
-		HashSet<SimpleImmutableEntry<ManagedNode, String>> bucket = buckets.get(threadNumber);
+		HashSet<DirtyNodeInfo> bucket = buckets.get(threadNumber);
 		
 		@SuppressWarnings("unchecked")
-		HashSet<SimpleImmutableEntry<ManagedNode, String>> work = (HashSet<SimpleImmutableEntry<ManagedNode, String>>) bucket.clone();
+		HashSet<DirtyNodeInfo> work = (HashSet<DirtyNodeInfo>) bucket.clone();
 		bucket.clear();
 		
 		return work;
 		
 	}
 
-	synchronized public static void addDirtyNode(SimpleImmutableEntry<ManagedNode, String> simpleImmutableEntry)
+	synchronized public static void addDirtyNode(DirtyNodeInfo dirtyNodeInfo)
 	{
-		logger.trace("In addDirtyNode; Node:[" + simpleImmutableEntry.getKey() + "] Category:[" + simpleImmutableEntry.getValue() + "]");
+		logger.trace("In addDirtyNode; Node:[" + dirtyNodeInfo.mn + "] Category:[" + dirtyNodeInfo.category + "]");
 		
 		// With the following trick, a particular nodeName will always be processed
 		// by the same thread
-		int bucketNumber = Math.abs(simpleImmutableEntry.hashCode()) % numberOfThreads;
+		int bucketNumber = Math.abs(dirtyNodeInfo.mn.hashCode()) % numberOfThreads;
 		
-		HashSet<SimpleImmutableEntry<ManagedNode, String>> bucket = buckets.get(bucketNumber);
+		HashSet<DirtyNodeInfo> bucket = buckets.get(bucketNumber);
 		
-		bucket.add(simpleImmutableEntry);
+		bucket.add(dirtyNodeInfo);
 		
 	}
 	
@@ -388,7 +445,7 @@ public class CausalityAnalyser implements Runnable {
 		randomMax = pRandomMax;
 		
         for (int i = 0; i < numberOfThreads; i++) {
-        	buckets.insertElementAt(new HashSet<SimpleImmutableEntry<ManagedNode, String>>(), i);
+        	buckets.insertElementAt(new HashSet<DirtyNodeInfo>(), i);
         	CausalityAnalyser dnt = new CausalityAnalyser(i);
         	runners.insertElementAt(dnt, i);
         	Thread t = new Thread(dnt, "CsAnl-" + (i+1));
@@ -417,11 +474,11 @@ public class CausalityAnalyser implements Runnable {
 	public void run() {
 		
 			while (doRun) {
-				HashSet<SimpleImmutableEntry<ManagedNode, String>> managedNodesToCheck = giveMeSomeWork(threadNumber);
-				for (SimpleImmutableEntry<ManagedNode, String> fqdNameEntry : managedNodesToCheck)
+				HashSet<DirtyNodeInfo> managedNodesToCheck = giveMeSomeWork(threadNumber);
+				for (DirtyNodeInfo fqdNameEntry : managedNodesToCheck)
 				{
-					logger.trace(fqdNameEntry.getKey() + "," + fqdNameEntry.getValue());
-					checkImpacts(fqdNameEntry.getKey(), fqdNameEntry.getValue());
+					logger.trace(fqdNameEntry.mn + "," + fqdNameEntry.category);
+					checkImpacts(fqdNameEntry.mn, fqdNameEntry.category,fqdNameEntry.signalImpact);
 				}
 				try {
 				Thread.sleep(waitTime + (new Random()).nextInt(randomMax + 1));
@@ -433,5 +490,63 @@ public class CausalityAnalyser implements Runnable {
 			}
 		
 	}
+	
+	static class DirtyNodeInfo {
+		
+
+		final static boolean CHECK_ROOT_CAUSE_AND_SIGNAL_IMPACT = true;
+		final static boolean CHECK_ROOT_CAUSE_ONLY = false;
+		
+		public DirtyNodeInfo(ManagedNode mn, String category,
+				boolean signalImpact) {
+			super();
+			this.mn = mn;
+			this.category = category;
+			this.signalImpact = signalImpact;
+		}
+		
+		ManagedNode mn = null; 
+		String category = null;
+		boolean signalImpact = true;
+
+		@Override
+		public int hashCode() {
+			final int prime = 31;
+			int result = 1;
+			result = prime * result
+					+ ((category == null) ? 0 : category.hashCode());
+			result = prime * result + ((mn == null) ? 0 : mn.hashCode());
+			result = prime * result + (signalImpact ? 1231 : 1237);
+			return result;
+		}
+
+		@Override
+		public boolean equals(Object obj) {
+			if (this == obj)
+				return true;
+			if (obj == null)
+				return false;
+			if (getClass() != obj.getClass())
+				return false;
+			DirtyNodeInfo other = (DirtyNodeInfo) obj;
+			if (category == null) {
+				if (other.category != null)
+					return false;
+			} else if (!category.equals(other.category))
+				return false;
+			if (mn == null) {
+				if (other.mn != null)
+					return false;
+			} else if (!mn.equals(other.mn))
+				return false;
+			if (signalImpact != other.signalImpact)
+				return false;
+			return true;
+		}
+		
+		
+		
+	}
+
 
 }
