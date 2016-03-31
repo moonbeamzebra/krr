@@ -4,7 +4,7 @@
 lsof -i -n -P | grep LISTEN
 
 // Current directory:
-/Users/jplaberge/Documents/workspace.2015/krr.git
+cd /Users/jplaberge/Documents/workspace.2015/krr.git
 
 // To compile
 mvn clean install
