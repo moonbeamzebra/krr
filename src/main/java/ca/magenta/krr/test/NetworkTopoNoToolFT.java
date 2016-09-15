@@ -122,6 +122,7 @@ public class NetworkTopoNoToolFT {
 
 				logger.info("Sleep ...");
 				Thread.sleep(2000);
+				
 
 				expectedResults.clear();	
 				
@@ -140,6 +141,7 @@ public class NetworkTopoNoToolFT {
 			}
 
 			if (resultOK) {
+				System.exit(0);
 
 				// 43	KrrSimple	Pinger	Pinger01	:::Switch::switch07	Unresponsive	MAJOR
 				TestToolKit.sendMessage_simpleFormat(43, Globals.CLEARING);

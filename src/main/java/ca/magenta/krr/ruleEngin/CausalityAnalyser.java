@@ -1,10 +1,12 @@
 package ca.magenta.krr.ruleEngin;
 
 import java.util.AbstractMap.SimpleImmutableEntry;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Random;
+import java.util.Set;
 import java.util.Vector;
 
 import org.apache.log4j.Logger;
@@ -17,6 +19,7 @@ import ca.magenta.krr.data.Chain;
 import ca.magenta.krr.data.DependencyRule;
 import ca.magenta.krr.data.ManagedNode;
 import ca.magenta.krr.engine.Engine;
+import ca.magenta.krr.fact.Fact;
 import ca.magenta.krr.fact.Signal;
 import ca.magenta.krr.fact.State;
 import ca.magenta.krr.fact.StateLifecycle;
@@ -74,6 +77,7 @@ public class CausalityAnalyser implements Runnable {
 		logger.trace("In check4RootCauseAndDispatch");
 		
 		boolean isStateUpdateInstance = (stateLifecycle instanceof StateUpdate);
+		
 		boolean hasChangesOfInterest = hasChangesOfInterest(stateLifecycle);
 		
 		State stateRef = stateLifecycle.getStateRef();
@@ -109,13 +113,12 @@ public class CausalityAnalyser implements Runnable {
 			}
 			
 			logger.trace(stateRef);
-		}
-		
-		for(String cat : cats)
-		{
-			CausalityAnalyser.addDirtyNode(new DirtyNodeInfo(causingMN, cat, DirtyNodeInfo.CHECK_ROOT_CAUSE_ONLY));
-		}
 
+			for(String cat : cats)
+			{
+				CausalityAnalyser.addDirtyNode(new DirtyNodeInfo(causingMN, cat, DirtyNodeInfo.CHECK_ROOT_CAUSE_ONLY));
+			}
+		}
 	}
 
 	private static boolean hasChangesOfInterest(StateLifecycle stateLifecycle) {
@@ -194,9 +197,15 @@ public class CausalityAnalyser implements Runnable {
 					}
 				}
 			}
-			logger.debug("Straight:[" + straight+"]");
-			logger.debug("Good:[" + good+"]");
-			logger.debug("OutOf:[" + outOf+"]");
+
+
+			if (logger.isDebugEnabled())
+			{
+				logger.debug("Straight:[" + straight+"]");
+				logger.debug("Good:[" + good+"]");
+				logger.debug("OutOf:[" + outOf+"]");
+				
+			}
 			
 			DependencyRule dependencyRule = null;
 			
@@ -208,6 +217,8 @@ public class CausalityAnalyser implements Runnable {
 			HashSet<String> toClearCategories = new HashSet<String>();
 			while (true)
 			{	
+				HashSet<State> effCausedBys = null;
+				
 				logger.debug("Testing severity:[" + testedSeverity.toString() + "]");
 				dependencyRule = dependencyRuleBySeverity.get(testedSeverity.toString());
 				
@@ -239,6 +250,7 @@ public class CausalityAnalyser implements Runnable {
 								categories.add(dependencyRule.getStateCategory());
 								logger.debug("Add impact state for:[" + managedNodeChain + "]" + 
 										      categories);
+								effCausedBys = State.returnEffectiveCausedBys(causedBys);
 								// Add or update
 								Signal.raising(CausalityAnalyser.SOURCE_TYPE,
 										CausalityAnalyser.SOURCE, 
@@ -250,7 +262,7 @@ public class CausalityAnalyser implements Runnable {
 										categories, 
 										false /* NOT isConsumerView */,
 										true /*isProviderView*/,
-										causedBys, 
+										effCausedBys, 
 										null /* causes */, 
 										null /* aggregates */,
 										null /* specificProperties */);
@@ -266,9 +278,23 @@ public class CausalityAnalyser implements Runnable {
 										if (logger.isDebugEnabled())
 											logger.debug("Other state on same node:[" + state.getLinkKey() + "]-" +  state.getCategories());
 
-										for (State causedBy : causedBys) {
-											state.addCausedBy(causedBy);
+										if (effCausedBys == null)  // Test if not already compute
+											effCausedBys = State.returnEffectiveCausedBys(causedBys);
+										
+										if (logger.isDebugEnabled()){
+											String causedByString="";
+											for (State s : effCausedBys){
+												causedByString += s.getMostSpecificManagedNode().getFqdName() + "::" + s.getStateDescr() + " ";
+											}
+											logger.debug("Effective caused bys:[" + causedByString + "]");
 										}
+										
+										Signal.raising(state,
+												effCausedBys);
+
+										//for (State causedBy : effCausedBys) {
+										//	state.addCausedBy(causedBy);
+										//}
 									}
 								}
 							}
@@ -284,7 +310,11 @@ public class CausalityAnalyser implements Runnable {
 											if (logger.isDebugEnabled())
 												logger.debug("Other state on same node:[" + state.getLinkKey() + "]-" +  state.getCategories());
 
-											state.flushCausedBy();
+											HashSet<State> emptyCausedBys = new HashSet<State>();
+											Signal.raising(state,
+													emptyCausedBys);
+
+											//state.flushCausedBy();
 										}
 									}
 								}

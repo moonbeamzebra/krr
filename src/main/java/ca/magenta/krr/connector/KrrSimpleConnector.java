@@ -12,6 +12,7 @@ import ca.magenta.krr.data.ManagedEntity;
 import ca.magenta.krr.data.ManagedNode;
 import ca.magenta.krr.engine.Engine;
 import ca.magenta.krr.fact.Message;
+import ca.magenta.krr.fact.NormalizedProperties;
 import ca.magenta.krr.fact.Signal;
 
 import com.google.gson.Gson;
@@ -34,7 +35,7 @@ public class KrrSimpleConnector {
 
 			String sourceType = atts.get("sourceType");
 			String source = atts.get("source");
-			String sourceName = sourceType + "::" + source;
+			String sourceName = NormalizedProperties.forgeSourceName(sourceType,source);
 
 			String managedElement = atts.get("managedElement");
 			Chain<ManagedEntity> managedEntityChain = ManagedEntity.parseToManagedEntityChain(managedElement);
@@ -72,7 +73,7 @@ public class KrrSimpleConnector {
 
 			as.setId(identifier);
 			as.setLinkKey(linkKey);
-			as.setSourceName(sourceName);
+			as.setSource(source);
 			as.setSourceType(sourceType);
 			as.setManagedEntityChain(managedEntityChain);
 			as.setCleared(cleared);

@@ -139,7 +139,7 @@ public class Engine {
 	
 	public static void dbConnect(String hostname, int port, boolean dbTest) throws SQLException {
 		
-		String url = "jdbc:h2:tcp://" + hostname + ":" + port + "/~/krr";
+		String url = "jdbc:h2:tcp://" + hostname + ":" + port + "/./krr";
 		if (dbTest)
 			url += "Test";
 		connection = DriverManager.getConnection(url, "sa", "");
@@ -301,18 +301,6 @@ public class Engine {
 	
 	
 
-
-	public static State getState(FactHandle causedByHdle) {
-		
-		State state = null;
-		
-		Fact fact = Engine.getStreamKS().getFact(causedByHdle);
-		if ((fact != null) && fact instanceof State)
-		{
-			state = (State) fact;
-		}
-		return state;
-	}
 
 	public static void dbEmpty() {
 		try {

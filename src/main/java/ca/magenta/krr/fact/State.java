@@ -269,49 +269,7 @@ public class State extends NormalizedProperties {
 
 	}
 	
-	
-	public void flushCausedBy() {
-		
-		for (FactHandle impactingStateFactHandle : causedByLocal) {
-			
-			Fact impactingFact = Engine.getStreamKS().getFact(impactingStateFactHandle);
-			if ((impactingFact != null) && impactingFact instanceof State) {
-				State impactingState = (State) impactingFact;
-				State.removeCausedBy(this, impactingState);
-			}
-		}
-		
-	}
-
-	synchronized private static void removeCausedBy(State impactedState, State impactingState) {
-		
-		FactHandle impactedStateFactHandle = Engine.getStreamKS().getFactHandle(impactedState);
-		FactHandle impactingStateFactHandle = Engine.getStreamKS().getFactHandle(impactingState);
-		
-		if (impactingStateFactHandle != null)
-		{
-			boolean changed = impactedState.removeCausedBy_local(impactingStateFactHandle);
-			if (changed) {
-				HashSet<String> changes = new HashSet<String>();
-				changes.add(State.CAUSED_BY_LABEL);
-				Engine.getStreamKS().update(impactedStateFactHandle, impactedState);
-				StateUpdate.insertInWM(impactedState, changes);
-			}
-		}
-		
-		if (impactedStateFactHandle != null)
-		{
-			boolean changed = impactingState.removeCauses_local(impactedStateFactHandle);
-			if (changed) {
-				HashSet<String> changes = new HashSet<String>();
-				changes.add(State.CAUSES_LABEL);
-				Engine.getStreamKS().update(impactingStateFactHandle, impactingState);
-				StateUpdate.insertInWM(impactingState, changes);
-			}
-		}
-		
-	}
-
+	// Called in State.drl; keep public
 	synchronized public void addCausedBy(State causingState)
 	{
 		State.addCausedBy(this, causingState);
@@ -344,45 +302,6 @@ public class State extends NormalizedProperties {
 			}
 		}
 	}
-
-	/*
-	public synchronized static State removeAggregateFromAggregators(State aggregate,
-																	FactHandle aggregateFactHandle,
-																	boolean updateAggregateInWM) {
-
-		HashSet<String> aggregatedbyChanges = new HashSet<String>();
-		aggregatedbyChanges.add(State.AGGREGATES_LABEL);
-		
-		logger.debug("In removeAggregateFromAggregators; linkKey:" + aggregate.getLinkKey());
-		
-		boolean anyChanges = false;
-		
-		for (FactHandle aggregatedByHdle : aggregate.aggregatedBy)
-		{
-			State aggregatedByState = Engine.getState(aggregatedByHdle);
-			if (aggregatedByState != null)
-			{
-				boolean changed = aggregatedByState.removeAggregate(aggregateFactHandle);
-				if (changed)
-				{
-					Engine.getStreamKS().update(aggregatedByHdle, aggregatedByState);
-					StateUpdate.insertInWM(aggregatedByState, aggregatedbyChanges);
-					anyChanges = true;
-				}
-				aggregate.removeAggregatedBy(aggregatedByHdle);
-			}
-		}
-		
-		if (updateAggregateInWM && anyChanges)
-		{
-			HashSet<String> aggregateChanges = new HashSet<String>();
-			aggregateChanges.add(State.AGGREGATEDBY_LABEL);
-			Engine.getStreamKS().update(aggregateFactHandle, aggregate);
-			StateUpdate.insertInWM(aggregate, aggregateChanges);
-		}
-
-		return aggregate;
-	} */
 	
 	public synchronized static State updateAggregatedAndAggregatesOnClear(
 			State clearedState, FactHandle clearedStateFactHandle,
@@ -399,7 +318,7 @@ public class State extends NormalizedProperties {
 		boolean anyChanges = false;
 
 		for (FactHandle aggregatedByHdle : clearedState.aggregatedBy) {
-			State aggregatedByState = Engine.getState(aggregatedByHdle);
+			State aggregatedByState = State.getState(aggregatedByHdle);
 			if (aggregatedByState != null) {
 				boolean changed = aggregatedByState
 						.removeAggregate(clearedStateFactHandle);
@@ -415,7 +334,7 @@ public class State extends NormalizedProperties {
 		}
 		
 		for (FactHandle aggregateHdle : clearedState.aggregates) {
-			State aggregateState = Engine.getState(aggregateHdle);
+			State aggregateState = State.getState(aggregateHdle);
 			if (aggregateState != null) {
 				boolean changed = aggregateState.removeAggregatedBy(clearedStateFactHandle);
 				if (changed) {
@@ -447,7 +366,7 @@ public class State extends NormalizedProperties {
 		Vector<SimpleImmutableEntry<FactHandle, State>> toUpdate = new Vector<SimpleImmutableEntry<FactHandle, State>>();
 		if (aggregateHdles != null) {
 			for (FactHandle  aggregateHdle : aggregateHdles) {
-				State aggregateState = Engine.getState(aggregateHdle);
+				State aggregateState = State.getState(aggregateHdle);
 				if (aggregateState != null) {
 					aggregator.addAggregate(aggregateHdle);
 					boolean changed = aggregateState.addAggregatedBy(stateFactHandle);
@@ -480,7 +399,7 @@ public class State extends NormalizedProperties {
 
 		if (causedByHdles != null) {
 			for (FactHandle causedByHdle : causedByHdles) {
-				State causedByState = Engine.getState(causedByHdle);
+				State causedByState = State.getState(causedByHdle);
 				if (causedByState != null) {
 					state.addCausedBy_local(causedByHdle);
 					boolean changed = causedByState.addCauses_local(stateFactHandle);
@@ -496,7 +415,7 @@ public class State extends NormalizedProperties {
 
 		if (causesHdles != null) {
 			for (FactHandle causesHdle : causesHdles) {
-				State causesState = Engine.getState(causesHdle);
+				State causesState = State.getState(causesHdle);
 				if (causesState != null) {
 					state.addCauses_local(causesHdle);
 					boolean changed = causesState.addCausedBy_local(stateFactHandle);
@@ -517,7 +436,7 @@ public class State extends NormalizedProperties {
 			if (causedByHdle != null)
 			{
 				logger.debug("Found");
-				State causedByState = Engine.getState(causedByHdle);
+				State causedByState = State.getState(causedByHdle);
 				if (causedByState != null) {
 					state.addCausedBy_extern(causedByHdle);
 					boolean changed = causedByState.addCauses_extern(stateFactHandle);
@@ -538,7 +457,7 @@ public class State extends NormalizedProperties {
 			if (causesHdle != null)
 			{
 				logger.debug("Found");
-				State causesState = Engine.getState(causesHdle);
+				State causesState = State.getState(causesHdle);
 				if (causesState != null) {
 					state.addCauses_extern(causesHdle);
 					boolean changed = causesState.addCausedBy_extern(stateFactHandle);
@@ -600,7 +519,7 @@ public class State extends NormalizedProperties {
 					if (state.causedByLocal != null) {
 
 						for (FactHandle causedByHdle : state.causedByLocal) {
-							State causedByState = Engine.getState(causedByHdle);
+							State causedByState = State.getState(causedByHdle);
 							if (causedByState != null) {
 								boolean changed = causedByState
 										.removeCauses_local(stateFactHandle);
@@ -623,7 +542,7 @@ public class State extends NormalizedProperties {
 					if (state.causesLocal != null) {
 
 						for (FactHandle causesHdle : state.causesLocal) {
-							State causesState = Engine.getState(causesHdle);
+							State causesState = State.getState(causesHdle);
 							if (causesState != null) {
 
 								boolean changed = causesState
@@ -899,7 +818,7 @@ public class State extends NormalizedProperties {
 											+ this.linkKey
 											+ "',"
 											+ "'"
-											+ this.sourceName
+											+ this.getSourceName()
 											+ "',"
 											+ "'"
 											+ this.sourceType
@@ -968,7 +887,7 @@ public class State extends NormalizedProperties {
 
 					Engine.getDB().executeUpdate(
 							"update STATE " + "set " + "id = '" + this.getId() + "', " + "linkKey = '" + this.linkKey + "', " + "sourceName = '"
-									+ this.sourceName + "', " + "sourceType = '" + this.sourceType + "', " + "managedEntityChain = '"
+									+ this.getSourceName() + "', " + "sourceType = '" + this.sourceType + "', " + "managedEntityChain = '"
 									+ this.managedEntityChain + "', " + "managedNodeChain = '" + this.managedNodeChain + "', " + "cleared = "
 									+ this.cleared + ", " + "severity = '" + this.severity + "', " + "stateDescr = '" + this.stateDescr + "', "
 									+ "shortDescr = '" + this.shortDescr + "', " + "descr = '" + this.descr + "', " + "count = " + this.count + ", "
@@ -992,5 +911,77 @@ public class State extends NormalizedProperties {
 
 	}
 
+	public static State getState(FactHandle causedByHdle) {
+		
+		State state = null;
+		
+		Fact fact = Engine.getStreamKS().getFact(causedByHdle);
+		if ((fact != null) && fact instanceof State)
+		{
+			state = (State) fact;
+		}
+		return state;
+	}
+
+	public static HashSet<State> returnEffectiveCausedBys(
+			HashSet<State> causedBys) {
+		
+		HashSet<State> effectiveCausedBys = null;
+		
+		if (causedBys != null) {
+			effectiveCausedBys = new HashSet<State>();
+
+			for (State causedBy : causedBys) {
+
+				HashSet<State> underlayEffCausedBys = causedBy.returnEffectiveCausedBys(); 
+				
+				effectiveCausedBys.addAll(underlayEffCausedBys);
+			}
+		}
+		
+		return effectiveCausedBys;
+	}
+
+
+	private static HashSet<State> returnEffectiveCausedBysFromHdles(
+			HashSet<FactHandle> causedBys) {
+
+		HashSet<State> effectiveCausedBys = null;
+		
+		if (causedBys != null) {
+			effectiveCausedBys = new HashSet<State>();
+
+			for (FactHandle causedByHdle : causedBys) {
+				
+				State causedBy = State.getState(causedByHdle);
+				if (causedBy != null) {
+				
+					HashSet<State> underlayEffCausedBys = causedBy.returnEffectiveCausedBys(); 
+					
+					effectiveCausedBys.addAll(underlayEffCausedBys);
+				}
+			}
+		}
+		
+		return effectiveCausedBys;
+	}
+
+	private HashSet<State> returnEffectiveCausedBys() {
+
+		HashSet<State> effectiveCausedBys = new HashSet<State>();
+		
+		if ( this.isRoot() )
+		{
+			effectiveCausedBys.add(this);
+		}
+		else
+		{
+			HashSet<State> underlayCausedBys = State.returnEffectiveCausedBysFromHdles(this.getCausedBy());
+			
+			effectiveCausedBys.addAll(underlayCausedBys);
+		}
+		
+		return effectiveCausedBys;
+	}
 
 }

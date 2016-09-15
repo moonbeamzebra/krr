@@ -31,10 +31,11 @@ public abstract class NormalizedProperties implements Fact{
 
 	private static Logger logger = Logger.getLogger(NormalizedProperties.class);
 	
-	protected static final String CAUSES_LABEL = "causes";
-	protected static final String CAUSED_BY_LABEL = "causedBy";
-	protected static final String AGGREGATEDBY_LABEL = "aggregatedBy";
-	protected static final String AGGREGATES_LABEL = "aggregates";
+	public static final String TIMESTAMP_LABEL = "timestamp";
+	public static final String CAUSES_LABEL = "causes";
+	public static final String CAUSED_BY_LABEL = "causedBy";
+	public static final String AGGREGATEDBY_LABEL = "aggregatedBy";
+	public static final String AGGREGATES_LABEL = "aggregates";
 	
 	public static final String AGGREGATOR_STATE_DESCR = "IsAggregating";
 	public boolean isAggregator() {
@@ -51,7 +52,7 @@ public abstract class NormalizedProperties implements Fact{
 		
 		id = normalizedProperties.id;
 		linkKey = normalizedProperties.linkKey;
-		sourceName = normalizedProperties.sourceName;
+		source = normalizedProperties.source;
 		sourceType = normalizedProperties.sourceType;
 		managedEntityChain = normalizedProperties.managedEntityChain;
 		managedNodeChain = normalizedProperties.managedNodeChain;
@@ -100,7 +101,8 @@ public abstract class NormalizedProperties implements Fact{
 
 	protected String id = null;
 	protected String linkKey = null;
-	protected String sourceName = null;
+	protected String source = null;
+	//protected String sourceName = null;
 	protected String sourceType = null;
 	protected Chain<ManagedEntity> managedEntityChain = new Chain<ManagedEntity>();
 	protected Chain<ManagedNode> managedNodeChain = null;
@@ -158,12 +160,20 @@ public abstract class NormalizedProperties implements Fact{
 		this.linkKey = linkKey;
 	}
 
-	public String getSourceName() {
-		return sourceName;
+	public String getSource() {
+		return source;
 	}
 
-	public void setSourceName(String sourceName) {
-		this.sourceName = sourceName;
+	public void setSource(String source) {
+		this.source = source;
+	}
+	
+	public static String forgeSourceName(String sourceType, String source){
+		return sourceType + "::" + source;
+	}
+
+	public String getSourceName() {
+		return forgeSourceName(sourceType,source);
 	}
 
 	public String getSourceType() {

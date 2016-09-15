@@ -28,6 +28,9 @@ final public class Signal extends NormalizedProperties {
 	public static final boolean FALLING_EDGE = Globals.CLEARING;
 	public static final boolean RAISING_EDGE = Globals.RAISING;
 
+	public static final boolean ADD = true;
+	public static final boolean REPLACE = ! ADD;
+	
 	
 	private HashSet<String> causedByStrs = new HashSet<String>();
 	private transient HashSet<FactHandle> causedByHdles = null;
@@ -86,7 +89,7 @@ final public class Signal extends NormalizedProperties {
 
 		String sourceType = sourceTypeStr;
 		String source = atts.get("Source");
-		String sourceName = sourceType + "::" + source;
+		String sourceName = NormalizedProperties.forgeSourceName(sourceType,source);
 
 		ManagedEntity managedEntityGround = new ManagedEntity(atts.get("ElementClassName"), atts.get("ElementName"));
 		ManagedEntity managedEntityMostSpecific = new ManagedEntity(atts.get("ClassName"), atts.get("InstanceName"));
@@ -162,7 +165,7 @@ final public class Signal extends NormalizedProperties {
 		
 		as.setId(identifier);
 		as.linkKey = linkKey;
-		as.sourceName = sourceName;
+		as.source = source;
 		as.sourceType = sourceType;
 		as.managedEntityChain = managedEntityChain;
 		as.cleared = cleared;
@@ -216,6 +219,27 @@ final public class Signal extends NormalizedProperties {
 		Engine.getStreamKS().insert(as);
 		
 	}
+	
+	public static void raising(	State state, 
+								HashSet<State> newCausedBys) {
+		
+		raising(state.sourceType,
+				state.source, 
+				state.managedNodeChain,
+				state.stateDescr,
+				state.severity, 
+				state.shortDescr, 
+				state.descr, 
+				state.categories,
+				state.isConsumerView, 
+				state.isProviderView,
+				newCausedBys,
+				null /*causes*/,
+				null /*aggregates*/,
+				state.specificProperties
+				);		
+	}
+	
 
 	public static void raising(String sourceType,
 			String source, 
@@ -333,7 +357,7 @@ final public class Signal extends NormalizedProperties {
 										HashMap<String, String> specificProperties
 										) {
 
-		String sourceName = sourceType + "::" + source;
+		String sourceName = NormalizedProperties.forgeSourceName(sourceType,source);
 		
 		ManagedNode mn = managedNodeChain.getMostSpecific();
 		
@@ -351,7 +375,7 @@ final public class Signal extends NormalizedProperties {
 
 		as.setId(identifier);
 		as.linkKey = linkKey;
-		as.sourceName = sourceName;
+		as.source = source;
 		as.sourceType = sourceType;
 		//as.managedEntityChain = managedEntityChain;
 		as.cleared = clearing;
@@ -435,6 +459,7 @@ final public class Signal extends NormalizedProperties {
 	public HashSet<String> getCausesStrs() {
 		return causeStrs;
 	}
+
 
 
 }
