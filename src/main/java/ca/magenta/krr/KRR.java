@@ -236,7 +236,7 @@ public class KRR implements Runnable {
 
 		KRR.KRRProps paramOptions = parseParam(args);
 
-		if (rc == 0) {
+		if (paramOptions != null) {
 
 			KRR krr = new KRR(paramOptions);
 
@@ -249,7 +249,7 @@ public class KRR implements Runnable {
 		KRR.KRRProps paramsOptions = new KRRProps();
 
 		if (a_sArgs.length > 0) {
-			for (int i = 0; i < a_sArgs.length; i++) {
+			for (int i = 0; (paramsOptions!=null) && (i < a_sArgs.length); i++) {
 				if (a_sArgs[i].startsWith("-neo4jHost=")) {
 					paramsOptions.neo4jHost = a_sArgs[i].substring(11);
 					logger.info("neo4jHost: [" + paramsOptions.neo4jHost + "]");
