@@ -22,6 +22,7 @@ import ca.magenta.krr.engine.Engine;
 import ca.magenta.krr.fact.Fact;
 import ca.magenta.krr.fact.Signal;
 import ca.magenta.krr.fact.State;
+import ca.magenta.krr.fact.StateClear;
 import ca.magenta.krr.fact.StateLifecycle;
 import ca.magenta.krr.fact.StateUpdate;
 import ca.magenta.neo4j.Node;
@@ -76,6 +77,7 @@ public class CausalityAnalyser implements Runnable {
 		
 		logger.trace("In check4RootCauseAndDispatch");
 		
+		
 		boolean isStateUpdateInstance = (stateLifecycle instanceof StateUpdate);
 		
 		boolean hasChangesOfInterest = hasChangesOfInterest(stateLifecycle);
@@ -117,6 +119,37 @@ public class CausalityAnalyser implements Runnable {
 			for(String cat : cats)
 			{
 				CausalityAnalyser.addDirtyNode(new DirtyNodeInfo(causingMN, cat, DirtyNodeInfo.CHECK_ROOT_CAUSE_ONLY));
+			}
+		}
+
+		if (stateLifecycle instanceof StateClear)
+		{
+			StateClear stateClear = (StateClear) stateLifecycle;
+			
+			logger.debug(String.format("stateClear.getLastCauses().size() : [%d]", stateClear.getLastCauses().size()));
+			
+			for (FactHandle causeHdle : stateClear.getLastCauses())
+			{
+				if (causeHdle != null)
+				{
+					State causeState = State.getState(causeHdle);
+					if (causeState != null)
+					{
+						logger.debug(String.format("causeState.getLinkKey() : [%s]", causeState.getLinkKey()));
+						
+						ManagedNode causeMN = causeState.getMostSpecificManagedNode();
+						HashSet<String> causeCats = causeState.getCategories();
+						if ( ! ( causeState.getStateDescr().equals(STATE_DESCR) && 
+								causeState.getSourceName().equals(CausalityAnalyser.getSourceName()) ) )
+						{
+							for (String category : causeCats)
+							{
+								logger.debug(String.format("category : [%s]", category));
+								CausalityAnalyser.addDirtyNode(new DirtyNodeInfo(causeMN, category, DirtyNodeInfo.CHECK_ROOT_CAUSE_ONLY));
+							}
+						}
+					}
+				}
 			}
 		}
 	}
@@ -358,6 +391,14 @@ public class CausalityAnalyser implements Runnable {
 									Signal.insertInWM_Clear(state);
 								}
 							}
+							else
+							{
+								if (logger.isDebugEnabled())
+									logger.debug("Other state on same node:[" + state.getLinkKey() + "]-" +  state.getCategories());
+								HashSet<State> emptyCausedBys = new HashSet<State>();
+								Signal.raising(state,
+										emptyCausedBys);
+							}
 						}
 					}
 					
@@ -456,7 +497,7 @@ public class CausalityAnalyser implements Runnable {
 
 	synchronized public static void addDirtyNode(DirtyNodeInfo dirtyNodeInfo)
 	{
-		logger.trace("In addDirtyNode; Node:[" + dirtyNodeInfo.mn + "] Category:[" + dirtyNodeInfo.category + "]");
+		logger.debug("In addDirtyNode; Node:[" + dirtyNodeInfo.mn + "] Category:[" + dirtyNodeInfo.category + "]");
 		
 		// With the following trick, a particular nodeName will always be processed
 		// by the same thread

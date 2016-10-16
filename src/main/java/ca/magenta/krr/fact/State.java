@@ -264,7 +264,7 @@ public class State extends NormalizedProperties {
 		StateNew.insertInWM(newState, null, true /* veryNew */);
 
 		if (newState.isCleared()) {
-			StateClear.insertInWM(newState, null, true /* firstEnteredCleared */);
+			StateClear.insertInWM(newState, null, null, true /* firstEnteredCleared */);
 		}
 
 	}
@@ -618,6 +618,15 @@ public class State extends NormalizedProperties {
 		updatedState.aggregatedBy = currentState.aggregatedBy;
 		updatedState.lastClearTime = now;
 		updatedState.lastUpdateTime = now;
+		
+		@SuppressWarnings("unchecked")
+		HashSet<FactHandle> currentCauses = (HashSet<FactHandle>) currentState.getCauses().clone();
+		for (FactHandle causeHdle : currentCauses )
+		{
+			State cause = State.getState(causeHdle);
+			logger.debug(String.format("cause.getLinkKey() : [%s]", cause.getLinkKey()));
+			logger.debug(String.format("cause.getCategories() : [%s]", cause.getCategories().toString()));
+		}
 
 		Engine.unregisterState(currentStateFactHandle, updatedState.getMostSpecificManagedNode(), updatedState.getLinkKey());
 		
@@ -628,7 +637,7 @@ public class State extends NormalizedProperties {
 
 		Engine.getStreamKS().update(currentStateFactHandle, updatedState);
 
-		StateClear.insertInWM(updatedState, currentState, false /*
+		StateClear.insertInWM(updatedState, currentState, currentCauses, false /*
 																 * not
 																 * firstEnteredCleared
 																 */);

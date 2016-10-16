@@ -2,6 +2,8 @@ package ca.magenta.krr.fact;
 
 import java.util.HashSet;
 
+import org.kie.api.runtime.rule.FactHandle;
+
 import ca.magenta.krr.engine.Engine;
 
 /**
@@ -11,9 +13,11 @@ import ca.magenta.krr.engine.Engine;
  */
 final public class StateClear extends StateLifecycle{
 	
-	public static void insertInWM(State newState, State oldState, boolean firstEnteredCleared)
+	private transient HashSet<FactHandle> lastCauses = new HashSet<FactHandle>();
+	
+	public static void insertInWM(State newState, State oldState, HashSet<FactHandle> oldCauses, boolean firstEnteredCleared)
 	{
-		StateClear stateClear = new StateClear(newState, oldState, firstEnteredCleared);
+		StateClear stateClear = new StateClear(newState, oldState, oldCauses, firstEnteredCleared);
 		
 		Engine.getStreamKS().insert(stateClear);
 	}
@@ -22,8 +26,11 @@ final public class StateClear extends StateLifecycle{
 		super();
 	}
 
-	private StateClear(State stateNew, State stateOld, boolean firstEnteredCleared) {
+	private StateClear(State stateNew, State stateOld, HashSet<FactHandle> oldCauses, boolean firstEnteredCleared) {
 		super();
+		
+		if (oldCauses != null)
+			lastCauses = oldCauses;
 		
 		this.setStateRef(stateNew);
 		
@@ -33,4 +40,7 @@ final public class StateClear extends StateLifecycle{
 			this.setChanges(stateNew.getChanges(stateOld));
 	}
 
+	public HashSet<FactHandle> getLastCauses() {
+		return lastCauses;
+	}
 }

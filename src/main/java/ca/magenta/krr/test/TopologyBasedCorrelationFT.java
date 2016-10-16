@@ -608,6 +608,11 @@ public class TopologyBasedCorrelationFT {
 				
 				logger.info("Sleep ...");
 				Thread.sleep(2000);
+				
+				// 21 KrrSimple Smarts MGTA-AM-PM :::Host::server05 Unresponsive MAJOR
+				TestToolKit.sendMessage_simpleFormat(21, Globals.CLEARING);	
+				
+				System.exit(0);
 
 				expectedResults.clear();
 				
