@@ -17,7 +17,7 @@ final public class StateNew extends StateLifecycle{
 	
 	public static void insertInWM(State newState, State oldState, boolean veryNew)
 	{
-		StateNew stateNew = new StateNew(newState, oldState, veryNew);
+		StateNew stateNew = new StateNew(newState, oldState, new HashSet<String>(), veryNew);
 		
 		Engine.getStreamKS().insert(stateNew);
 	}
@@ -26,14 +26,25 @@ final public class StateNew extends StateLifecycle{
 		super();
 	}
 
-	private StateNew(State stateNew, State stateOld, boolean veryNew) {
+	private StateNew(State stateNew, State stateOld, HashSet<String> stateChangeList, boolean veryNew) {
 		super();
 		
 		this.setStateRef(stateNew);
 		
 		if (veryNew)
-			this.setChanges(new HashSet<String>());
+			this.setChanges(stateChangeList);
 		else
-			this.setChanges(stateNew.getChanges(stateOld));
+		{
+			HashSet<String> changes = stateNew.getChanges(stateOld);
+			changes.addAll(stateChangeList);
+			this.setChanges(changes);
+		}
+	}
+
+	public static void insertInWM(State newState, State oldState, HashSet<String> stateChangeList, boolean veryNew) {
+		
+		StateNew stateNew = new StateNew(newState, oldState, stateChangeList, veryNew);
+		
+		Engine.getStreamKS().insert(stateNew);
 	}
 }

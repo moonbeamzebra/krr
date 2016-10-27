@@ -3,8 +3,12 @@ package ca.magenta.krr.fact;
 
 import java.util.HashSet;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
+import org.apache.log4j.Logger;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+
+import ca.magenta.krr.test.TopologyBasedCorrelationFT;
+import ca.magenta.krr.tools.Utils;
 
 /**
  * @author jean-paul.laberge <jplaberge@magenta.ca>
@@ -12,9 +16,11 @@ import com.google.gson.GsonBuilder;
  * @since 2014-03-16
  */
 public abstract class StateLifecycle implements Fact {
+	
+	private static Logger logger = Logger.getLogger(TopologyBasedCorrelationFT.class);
 
 	private HashSet<String> changes = new HashSet<String>();
-	private State stateRef = null;
+	private transient State stateRef = null;
 	
 	public StateLifecycle() {
 		super();
@@ -44,14 +50,7 @@ public abstract class StateLifecycle implements Fact {
 	
 	public String toString(boolean pretty)		
 	{
-		if (pretty)
-		{
-			return (new GsonBuilder().setPrettyPrinting().create()).toJson(this);
-		}
-		else
-		{
-			return (new Gson()).toJson(this);
-		}
+		return  Utils.toJsonG(this, this.getClass(), pretty);
 	}
 
 	@Override

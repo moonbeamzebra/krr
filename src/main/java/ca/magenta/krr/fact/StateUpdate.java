@@ -39,4 +39,9 @@ final public class StateUpdate extends StateLifecycle{
 	private StateUpdate(State stateNew, State stateOld) {
 		this(stateNew, stateNew.getChanges(stateOld));
 	}
+
+	public static void insertInWM(State stateNew, State stateOld, HashSet<String> stateChangeList) {
+		stateChangeList.addAll(stateNew.getChanges(stateOld));
+		insertInWM(stateNew, stateChangeList);
+	}
 }

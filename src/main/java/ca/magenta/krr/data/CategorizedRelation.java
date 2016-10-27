@@ -3,11 +3,10 @@ package ca.magenta.krr.data;
 import java.net.URI;
 import java.util.HashMap;
 
+import ca.magenta.krr.tools.Utils;
 import ca.magenta.neo4j.Node;
 import ca.magenta.neo4j.Relation;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 
 /**
  * @author jean-paul.laberge <jplaberge@magenta.ca>
@@ -46,14 +45,7 @@ public class CategorizedRelation extends Relation {
 	
 	public String toString(boolean pretty)		
 	{
-		if (pretty)
-		{
-			return (new GsonBuilder().setPrettyPrinting().create()).toJson(this);
-		}
-		else
-		{
-			return (new Gson()).toJson(this);
-		}
+		return  Utils.toJsonG(this, this.getClass(), pretty);
 	}
 
 	@Override

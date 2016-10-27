@@ -41,6 +41,9 @@ final public class Signal extends NormalizedProperties {
 
 	public void addCausedByHdles(HashSet<State> causedBy) {
 
+		if (causedByHdles == null)
+			causedByHdles = new HashSet<FactHandle>();
+
 		for (State state : causedBy) {
 			addCausedByHdle(state);
 		}
@@ -57,6 +60,8 @@ final public class Signal extends NormalizedProperties {
 	}
 
 	public void addCausesHdles(HashSet<State> impacts) {
+		if (causesHdles == null)
+			causesHdles = new HashSet<FactHandle>();
 
 		for (State state : impacts) {
 			addCausesHdle(state);

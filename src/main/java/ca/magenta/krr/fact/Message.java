@@ -4,8 +4,8 @@ import java.util.HashMap;
 
 import org.apache.log4j.Logger;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
+
+import ca.magenta.krr.tools.Utils;
 
 /**
  * @author jean-paul.laberge <jplaberge@magenta.ca>
@@ -73,14 +73,7 @@ public class Message implements  Fact{
 	
 	public String toString(boolean pretty)		
 	{
-		if (pretty)
-		{
-			return (new GsonBuilder().setPrettyPrinting().create()).toJson(this);
-		}
-		else
-		{
-			return (new Gson()).toJson(this);
-		}
+		return  Utils.toJsonG(this, this.getClass(), pretty);
 	}
 
 	@Override

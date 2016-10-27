@@ -18,7 +18,6 @@ import java.sql.Statement;
 import org.apache.log4j.Logger;
 import org.kie.api.runtime.rule.FactHandle;
 
-import com.google.gson.Gson;
 
 import ca.magenta.krr.api.APIServer;
 import ca.magenta.krr.common.KS;

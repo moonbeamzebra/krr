@@ -69,7 +69,7 @@ public class TopologyBasedCorrelationFT {
 				TestToolKit.sendMessage_simpleFormat(17, Globals.RAISING);
 				// 25 KrrSimple Smarts MGTA-AM-PM :::Host::server07 Unresponsive MAJOR
 				TestToolKit.sendMessage_simpleFormat(25, Globals.RAISING);
-	
+				
 				logger.info("Sleep ...");
 				Thread.sleep(3000);
 				
@@ -605,55 +605,50 @@ public class TopologyBasedCorrelationFT {
 			if (resultOK) {
 				// 48	KrrSimple	Nimsoft	Nim01	:::URL::www.magenta.ca|order	NoAnswer	MAJOR
 				TestToolKit.sendMessage_simpleFormat(48, Globals.RAISING);
-				
+
 				logger.info("Sleep ...");
 				Thread.sleep(2000);
-				
-				// 21 KrrSimple Smarts MGTA-AM-PM :::Host::server05 Unresponsive MAJOR
-				TestToolKit.sendMessage_simpleFormat(21, Globals.CLEARING);	
-				
-				System.exit(0);
 
 				expectedResults.clear();
 				
 				expectedResults
-				.add("Nimsoft::Nim01:::URL::www.magenta.ca|order::NoAnswer,MAJOR,[Availability],isRoot=false,CausedBy=[server04::Unresponsive server05::Unresponsive server06::Unresponsive],Causes=[],AggregatedBy=[],Aggregates=[],[NoAnswer]");
+				.add("Smarts::MGTA-AM-PM:::Host::server01::Unresponsive,MAJOR,[Availability],isRoot=true,CausedBy=[],Causes=[MGTAWeb::Impacted www.magenta.ca|home::Impacted www.magenta.ca|MyProfile::Impacted MGTAWeb1::Impacted www.magenta.ca|krr::Impacted],AggregatedBy=[],Aggregates=[],[Unresponsive]");
 				expectedResults
-				.add("CausalityAnalyser::local:::URL::www.magenta.ca|order::Impacted,CRITICAL,[Availability],isRoot=false,CausedBy=[server04::Unresponsive server05::Unresponsive server06::Unresponsive],Causes=[],AggregatedBy=[],Aggregates=[],[Losing resource]");
+				.add("Smarts::MGTA-AM-PM:::Host::server02::Unresponsive,MAJOR,[Availability],isRoot=true,CausedBy=[],Causes=[MGTAWeb::Impacted www.magenta.ca|home::Impacted www.magenta.ca|MyProfile::Impacted MGTAWeb1::Impacted www.magenta.ca|krr::Impacted],AggregatedBy=[],Aggregates=[],[Unresponsive]");
 				expectedResults
-				.add("Smarts::MGTA-AM-PM:::Host::server11::Unresponsive,MAJOR,[Availability],isRoot=true,CausedBy=[],Causes=[MGTAWeb::Impacted www.magenta.ca|MyProfile::Impacted MGTAWeb1::Impacted www.magenta.ca|krr::Impacted www.magenta.ca|home::Impacted],AggregatedBy=[],Aggregates=[],[Unresponsive]");
+				.add("Smarts::MGTA-AM-PM:::Host::server03::Unresponsive,MAJOR,[Availability],isRoot=true,CausedBy=[],Causes=[MGTAWeb::Impacted www.magenta.ca|home::Impacted www.magenta.ca|MyProfile::Impacted MGTAWeb1::Impacted www.magenta.ca|krr::Impacted],AggregatedBy=[],Aggregates=[],[Unresponsive]");
 				expectedResults
-				.add("Smarts::MGTA-AM-PM:::Host::server10::Unresponsive,MAJOR,[Availability],isRoot=true,CausedBy=[],Causes=[MGTAWeb::Impacted www.magenta.ca|MyProfile::Impacted MGTAWeb1::Impacted www.magenta.ca|krr::Impacted www.magenta.ca|home::Impacted],AggregatedBy=[],Aggregates=[],[Unresponsive]");
+				.add("Smarts::MGTA-AM-PM:::Host::server04::Unresponsive,MAJOR,[Availability],isRoot=true,CausedBy=[],Causes=[MGTAWeb::Impacted www.magenta.ca|home::Impacted www.magenta.ca|order::NoAnswer MGTAWeb2::Impacted www.magenta.ca|order::Impacted www.magenta.ca|krr::Impacted],AggregatedBy=[],Aggregates=[],[Unresponsive]");
 				expectedResults
-				.add("Smarts::MGTA-AM-PM:::Host::server06::Unresponsive,MAJOR,[Availability],isRoot=true,CausedBy=[],Causes=[MGTAWeb::Impacted www.magenta.ca|order::NoAnswer www.magenta.ca|krr::Impacted www.magenta.ca|home::Impacted MGTAWeb2::Impacted www.magenta.ca|order::Impacted],AggregatedBy=[],Aggregates=[],[Unresponsive]");
+				.add("Smarts::MGTA-AM-PM:::Host::server05::Unresponsive,MAJOR,[Availability],isRoot=true,CausedBy=[],Causes=[MGTAWeb::Impacted www.magenta.ca|home::Impacted www.magenta.ca|order::NoAnswer MGTAWeb2::Impacted www.magenta.ca|order::Impacted www.magenta.ca|krr::Impacted],AggregatedBy=[],Aggregates=[],[Unresponsive]");
 				expectedResults
-				.add("Smarts::MGTA-AM-PM:::Host::server01::Unresponsive,MAJOR,[Availability],isRoot=true,CausedBy=[],Causes=[MGTAWeb::Impacted www.magenta.ca|MyProfile::Impacted MGTAWeb1::Impacted www.magenta.ca|krr::Impacted www.magenta.ca|home::Impacted],AggregatedBy=[],Aggregates=[],[Unresponsive]");
+				.add("Smarts::MGTA-AM-PM:::Host::server06::Unresponsive,MAJOR,[Availability],isRoot=true,CausedBy=[],Causes=[MGTAWeb::Impacted www.magenta.ca|home::Impacted www.magenta.ca|order::NoAnswer MGTAWeb2::Impacted www.magenta.ca|order::Impacted www.magenta.ca|krr::Impacted],AggregatedBy=[],Aggregates=[],[Unresponsive]");
 				expectedResults
-				.add("Smarts::MGTA-AM-PM:::Host::server07::Unresponsive,MAJOR,[Availability],isRoot=true,CausedBy=[],Causes=[MGTAWeb::Impacted www.magenta.ca|MyProfile::Impacted MGTAWeb1::Impacted www.magenta.ca|krr::Impacted www.magenta.ca|home::Impacted],AggregatedBy=[],Aggregates=[],[Unresponsive]");
+				.add("Smarts::MGTA-AM-PM:::Host::server07::Unresponsive,MAJOR,[Availability],isRoot=true,CausedBy=[],Causes=[MGTAWeb::Impacted www.magenta.ca|home::Impacted www.magenta.ca|MyProfile::Impacted MGTAWeb1::Impacted www.magenta.ca|krr::Impacted],AggregatedBy=[],Aggregates=[],[Unresponsive]");
 				expectedResults
-				.add("Smarts::MGTA-AM-PM:::Host::server08::Unresponsive,MAJOR,[Availability],isRoot=true,CausedBy=[],Causes=[MGTAWeb::Impacted www.magenta.ca|MyProfile::Impacted MGTAWeb1::Impacted www.magenta.ca|krr::Impacted www.magenta.ca|home::Impacted],AggregatedBy=[],Aggregates=[],[Unresponsive]");
+				.add("Smarts::MGTA-AM-PM:::Host::server08::Unresponsive,MAJOR,[Availability],isRoot=true,CausedBy=[],Causes=[MGTAWeb::Impacted www.magenta.ca|home::Impacted www.magenta.ca|MyProfile::Impacted MGTAWeb1::Impacted www.magenta.ca|krr::Impacted],AggregatedBy=[],Aggregates=[],[Unresponsive]");
+				expectedResults
+				.add("Smarts::MGTA-AM-PM:::Host::server09::Unresponsive,MAJOR,[Availability],isRoot=true,CausedBy=[],Causes=[MGTAWeb::Impacted www.magenta.ca|home::Impacted www.magenta.ca|MyProfile::Impacted MGTAWeb1::Impacted www.magenta.ca|krr::Impacted],AggregatedBy=[],Aggregates=[],[Unresponsive]");
+				expectedResults
+				.add("Smarts::MGTA-AM-PM:::Host::server10::Unresponsive,MAJOR,[Availability],isRoot=true,CausedBy=[],Causes=[MGTAWeb::Impacted www.magenta.ca|home::Impacted www.magenta.ca|MyProfile::Impacted MGTAWeb1::Impacted www.magenta.ca|krr::Impacted],AggregatedBy=[],Aggregates=[],[Unresponsive]");
+				expectedResults
+				.add("Smarts::MGTA-AM-PM:::Host::server11::Unresponsive,MAJOR,[Availability],isRoot=true,CausedBy=[],Causes=[MGTAWeb::Impacted www.magenta.ca|home::Impacted www.magenta.ca|MyProfile::Impacted MGTAWeb1::Impacted www.magenta.ca|krr::Impacted],AggregatedBy=[],Aggregates=[],[Unresponsive]");
+				expectedResults
+				.add("CausalityAnalyser::local:::Service::MGTAWeb1::Impacted,CRITICAL,[Availability],isRoot=false,CausedBy=[server07::Unresponsive server02::Unresponsive server10::Unresponsive server08::Unresponsive server11::Unresponsive server03::Unresponsive server09::Unresponsive server01::Unresponsive],Causes=[],AggregatedBy=[],Aggregates=[],[Losing resource]");
 				expectedResults
 				.add("CausalityAnalyser::local:::Service::MGTAWeb2::Impacted,CRITICAL,[Availability],isRoot=false,CausedBy=[server04::Unresponsive server05::Unresponsive server06::Unresponsive],Causes=[],AggregatedBy=[],Aggregates=[],[Losing resource]");
 				expectedResults
-				.add("CausalityAnalyser::local:::URL::www.magenta.ca|MyProfile::Impacted,CRITICAL,[Availability],isRoot=false,CausedBy=[server07::Unresponsive server10::Unresponsive server02::Unresponsive server08::Unresponsive server11::Unresponsive server03::Unresponsive server01::Unresponsive server09::Unresponsive],Causes=[],AggregatedBy=[],Aggregates=[],[Losing resource]");
+				.add("CausalityAnalyser::local:::Service::MGTAWeb::Impacted,CRITICAL,[Availability],isRoot=false,CausedBy=[server04::Unresponsive server07::Unresponsive server02::Unresponsive server10::Unresponsive server05::Unresponsive server08::Unresponsive server03::Unresponsive server11::Unresponsive server06::Unresponsive server01::Unresponsive server09::Unresponsive],Causes=[],AggregatedBy=[],Aggregates=[],[Losing resource]");
 				expectedResults
-				.add("Smarts::MGTA-AM-PM:::Host::server03::Unresponsive,MAJOR,[Availability],isRoot=true,CausedBy=[],Causes=[MGTAWeb::Impacted www.magenta.ca|MyProfile::Impacted MGTAWeb1::Impacted www.magenta.ca|krr::Impacted www.magenta.ca|home::Impacted],AggregatedBy=[],Aggregates=[],[Unresponsive]");
+				.add("CausalityAnalyser::local:::URL::www.magenta.ca|MyProfile::Impacted,CRITICAL,[Availability],isRoot=false,CausedBy=[server07::Unresponsive server02::Unresponsive server10::Unresponsive server08::Unresponsive server03::Unresponsive server11::Unresponsive server01::Unresponsive server09::Unresponsive],Causes=[],AggregatedBy=[],Aggregates=[],[Losing resource]");
 				expectedResults
-				.add("Smarts::MGTA-AM-PM:::Host::server02::Unresponsive,MAJOR,[Availability],isRoot=true,CausedBy=[],Causes=[MGTAWeb::Impacted www.magenta.ca|MyProfile::Impacted MGTAWeb1::Impacted www.magenta.ca|krr::Impacted www.magenta.ca|home::Impacted],AggregatedBy=[],Aggregates=[],[Unresponsive]");
+				.add("CausalityAnalyser::local:::URL::www.magenta.ca|home::Impacted,CRITICAL,[Availability],isRoot=false,CausedBy=[server04::Unresponsive server07::Unresponsive server02::Unresponsive server10::Unresponsive server05::Unresponsive server08::Unresponsive server03::Unresponsive server11::Unresponsive server06::Unresponsive server01::Unresponsive server09::Unresponsive],Causes=[],AggregatedBy=[],Aggregates=[],[Losing resource]");
 				expectedResults
-				.add("CausalityAnalyser::local:::Service::MGTAWeb1::Impacted,CRITICAL,[Availability],isRoot=false,CausedBy=[server07::Unresponsive server10::Unresponsive server02::Unresponsive server08::Unresponsive server11::Unresponsive server03::Unresponsive server01::Unresponsive server09::Unresponsive],Causes=[],AggregatedBy=[],Aggregates=[],[Losing resource]");
+				.add("CausalityAnalyser::local:::URL::www.magenta.ca|krr::Impacted,CRITICAL,[Availability],isRoot=false,CausedBy=[server04::Unresponsive server07::Unresponsive server02::Unresponsive server10::Unresponsive server05::Unresponsive server08::Unresponsive server03::Unresponsive server11::Unresponsive server06::Unresponsive server01::Unresponsive server09::Unresponsive],Causes=[],AggregatedBy=[],Aggregates=[],[Losing resource]");
 				expectedResults
-				.add("Smarts::MGTA-AM-PM:::Host::server09::Unresponsive,MAJOR,[Availability],isRoot=true,CausedBy=[],Causes=[MGTAWeb::Impacted www.magenta.ca|MyProfile::Impacted MGTAWeb1::Impacted www.magenta.ca|krr::Impacted www.magenta.ca|home::Impacted],AggregatedBy=[],Aggregates=[],[Unresponsive]");
+				.add("CausalityAnalyser::local:::URL::www.magenta.ca|order::Impacted,CRITICAL,[Availability],isRoot=false,CausedBy=[server04::Unresponsive server05::Unresponsive server06::Unresponsive],Causes=[],AggregatedBy=[],Aggregates=[],[Losing resource]");
 				expectedResults
-				.add("Smarts::MGTA-AM-PM:::Host::server05::Unresponsive,MAJOR,[Availability],isRoot=true,CausedBy=[],Causes=[MGTAWeb::Impacted www.magenta.ca|order::NoAnswer www.magenta.ca|krr::Impacted www.magenta.ca|home::Impacted MGTAWeb2::Impacted www.magenta.ca|order::Impacted],AggregatedBy=[],Aggregates=[],[Unresponsive]");
-				expectedResults
-				.add("CausalityAnalyser::local:::URL::www.magenta.ca|krr::Impacted,CRITICAL,[Availability],isRoot=false,CausedBy=[server04::Unresponsive server07::Unresponsive server10::Unresponsive server02::Unresponsive server05::Unresponsive server08::Unresponsive server11::Unresponsive server03::Unresponsive server06::Unresponsive server01::Unresponsive server09::Unresponsive],Causes=[],AggregatedBy=[],Aggregates=[],[Losing resource]");
-				expectedResults
-				.add("CausalityAnalyser::local:::Service::MGTAWeb::Impacted,CRITICAL,[Availability],isRoot=false,CausedBy=[server04::Unresponsive server07::Unresponsive server10::Unresponsive server02::Unresponsive server05::Unresponsive server08::Unresponsive server11::Unresponsive server03::Unresponsive server06::Unresponsive server01::Unresponsive server09::Unresponsive],Causes=[],AggregatedBy=[],Aggregates=[],[Losing resource]");
-				expectedResults
-				.add("CausalityAnalyser::local:::URL::www.magenta.ca|home::Impacted,CRITICAL,[Availability],isRoot=false,CausedBy=[server04::Unresponsive server07::Unresponsive server10::Unresponsive server02::Unresponsive server05::Unresponsive server08::Unresponsive server11::Unresponsive server03::Unresponsive server06::Unresponsive server01::Unresponsive server09::Unresponsive],Causes=[],AggregatedBy=[],Aggregates=[],[Losing resource]");
-				expectedResults
-				.add("Smarts::MGTA-AM-PM:::Host::server04::Unresponsive,MAJOR,[Availability],isRoot=true,CausedBy=[],Causes=[MGTAWeb::Impacted www.magenta.ca|order::NoAnswer www.magenta.ca|krr::Impacted www.magenta.ca|home::Impacted MGTAWeb2::Impacted www.magenta.ca|order::Impacted],AggregatedBy=[],Aggregates=[],[Unresponsive]");				
+				.add("Nimsoft::Nim01:::URL::www.magenta.ca|order::NoAnswer,MAJOR,[Availability],isRoot=false,CausedBy=[server04::Unresponsive server05::Unresponsive server06::Unresponsive],Causes=[],AggregatedBy=[],Aggregates=[],[NoAnswer]");						
 
 				resultOK = TestToolKit.testEachExistOnceNotCleared(expectedResults, expectedResults.size());
 
@@ -661,74 +656,45 @@ public class TopologyBasedCorrelationFT {
 
 			
 			if (resultOK) {
+
 				// 21 KrrSimple Smarts MGTA-AM-PM :::Host::server05 Unresponsive MAJOR
 				TestToolKit.sendMessage_simpleFormat(21, Globals.CLEARING);				
 
 				logger.info("Sleep ...");
 				Thread.sleep(2000);
-
-				System.exit(0);
 				
 				expectedResults.clear();
 				
 				expectedResults
-				.add("Smarts::MGTA-AM-PM:::Host::server08::Unresponsive,MAJOR,[Availability],isRoot=true,"
-						+ "CausedBy=[],Causes=[MGTAWeb1::Impacted],AggregatedBy=[],Aggregates=[],[Unresponsive]");
+				.add("Nimsoft::Nim01:::URL::www.magenta.ca|order::NoAnswer,MAJOR,[Availability],isRoot=true,CausedBy=[],Causes=[],AggregatedBy=[],Aggregates=[],[NoAnswer]");
 				expectedResults
-				.add("Smarts::MGTA-AM-PM:::Host::server10::Unresponsive,MAJOR,[Availability],isRoot=true,"
-						+ "CausedBy=[],Causes=[MGTAWeb1::Impacted],AggregatedBy=[],Aggregates=[],[Unresponsive]");
+				.add("Smarts::MGTA-AM-PM:::Host::server01::Unresponsive,MAJOR,[Availability],isRoot=true,CausedBy=[],Causes=[MGTAWeb::Impacted www.magenta.ca|MyProfile::Impacted MGTAWeb1::Impacted],AggregatedBy=[],Aggregates=[],[Unresponsive]");
 				expectedResults
-				.add("CausalityAnalyser::local:::Service::MGTAWeb::Impacted,CRITICAL,[Availability],isRoot=false,"
-						+ "CausedBy=[MGTAWeb1::Impacted MGTAWeb2::Impacted],Causes=[www.magenta.ca|krr::Impacted "
-						+ "www.magenta.ca|home::NoAnswer www.magenta.ca|home::Impacted],AggregatedBy=[],Aggregates=[],[Losing resource]");
+				.add("Smarts::MGTA-AM-PM:::Host::server02::Unresponsive,MAJOR,[Availability],isRoot=true,CausedBy=[],Causes=[MGTAWeb::Impacted www.magenta.ca|MyProfile::Impacted MGTAWeb1::Impacted],AggregatedBy=[],Aggregates=[],[Unresponsive]");
 				expectedResults
-				.add("Smarts::MGTA-AM-PM:::Host::server11::Unresponsive,MAJOR,[Availability],isRoot=true,"
-						+ "CausedBy=[],Causes=[MGTAWeb1::Impacted],AggregatedBy=[],Aggregates=[],[Unresponsive]");
+				.add("Smarts::MGTA-AM-PM:::Host::server03::Unresponsive,MAJOR,[Availability],isRoot=true,CausedBy=[],Causes=[MGTAWeb::Impacted www.magenta.ca|MyProfile::Impacted MGTAWeb1::Impacted],AggregatedBy=[],Aggregates=[],[Unresponsive]");
 				expectedResults
-				.add("Smarts::MGTA-AM-PM:::Host::server09::Unresponsive,MAJOR,[Availability],isRoot=true,"
-						+ "CausedBy=[],Causes=[MGTAWeb1::Impacted],AggregatedBy=[],Aggregates=[],[Unresponsive]");
+				.add("Smarts::MGTA-AM-PM:::Host::server04::Unresponsive,MAJOR,[Availability],isRoot=true,CausedBy=[],Causes=[MGTAWeb2::Impacted],AggregatedBy=[],Aggregates=[],[Unresponsive]");
 				expectedResults
-				.add("Nimsoft::Nim01:::URL::www.magenta.ca|home::NoAnswer,MAJOR,[Availability],isRoot=false,"
-						+ "CausedBy=[MGTAWeb::Impacted],Causes=[],AggregatedBy=[],Aggregates=[],[NoAnswer]");
+				.add("Smarts::MGTA-AM-PM:::Host::server06::Unresponsive,MAJOR,[Availability],isRoot=true,CausedBy=[],Causes=[MGTAWeb2::Impacted],AggregatedBy=[],Aggregates=[],[Unresponsive]");
 				expectedResults
-				.add("CausalityAnalyser::local:::URL::www.magenta.ca|home::Impacted,CRITICAL,[Availability],isRoot=false,"
-						+ "CausedBy=[MGTAWeb::Impacted],Causes=[],AggregatedBy=[],Aggregates=[],[Losing resource]");
+				.add("Smarts::MGTA-AM-PM:::Host::server07::Unresponsive,MAJOR,[Availability],isRoot=true,CausedBy=[],Causes=[MGTAWeb::Impacted www.magenta.ca|MyProfile::Impacted MGTAWeb1::Impacted],AggregatedBy=[],Aggregates=[],[Unresponsive]");
 				expectedResults
-				.add("Smarts::MGTA-AM-PM:::Host::server05::Unresponsive,MAJOR,[Availability],isRoot=true,"
-						+ "CausedBy=[],Causes=[MGTAWeb2::Impacted],AggregatedBy=[],Aggregates=[],[Unresponsive]");
+				.add("Smarts::MGTA-AM-PM:::Host::server08::Unresponsive,MAJOR,[Availability],isRoot=true,CausedBy=[],Causes=[MGTAWeb::Impacted www.magenta.ca|MyProfile::Impacted MGTAWeb1::Impacted],AggregatedBy=[],Aggregates=[],[Unresponsive]");
 				expectedResults
-				.add("Smarts::MGTA-AM-PM:::Host::server03::Unresponsive,MAJOR,[Availability],isRoot=true,"
-						+ "CausedBy=[],Causes=[MGTAWeb1::Impacted],AggregatedBy=[],Aggregates=[],[Unresponsive]");
+				.add("Smarts::MGTA-AM-PM:::Host::server09::Unresponsive,MAJOR,[Availability],isRoot=true,CausedBy=[],Causes=[MGTAWeb::Impacted www.magenta.ca|MyProfile::Impacted MGTAWeb1::Impacted],AggregatedBy=[],Aggregates=[],[Unresponsive]");
 				expectedResults
-				.add("CausalityAnalyser::local:::Service::MGTAWeb2::Impacted,CRITICAL,[Availability],isRoot=false,"
-						+ "CausedBy=[server05::Unresponsive server04::Unresponsive server06::Unresponsive],"
-						+ "Causes=[MGTAWeb::Impacted],AggregatedBy=[],Aggregates=[],[Losing resource]");
+				.add("Smarts::MGTA-AM-PM:::Host::server10::Unresponsive,MAJOR,[Availability],isRoot=true,CausedBy=[],Causes=[MGTAWeb::Impacted www.magenta.ca|MyProfile::Impacted MGTAWeb1::Impacted],AggregatedBy=[],Aggregates=[],[Unresponsive]");
 				expectedResults
-				.add("CausalityAnalyser::local:::Service::MGTAWeb1::Impacted,CRITICAL,[Availability],isRoot=false,"
-						+ "CausedBy=[server11::Unresponsive server02::Unresponsive server09::Unresponsive server01::Unresponsive "
-						+ "server07::Unresponsive server10::Unresponsive server03::Unresponsive server08::Unresponsive],"
-						+ "Causes=[MGTAWeb::Impacted www.magenta.ca|MyProfile::Impacted],AggregatedBy=[],Aggregates=[],[Losing resource]");
+				.add("Smarts::MGTA-AM-PM:::Host::server11::Unresponsive,MAJOR,[Availability],isRoot=true,CausedBy=[],Causes=[MGTAWeb::Impacted www.magenta.ca|MyProfile::Impacted MGTAWeb1::Impacted],AggregatedBy=[],Aggregates=[],[Unresponsive]");
 				expectedResults
-				.add("Smarts::MGTA-AM-PM:::Host::server04::Unresponsive,MAJOR,[Availability],isRoot=true,"
-						+ "CausedBy=[],Causes=[MGTAWeb2::Impacted],AggregatedBy=[],Aggregates=[],[Unresponsive]");
+				.add("CausalityAnalyser::local:::Service::MGTAWeb1::Impacted,CRITICAL,[Availability],isRoot=false,CausedBy=[server07::Unresponsive server02::Unresponsive server10::Unresponsive server08::Unresponsive server11::Unresponsive server03::Unresponsive server09::Unresponsive server01::Unresponsive],Causes=[],AggregatedBy=[],Aggregates=[],[Losing resource]");
 				expectedResults
-				.add("CausalityAnalyser::local:::URL::www.magenta.ca|krr::Impacted,CRITICAL,[Availability],isRoot=false,"
-						+ "CausedBy=[MGTAWeb::Impacted],Causes=[],AggregatedBy=[],Aggregates=[],[Losing resource]");
+				.add("CausalityAnalyser::local:::Service::MGTAWeb2::Impacted,MAJOR,[HiAvailability],isRoot=false,CausedBy=[server04::Unresponsive server06::Unresponsive],Causes=[],AggregatedBy=[],Aggregates=[],[Losing resource]");
 				expectedResults
-				.add("Smarts::MGTA-AM-PM:::Host::server02::Unresponsive,MAJOR,[Availability],isRoot=true,"
-						+ "CausedBy=[],Causes=[MGTAWeb1::Impacted],AggregatedBy=[],Aggregates=[],[Unresponsive]");
+				.add("CausalityAnalyser::local:::Service::MGTAWeb::Impacted,MAJOR,[HiAvailability],isRoot=false,CausedBy=[server07::Unresponsive server10::Unresponsive server02::Unresponsive server08::Unresponsive server11::Unresponsive server03::Unresponsive server01::Unresponsive server09::Unresponsive],Causes=[],AggregatedBy=[],Aggregates=[],[Losing resource]");
 				expectedResults
-				.add("Smarts::MGTA-AM-PM:::Host::server01::Unresponsive,MAJOR,[Availability],isRoot=true,"
-						+ "CausedBy=[],Causes=[MGTAWeb1::Impacted],AggregatedBy=[],Aggregates=[],[Unresponsive]");
-				expectedResults
-				.add("Smarts::MGTA-AM-PM:::Host::server07::Unresponsive,MAJOR,[Availability],isRoot=true,"
-						+ "CausedBy=[],Causes=[MGTAWeb1::Impacted],AggregatedBy=[],Aggregates=[],[Unresponsive]");
-				expectedResults
-				.add("CausalityAnalyser::local:::URL::www.magenta.ca|MyProfile::Impacted,CRITICAL,[Availability],isRoot=false,"
-						+ "CausedBy=[MGTAWeb1::Impacted],Causes=[],AggregatedBy=[],Aggregates=[],[Losing resource]");
-				expectedResults
-				.add("Smarts::MGTA-AM-PM:::Host::server06::Unresponsive,MAJOR,[Availability],isRoot=true,"
-						+ "CausedBy=[],Causes=[MGTAWeb2::Impacted],AggregatedBy=[],Aggregates=[],[Unresponsive]");
+				.add("CausalityAnalyser::local:::URL::www.magenta.ca|MyProfile::Impacted,CRITICAL,[Availability],isRoot=false,CausedBy=[server07::Unresponsive server10::Unresponsive server02::Unresponsive server08::Unresponsive server11::Unresponsive server03::Unresponsive server01::Unresponsive server09::Unresponsive],Causes=[],AggregatedBy=[],Aggregates=[],[Losing resource]");						
 
 				resultOK = TestToolKit.testEachExistOnceNotCleared(expectedResults, expectedResults.size());
 
@@ -745,75 +711,42 @@ public class TopologyBasedCorrelationFT {
 				logger.info("Sleep ...");
 				Thread.sleep(2000);
 
-
 				expectedResults.clear();
 
-				
 				expectedResults
-				.add("Smarts::MGTA-AM-PM:::Host::server08::Unresponsive,MAJOR,[Availability],isRoot=true,"
-						+ "CausedBy=[],Causes=[MGTAWeb1::Impacted],AggregatedBy=[],Aggregates=[],[Unresponsive]");
+				.add("Nimsoft::Nim01:::URL::www.magenta.ca|krr::NoAnswer,MAJOR,[Availability],isRoot=true,CausedBy=[],Causes=[],AggregatedBy=[],Aggregates=[],[NoAnswer]");
 				expectedResults
-				.add("Smarts::MGTA-AM-PM:::Host::server10::Unresponsive,MAJOR,[Availability],isRoot=true,"
-						+ "CausedBy=[],Causes=[MGTAWeb1::Impacted],AggregatedBy=[],Aggregates=[],[Unresponsive]");
+				.add("Nimsoft::Nim01:::URL::www.magenta.ca|order::NoAnswer,MAJOR,[Availability],isRoot=true,CausedBy=[],Causes=[],AggregatedBy=[],Aggregates=[],[NoAnswer]");
 				expectedResults
-				.add("CausalityAnalyser::local:::Service::MGTAWeb::Impacted,CRITICAL,[Availability],isRoot=false,"
-						+ "CausedBy=[MGTAWeb1::Impacted MGTAWeb2::Impacted],Causes=[www.magenta.ca|krr::NoAnswer www.magenta.ca|krr::Impacted "
-						+ "www.magenta.ca|home::NoAnswer www.magenta.ca|home::Impacted],AggregatedBy=[],Aggregates=[],[Losing resource]");
+				.add("Smarts::MGTA-AM-PM:::Host::server01::Unresponsive,MAJOR,[Availability],isRoot=true,CausedBy=[],Causes=[MGTAWeb::Impacted www.magenta.ca|MyProfile::NoAnswer www.magenta.ca|MyProfile::Impacted MGTAWeb1::Impacted],AggregatedBy=[],Aggregates=[],[Unresponsive]");
 				expectedResults
-				.add("Smarts::MGTA-AM-PM:::Host::server11::Unresponsive,MAJOR,[Availability],isRoot=true,"
-						+ "CausedBy=[],Causes=[MGTAWeb1::Impacted],AggregatedBy=[],Aggregates=[],[Unresponsive]");
+				.add("Smarts::MGTA-AM-PM:::Host::server02::Unresponsive,MAJOR,[Availability],isRoot=true,CausedBy=[],Causes=[MGTAWeb::Impacted www.magenta.ca|MyProfile::NoAnswer www.magenta.ca|MyProfile::Impacted MGTAWeb1::Impacted],AggregatedBy=[],Aggregates=[],[Unresponsive]");
 				expectedResults
-				.add("Smarts::MGTA-AM-PM:::Host::server09::Unresponsive,MAJOR,[Availability],isRoot=true,"
-						+ "CausedBy=[],Causes=[MGTAWeb1::Impacted],AggregatedBy=[],Aggregates=[],[Unresponsive]");
+				.add("Smarts::MGTA-AM-PM:::Host::server03::Unresponsive,MAJOR,[Availability],isRoot=true,CausedBy=[],Causes=[MGTAWeb::Impacted www.magenta.ca|MyProfile::NoAnswer www.magenta.ca|MyProfile::Impacted MGTAWeb1::Impacted],AggregatedBy=[],Aggregates=[],[Unresponsive]");
 				expectedResults
-				.add("Nimsoft::Nim01:::URL::www.magenta.ca|home::NoAnswer,MAJOR,[Availability],isRoot=false,"
-						+ "CausedBy=[MGTAWeb::Impacted],Causes=[],AggregatedBy=[],Aggregates=[],[NoAnswer]");
+				.add("Smarts::MGTA-AM-PM:::Host::server04::Unresponsive,MAJOR,[Availability],isRoot=true,CausedBy=[],Causes=[MGTAWeb2::Impacted],AggregatedBy=[],Aggregates=[],[Unresponsive]");
 				expectedResults
-				.add("CausalityAnalyser::local:::URL::www.magenta.ca|home::Impacted,CRITICAL,[Availability],isRoot=false,"
-						+ "CausedBy=[MGTAWeb::Impacted],Causes=[],AggregatedBy=[],Aggregates=[],[Losing resource]");
+				.add("Smarts::MGTA-AM-PM:::Host::server06::Unresponsive,MAJOR,[Availability],isRoot=true,CausedBy=[],Causes=[MGTAWeb2::Impacted],AggregatedBy=[],Aggregates=[],[Unresponsive]");
 				expectedResults
-				.add("Smarts::MGTA-AM-PM:::Host::server05::Unresponsive,MAJOR,[Availability],isRoot=true,"
-						+ "CausedBy=[],Causes=[MGTAWeb2::Impacted],AggregatedBy=[],Aggregates=[],[Unresponsive]");
+				.add("Smarts::MGTA-AM-PM:::Host::server07::Unresponsive,MAJOR,[Availability],isRoot=true,CausedBy=[],Causes=[MGTAWeb::Impacted www.magenta.ca|MyProfile::NoAnswer www.magenta.ca|MyProfile::Impacted MGTAWeb1::Impacted],AggregatedBy=[],Aggregates=[],[Unresponsive]");
 				expectedResults
-				.add("Smarts::MGTA-AM-PM:::Host::server03::Unresponsive,MAJOR,[Availability],isRoot=true,"
-						+ "CausedBy=[],Causes=[MGTAWeb1::Impacted],AggregatedBy=[],Aggregates=[],[Unresponsive]");
+				.add("Smarts::MGTA-AM-PM:::Host::server08::Unresponsive,MAJOR,[Availability],isRoot=true,CausedBy=[],Causes=[MGTAWeb::Impacted www.magenta.ca|MyProfile::NoAnswer www.magenta.ca|MyProfile::Impacted MGTAWeb1::Impacted],AggregatedBy=[],Aggregates=[],[Unresponsive]");
 				expectedResults
-				.add("CausalityAnalyser::local:::Service::MGTAWeb2::Impacted,CRITICAL,[Availability],isRoot=false,"
-						+ "CausedBy=[server05::Unresponsive server04::Unresponsive server06::Unresponsive],"
-						+ "Causes=[MGTAWeb::Impacted],AggregatedBy=[],Aggregates=[],[Losing resource]");
+				.add("Smarts::MGTA-AM-PM:::Host::server09::Unresponsive,MAJOR,[Availability],isRoot=true,CausedBy=[],Causes=[MGTAWeb::Impacted www.magenta.ca|MyProfile::NoAnswer www.magenta.ca|MyProfile::Impacted MGTAWeb1::Impacted],AggregatedBy=[],Aggregates=[],[Unresponsive]");
 				expectedResults
-				.add("CausalityAnalyser::local:::Service::MGTAWeb1::Impacted,CRITICAL,[Availability],isRoot=false,"
-						+ "CausedBy=[server11::Unresponsive server02::Unresponsive server09::Unresponsive server01::Unresponsive "
-						+ "server07::Unresponsive server10::Unresponsive server03::Unresponsive server08::Unresponsive],"
-						+ "Causes=[MGTAWeb::Impacted www.magenta.ca|MyProfile::NoAnswer www.magenta.ca|MyProfile::Impacted],"
-						+ "AggregatedBy=[],Aggregates=[],[Losing resource]");
+				.add("Smarts::MGTA-AM-PM:::Host::server10::Unresponsive,MAJOR,[Availability],isRoot=true,CausedBy=[],Causes=[MGTAWeb::Impacted www.magenta.ca|MyProfile::NoAnswer www.magenta.ca|MyProfile::Impacted MGTAWeb1::Impacted],AggregatedBy=[],Aggregates=[],[Unresponsive]");
 				expectedResults
-				.add("Smarts::MGTA-AM-PM:::Host::server04::Unresponsive,MAJOR,[Availability],isRoot=true,"
-						+ "CausedBy=[],Causes=[MGTAWeb2::Impacted],AggregatedBy=[],Aggregates=[],[Unresponsive]");
+				.add("Smarts::MGTA-AM-PM:::Host::server11::Unresponsive,MAJOR,[Availability],isRoot=true,CausedBy=[],Causes=[MGTAWeb::Impacted www.magenta.ca|MyProfile::NoAnswer www.magenta.ca|MyProfile::Impacted MGTAWeb1::Impacted],AggregatedBy=[],Aggregates=[],[Unresponsive]");
 				expectedResults
-				.add("Nimsoft::Nim01:::URL::www.magenta.ca|krr::NoAnswer,MAJOR,[Availability],isRoot=false,"
-						+ "CausedBy=[MGTAWeb::Impacted],Causes=[],AggregatedBy=[],Aggregates=[],[NoAnswer]");
+				.add("CausalityAnalyser::local:::Service::MGTAWeb1::Impacted,CRITICAL,[Availability],isRoot=false,CausedBy=[server07::Unresponsive server02::Unresponsive server10::Unresponsive server08::Unresponsive server11::Unresponsive server03::Unresponsive server09::Unresponsive server01::Unresponsive],Causes=[],AggregatedBy=[],Aggregates=[],[Losing resource]");
 				expectedResults
-				.add("CausalityAnalyser::local:::URL::www.magenta.ca|krr::Impacted,CRITICAL,[Availability],isRoot=false,"
-						+ "CausedBy=[MGTAWeb::Impacted],Causes=[],AggregatedBy=[],Aggregates=[],[Losing resource]");
+				.add("CausalityAnalyser::local:::Service::MGTAWeb2::Impacted,MAJOR,[HiAvailability],isRoot=false,CausedBy=[server04::Unresponsive server06::Unresponsive],Causes=[],AggregatedBy=[],Aggregates=[],[Losing resource]");
 				expectedResults
-				.add("Smarts::MGTA-AM-PM:::Host::server02::Unresponsive,MAJOR,[Availability],isRoot=true,"
-						+ "CausedBy=[],Causes=[MGTAWeb1::Impacted],AggregatedBy=[],Aggregates=[],[Unresponsive]");
+				.add("CausalityAnalyser::local:::Service::MGTAWeb::Impacted,MAJOR,[HiAvailability],isRoot=false,CausedBy=[server07::Unresponsive server02::Unresponsive server10::Unresponsive server08::Unresponsive server11::Unresponsive server03::Unresponsive server09::Unresponsive server01::Unresponsive],Causes=[],AggregatedBy=[],Aggregates=[],[Losing resource]");
 				expectedResults
-				.add("Smarts::MGTA-AM-PM:::Host::server01::Unresponsive,MAJOR,[Availability],isRoot=true,"
-						+ "CausedBy=[],Causes=[MGTAWeb1::Impacted],AggregatedBy=[],Aggregates=[],[Unresponsive]");
+				.add("CausalityAnalyser::local:::URL::www.magenta.ca|MyProfile::Impacted,CRITICAL,[Availability],isRoot=false,CausedBy=[server07::Unresponsive server02::Unresponsive server10::Unresponsive server08::Unresponsive server11::Unresponsive server03::Unresponsive server09::Unresponsive server01::Unresponsive],Causes=[],AggregatedBy=[],Aggregates=[],[Losing resource]");
 				expectedResults
-				.add("Smarts::MGTA-AM-PM:::Host::server07::Unresponsive,MAJOR,[Availability],isRoot=true,"
-						+ "CausedBy=[],Causes=[MGTAWeb1::Impacted],AggregatedBy=[],Aggregates=[],[Unresponsive]");
-				expectedResults
-				.add("Nimsoft::Nim01:::URL::www.magenta.ca|MyProfile::NoAnswer,MAJOR,[Availability],isRoot=false,"
-						+ "CausedBy=[MGTAWeb1::Impacted],Causes=[],AggregatedBy=[],Aggregates=[],[NoAnswer]");
-				expectedResults
-				.add("CausalityAnalyser::local:::URL::www.magenta.ca|MyProfile::Impacted,CRITICAL,[Availability],isRoot=false,"
-						+ "CausedBy=[MGTAWeb1::Impacted],Causes=[],AggregatedBy=[],Aggregates=[],[Losing resource]");
-				expectedResults
-				.add("Smarts::MGTA-AM-PM:::Host::server06::Unresponsive,MAJOR,[Availability],isRoot=true,"
-						+ "CausedBy=[],Causes=[MGTAWeb2::Impacted],AggregatedBy=[],Aggregates=[],[Unresponsive]");
+				.add("Nimsoft::Nim01:::URL::www.magenta.ca|MyProfile::NoAnswer,MAJOR,[Availability],isRoot=false,CausedBy=[server07::Unresponsive server02::Unresponsive server10::Unresponsive server08::Unresponsive server11::Unresponsive server03::Unresponsive server09::Unresponsive server01::Unresponsive],Causes=[],AggregatedBy=[],Aggregates=[],[NoAnswer]");
 
 				resultOK = TestToolKit.testEachExistOnceNotCleared(expectedResults, expectedResults.size());
 
@@ -821,12 +754,63 @@ public class TopologyBasedCorrelationFT {
 
 			if (resultOK) {
 
-				// 9 KrrSimple Nimsoft Nim01 :::URL::www.magenta.ca|home NoAnswer MAJOR
-				TestToolKit.sendMessage_simpleFormat(9, Globals.CLEARING);
-				// 10 KrrSimple Nimsoft Nim01 :::URL::www.magenta.ca|krr NoAnswer MAJOR
-				TestToolKit.sendMessage_simpleFormat(10, Globals.CLEARING);
-				// 11 KrrSimple Nimsoft Nim01 :::URL::www.magenta.ca|MyProfile NoAnswer MAJOR
-				TestToolKit.sendMessage_simpleFormat(11, Globals.CLEARING);
+				// 21 KrrSimple Smarts MGTA-AM-PM :::Host::server05 Unresponsive MAJOR
+				TestToolKit.sendMessage_simpleFormat(21, Globals.RAISING);				
+
+				logger.info("Sleep ...");
+				Thread.sleep(2000);
+				
+				expectedResults.clear();
+				
+				expectedResults
+				.add("Smarts::MGTA-AM-PM:::Host::server01::Unresponsive,MAJOR,[Availability],isRoot=true,CausedBy=[],Causes=[MGTAWeb::Impacted www.magenta.ca|krr::Impacted www.magenta.ca|MyProfile::NoAnswer www.magenta.ca|MyProfile::Impacted www.magenta.ca|krr::NoAnswer MGTAWeb1::Impacted www.magenta.ca|home::Impacted],AggregatedBy=[],Aggregates=[],[Unresponsive]");
+				expectedResults
+				.add("Smarts::MGTA-AM-PM:::Host::server02::Unresponsive,MAJOR,[Availability],isRoot=true,CausedBy=[],Causes=[MGTAWeb::Impacted www.magenta.ca|krr::Impacted www.magenta.ca|MyProfile::NoAnswer www.magenta.ca|MyProfile::Impacted www.magenta.ca|krr::NoAnswer MGTAWeb1::Impacted www.magenta.ca|home::Impacted],AggregatedBy=[],Aggregates=[],[Unresponsive]");
+				expectedResults
+				.add("Smarts::MGTA-AM-PM:::Host::server03::Unresponsive,MAJOR,[Availability],isRoot=true,CausedBy=[],Causes=[MGTAWeb::Impacted www.magenta.ca|krr::Impacted www.magenta.ca|MyProfile::NoAnswer www.magenta.ca|MyProfile::Impacted www.magenta.ca|krr::NoAnswer MGTAWeb1::Impacted www.magenta.ca|home::Impacted],AggregatedBy=[],Aggregates=[],[Unresponsive]");
+				expectedResults
+				.add("Smarts::MGTA-AM-PM:::Host::server04::Unresponsive,MAJOR,[Availability],isRoot=true,CausedBy=[],Causes=[MGTAWeb::Impacted www.magenta.ca|krr::Impacted www.magenta.ca|order::NoAnswer www.magenta.ca|krr::NoAnswer MGTAWeb2::Impacted www.magenta.ca|order::Impacted www.magenta.ca|home::Impacted],AggregatedBy=[],Aggregates=[],[Unresponsive]");
+				expectedResults
+				.add("Smarts::MGTA-AM-PM:::Host::server05::Unresponsive,MAJOR,[Availability],isRoot=true,CausedBy=[],Causes=[MGTAWeb::Impacted www.magenta.ca|krr::Impacted www.magenta.ca|order::NoAnswer www.magenta.ca|krr::NoAnswer MGTAWeb2::Impacted www.magenta.ca|order::Impacted www.magenta.ca|home::Impacted],AggregatedBy=[],Aggregates=[],[Unresponsive]");
+				expectedResults
+				.add("Smarts::MGTA-AM-PM:::Host::server06::Unresponsive,MAJOR,[Availability],isRoot=true,CausedBy=[],Causes=[MGTAWeb::Impacted www.magenta.ca|krr::Impacted www.magenta.ca|order::NoAnswer www.magenta.ca|krr::NoAnswer MGTAWeb2::Impacted www.magenta.ca|order::Impacted www.magenta.ca|home::Impacted],AggregatedBy=[],Aggregates=[],[Unresponsive]");
+				expectedResults
+				.add("Smarts::MGTA-AM-PM:::Host::server07::Unresponsive,MAJOR,[Availability],isRoot=true,CausedBy=[],Causes=[MGTAWeb::Impacted www.magenta.ca|krr::Impacted www.magenta.ca|MyProfile::NoAnswer www.magenta.ca|MyProfile::Impacted www.magenta.ca|krr::NoAnswer MGTAWeb1::Impacted www.magenta.ca|home::Impacted],AggregatedBy=[],Aggregates=[],[Unresponsive]");
+				expectedResults
+				.add("Smarts::MGTA-AM-PM:::Host::server08::Unresponsive,MAJOR,[Availability],isRoot=true,CausedBy=[],Causes=[MGTAWeb::Impacted www.magenta.ca|krr::Impacted www.magenta.ca|MyProfile::NoAnswer www.magenta.ca|MyProfile::Impacted www.magenta.ca|krr::NoAnswer MGTAWeb1::Impacted www.magenta.ca|home::Impacted],AggregatedBy=[],Aggregates=[],[Unresponsive]");
+				expectedResults
+				.add("Smarts::MGTA-AM-PM:::Host::server09::Unresponsive,MAJOR,[Availability],isRoot=true,CausedBy=[],Causes=[MGTAWeb::Impacted www.magenta.ca|krr::Impacted www.magenta.ca|MyProfile::NoAnswer www.magenta.ca|MyProfile::Impacted www.magenta.ca|krr::NoAnswer MGTAWeb1::Impacted www.magenta.ca|home::Impacted],AggregatedBy=[],Aggregates=[],[Unresponsive]");
+				expectedResults
+				.add("Smarts::MGTA-AM-PM:::Host::server10::Unresponsive,MAJOR,[Availability],isRoot=true,CausedBy=[],Causes=[MGTAWeb::Impacted www.magenta.ca|krr::Impacted www.magenta.ca|MyProfile::NoAnswer www.magenta.ca|MyProfile::Impacted www.magenta.ca|krr::NoAnswer MGTAWeb1::Impacted www.magenta.ca|home::Impacted],AggregatedBy=[],Aggregates=[],[Unresponsive]");
+				expectedResults
+				.add("Smarts::MGTA-AM-PM:::Host::server11::Unresponsive,MAJOR,[Availability],isRoot=true,CausedBy=[],Causes=[MGTAWeb::Impacted www.magenta.ca|krr::Impacted www.magenta.ca|MyProfile::NoAnswer www.magenta.ca|MyProfile::Impacted www.magenta.ca|krr::NoAnswer MGTAWeb1::Impacted www.magenta.ca|home::Impacted],AggregatedBy=[],Aggregates=[],[Unresponsive]");
+				expectedResults
+				.add("CausalityAnalyser::local:::Service::MGTAWeb1::Impacted,CRITICAL,[Availability],isRoot=false,CausedBy=[server07::Unresponsive server02::Unresponsive server10::Unresponsive server08::Unresponsive server11::Unresponsive server03::Unresponsive server09::Unresponsive server01::Unresponsive],Causes=[],AggregatedBy=[],Aggregates=[],[Losing resource]");
+				expectedResults
+				.add("CausalityAnalyser::local:::Service::MGTAWeb2::Impacted,CRITICAL,[Availability],isRoot=false,CausedBy=[server04::Unresponsive server05::Unresponsive server06::Unresponsive],Causes=[],AggregatedBy=[],Aggregates=[],[Losing resource]");
+				expectedResults
+				.add("CausalityAnalyser::local:::Service::MGTAWeb::Impacted,CRITICAL,[Availability],isRoot=false,CausedBy=[server04::Unresponsive server07::Unresponsive server02::Unresponsive server10::Unresponsive server05::Unresponsive server08::Unresponsive server03::Unresponsive server11::Unresponsive server06::Unresponsive server01::Unresponsive server09::Unresponsive],Causes=[],AggregatedBy=[],Aggregates=[],[Losing resource]");
+				expectedResults
+				.add("CausalityAnalyser::local:::URL::www.magenta.ca|MyProfile::Impacted,CRITICAL,[Availability],isRoot=false,CausedBy=[server07::Unresponsive server02::Unresponsive server10::Unresponsive server08::Unresponsive server03::Unresponsive server11::Unresponsive server01::Unresponsive server09::Unresponsive],Causes=[],AggregatedBy=[],Aggregates=[],[Losing resource]");
+				expectedResults
+				.add("CausalityAnalyser::local:::URL::www.magenta.ca|home::Impacted,CRITICAL,[Availability],isRoot=false,CausedBy=[server04::Unresponsive server07::Unresponsive server02::Unresponsive server10::Unresponsive server05::Unresponsive server08::Unresponsive server03::Unresponsive server11::Unresponsive server06::Unresponsive server01::Unresponsive server09::Unresponsive],Causes=[],AggregatedBy=[],Aggregates=[],[Losing resource]");
+				expectedResults
+				.add("CausalityAnalyser::local:::URL::www.magenta.ca|krr::Impacted,CRITICAL,[Availability],isRoot=false,CausedBy=[server04::Unresponsive server07::Unresponsive server02::Unresponsive server10::Unresponsive server05::Unresponsive server08::Unresponsive server03::Unresponsive server11::Unresponsive server06::Unresponsive server01::Unresponsive server09::Unresponsive],Causes=[],AggregatedBy=[],Aggregates=[],[Losing resource]");
+				expectedResults
+				.add("CausalityAnalyser::local:::URL::www.magenta.ca|order::Impacted,CRITICAL,[Availability],isRoot=false,CausedBy=[server04::Unresponsive server05::Unresponsive server06::Unresponsive],Causes=[],AggregatedBy=[],Aggregates=[],[Losing resource]");
+				expectedResults
+				.add("Nimsoft::Nim01:::URL::www.magenta.ca|MyProfile::NoAnswer,MAJOR,[Availability],isRoot=false,CausedBy=[server07::Unresponsive server02::Unresponsive server10::Unresponsive server08::Unresponsive server03::Unresponsive server11::Unresponsive server01::Unresponsive server09::Unresponsive],Causes=[],AggregatedBy=[],Aggregates=[],[NoAnswer]");
+				expectedResults
+				.add("Nimsoft::Nim01:::URL::www.magenta.ca|krr::NoAnswer,MAJOR,[Availability],isRoot=false,CausedBy=[server04::Unresponsive server07::Unresponsive server02::Unresponsive server10::Unresponsive server05::Unresponsive server08::Unresponsive server03::Unresponsive server11::Unresponsive server06::Unresponsive server01::Unresponsive server09::Unresponsive],Causes=[],AggregatedBy=[],Aggregates=[],[NoAnswer]");
+				expectedResults
+				.add("Nimsoft::Nim01:::URL::www.magenta.ca|order::NoAnswer,MAJOR,[Availability],isRoot=false,CausedBy=[server04::Unresponsive server05::Unresponsive server06::Unresponsive],Causes=[],AggregatedBy=[],Aggregates=[],[NoAnswer]");
+
+				resultOK = TestToolKit.testEachExistOnceNotCleared(expectedResults, expectedResults.size());
+
+			}
+			
+			
+			if (resultOK) {
 
 				// 13 KrrSimple Smarts MGTA-AM-PM :::Host::server01 Unresponsive MAJOR
 				TestToolKit.sendMessage_simpleFormat(13, Globals.CLEARING);
@@ -852,21 +836,36 @@ public class TopologyBasedCorrelationFT {
 				TestToolKit.sendMessage_simpleFormat(33, Globals.CLEARING);
 
 				logger.info("Sleep ...");
-				Thread.sleep(2000);
+				Thread.sleep(3000);
+				
+				expectedResults.clear();
+				
+				expectedResults
+				.add("Nimsoft::Nim01:::URL::www.magenta.ca|MyProfile::NoAnswer,MAJOR,[Availability],isRoot=true,CausedBy=[],Causes=[],AggregatedBy=[],Aggregates=[],[NoAnswer]");
+				expectedResults
+				.add("Nimsoft::Nim01:::URL::www.magenta.ca|krr::NoAnswer,MAJOR,[Availability],isRoot=true,CausedBy=[],Causes=[],AggregatedBy=[],Aggregates=[],[NoAnswer]");
+				expectedResults
+				.add("Nimsoft::Nim01:::URL::www.magenta.ca|order::NoAnswer,MAJOR,[Availability],isRoot=true,CausedBy=[],Causes=[],AggregatedBy=[],Aggregates=[],[NoAnswer]");
 
-				linkKeyList.clear();
-				linkKeyList.add("CausalityAnalyser::local:::URL::www.magenta.ca|krr::Impacted");
-				linkKeyList.add("CausalityAnalyser::local:::URL::www.magenta.ca|MyProfile::Impacted");
-				linkKeyList.add("CausalityAnalyser::local:::URL::www.magenta.ca|home::Impacted");
-
-				linkKeyList.add("CausalityAnalyser::local:::Service::MGTAWeb::Impacted");
-				linkKeyList.add("CausalityAnalyser::local:::Service::MGTAWeb1::Impacted");
-				linkKeyList.add("CausalityAnalyser::local:::Service::MGTAWeb2::Impacted");
-
-				resultOK = TestToolKit.testAreCleared(linkKeyList);
-
+				resultOK = TestToolKit.testEachExistOnceNotCleared(expectedResults, expectedResults.size());
 			}
 
+			if (resultOK) {
+				// 10 KrrSimple Nimsoft Nim01 :::URL::www.magenta.ca|krr NoAnswer MAJOR
+				TestToolKit.sendMessage_simpleFormat(10, Globals.CLEARING);
+				// 11 KrrSimple Nimsoft Nim01 :::URL::www.magenta.ca|MyProfile NoAnswer MAJOR
+				TestToolKit.sendMessage_simpleFormat(11, Globals.CLEARING);
+				// 48	KrrSimple	Nimsoft	Nim01	:::URL::www.magenta.ca|order	NoAnswer	MAJOR
+				TestToolKit.sendMessage_simpleFormat(48, Globals.CLEARING);
+
+				logger.info("Sleep ...");
+				Thread.sleep(2000);
+				
+				resultOK = TestToolKit.testForTotalCount_NOT_CLEARED(0 /* expectedCount */);
+
+			}
+			
+			
 			if (resultOK) {
 				// 9 KrrSimple Nimsoft Nim01 :::URL::www.magenta.ca|home NoAnswer MAJOR
 				TestToolKit.sendMessage_simpleFormat(9, Globals.RAISING);
@@ -874,6 +873,8 @@ public class TopologyBasedCorrelationFT {
 				TestToolKit.sendMessage_simpleFormat(10, Globals.RAISING);
 				// 11 KrrSimple Nimsoft Nim01 :::URL::www.magenta.ca|MyProfile NoAnswer MAJOR
 				TestToolKit.sendMessage_simpleFormat(11, Globals.RAISING);
+				// 48	KrrSimple	Nimsoft	Nim01	:::URL::www.magenta.ca|order	NoAnswer	MAJOR
+				TestToolKit.sendMessage_simpleFormat(48, Globals.RAISING);
 
 				// 13 KrrSimple Smarts MGTA-AM-PM :::Host::server01 Unresponsive MAJOR
 				TestToolKit.sendMessage_simpleFormat(13, Globals.RAISING);
