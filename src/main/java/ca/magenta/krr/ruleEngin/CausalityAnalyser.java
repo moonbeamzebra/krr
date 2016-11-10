@@ -122,36 +122,37 @@ public class CausalityAnalyser implements Runnable {
 			}
 		}
 
-		if (stateLifecycle instanceof StateClear)
-		{
-			StateClear stateClear = (StateClear) stateLifecycle;
-			
-			logger.debug(String.format("stateClear.getLastCauses().size() : [%d]", stateClear.getLastCauses().size()));
-			
-			for (FactHandle causeHdle : stateClear.getLastCauses())
-			{
-				if (causeHdle != null)
-				{
-					State causeState = State.getState(causeHdle);
-					if (causeState != null)
-					{
-						logger.debug(String.format("causeState.getLinkKey() : [%s]", causeState.getLinkKey()));
-						
-						ManagedNode causeMN = causeState.getMostSpecificManagedNode();
-						HashSet<String> causeCats = causeState.getCategories();
-						if ( ! ( causeState.getStateDescr().equals(STATE_DESCR) && 
-								causeState.getSourceName().equals(CausalityAnalyser.getSourceName()) ) )
-						{
-							for (String category : causeCats)
-							{
-								logger.debug(String.format("category : [%s]", category));
-								CausalityAnalyser.addDirtyNode(new DirtyNodeInfo(causeMN, category, DirtyNodeInfo.CHECK_ROOT_CAUSE_ONLY));
-							}
-						}
-					}
-				}
-			}
-		}
+		// Remed out 2016-11-03 done by CausalityAnalyser.drl State ServiceConsumer-ServiceProvider dependency
+//		if (stateLifecycle instanceof StateClear)
+//		{
+//			StateClear stateClear = (StateClear) stateLifecycle;
+//			
+//			logger.debug(String.format("stateClear.getLastCauses().size() : [%d]", stateClear.getLastCauses().size()));
+//			
+//			for (FactHandle causeHdle : stateClear.getLastCauses())
+//			{
+//				if (causeHdle != null)
+//				{
+//					State causeState = State.getState(causeHdle);
+//					if (causeState != null)
+//					{
+//						logger.debug(String.format("causeState.getLinkKey() : [%s]", causeState.getLinkKey()));
+//						
+//						ManagedNode causeMN = causeState.getMostSpecificManagedNode();
+//						HashSet<String> causeCats = causeState.getCategories();
+//						if ( ! ( causeState.getStateDescr().equals(STATE_DESCR) && 
+//								causeState.getSourceName().equals(CausalityAnalyser.getSourceName()) ) )
+//						{
+//							for (String category : causeCats)
+//							{
+//								logger.debug(String.format("category : [%s]", category));
+//								CausalityAnalyser.addDirtyNode(new DirtyNodeInfo(causeMN, category, DirtyNodeInfo.CHECK_ROOT_CAUSE_ONLY));
+//							}
+//						}
+//					}
+//				}
+//			}
+//		}
 	}
 
 	private static boolean hasChangesOfInterest(StateLifecycle stateLifecycle) {
@@ -301,58 +302,62 @@ public class CausalityAnalyser implements Runnable {
 										null /* specificProperties */);
 							}
 							
+							// Remed out 2016-11-03 done by CausalityAnalyser.drl State ServiceConsumer-ServiceProvider dependency
 							// Apply the same impact to other states of this manage node
-							Vector<State> thisNodeStates = Engine.getStateByNodeByCategory(mn, dependencyRule.getStateCategory());
-							if (thisNodeStates != null) {
-								for (State state : thisNodeStates) {
-									if (	! ( state.getStateDescr().equals(STATE_DESCR) && 
-											state.getSourceName().equals(CausalityAnalyser.getSourceName()) ) )
-									{
-										if (logger.isDebugEnabled())
-											logger.debug("Other state on same node:[" + state.getLinkKey() + "]-" +  state.getCategories());
-
-										if (effCausedBys == null)  // Test if not already compute
-											effCausedBys = State.returnEffectiveCausedBys(causedBys);
-										
-										if (logger.isDebugEnabled()){
-											String causedByString="";
-											for (State s : effCausedBys){
-												causedByString += s.getMostSpecificManagedNode().getFqdName() + "::" + s.getStateDescr() + " ";
-											}
-											logger.debug("Effective caused bys:[" + causedByString + "]");
-										}
-										
-										Signal.raising(state,
-												effCausedBys);
-
-										//for (State causedBy : effCausedBys) {
-										//	state.addCausedBy(causedBy);
-										//}
-									}
-								}
-							}
+//							Vector<State> thisNodeStates = Engine.getStateByNodeByCategory(mn, dependencyRule.getStateCategory());
+//							if (thisNodeStates != null) {
+//								for (State state : thisNodeStates) {
+//									if (	! ( state.getStateDescr().equals(STATE_DESCR) && 
+//											state.getSourceName().equals(CausalityAnalyser.getSourceName()) ) )
+//									{
+//										if (logger.isDebugEnabled())
+//											logger.debug("Other state on same node:[" + state.getLinkKey() + "]-" +  state.getCategories());
+//
+//										if (effCausedBys == null)  // Test if not already compute
+//											effCausedBys = State.returnEffectiveCausedBys(causedBys);
+//										
+//										if (logger.isDebugEnabled()){
+//											String causedByString="";
+//											for (State s : effCausedBys){
+//												causedByString += s.getMostSpecificManagedNode().getFqdName() + "::" + s.getStateDescr() + " ";
+//											}
+//											logger.debug("Effective caused bys:[" + causedByString + "]");
+//										}
+//										
+//										// Remed out 2016-11-03 done by CausalityAnalyser.drl State ServiceConsumer-ServiceProvider dependency
+//										//Signal.raising(state,
+//										//		effCausedBys);
+//
+//										//for (State causedBy : effCausedBys) {
+//										//	state.addCausedBy(causedBy);
+//										//}
+//									}
+//								}
+//							}
 							
-							if (! dependencyRule.getStateCategory().equals(stateCategory)){
-								// Remove all causedBy to other states of this manage node
-								Vector<State> thisNodeStatesOfTestedCategory = Engine.getStateByNodeByCategory(mn, stateCategory);
-								if (thisNodeStatesOfTestedCategory != null) {
-									for (State state : thisNodeStatesOfTestedCategory) {
-										if (	! ( state.getStateDescr().equals(STATE_DESCR) && 
-												state.getSourceName().equals(CausalityAnalyser.getSourceName()) ) )
-										{
-											if (logger.isDebugEnabled())
-												logger.debug("Other state on same node:[" + state.getLinkKey() + "]-" +  state.getCategories());
-
-											HashSet<State> emptyCausedBys = new HashSet<State>();
-											Signal.raising(state,
-													emptyCausedBys);
-
-											//state.flushCausedBy();
-										}
-									}
-								}
-
-							}
+							// Remed out 2016-11-05 done by CausalityAnalyser.drl State ServiceConsumer-ServiceProvider dependency
+//							if (! dependencyRule.getStateCategory().equals(stateCategory)){
+//								// Remove all causedBy to other states of this manage node
+//								Vector<State> thisNodeStatesOfTestedCategory = Engine.getStateByNodeByCategory(mn, stateCategory);
+//								if (thisNodeStatesOfTestedCategory != null) {
+//									for (State state : thisNodeStatesOfTestedCategory) {
+//										if (	! ( state.getStateDescr().equals(STATE_DESCR) && 
+//												state.getSourceName().equals(CausalityAnalyser.getSourceName()) ) )
+//										{
+//											if (logger.isDebugEnabled())
+//												logger.debug("Other state on same node:[" + state.getLinkKey() + "]-" +  state.getCategories());
+//
+//											// Remed out 2016-11-05 done by CausalityAnalyser.drl State ServiceConsumer-ServiceProvider dependency
+//											//HashSet<State> emptyCausedBys = new HashSet<State>();
+//											//Signal.raising(state,
+//											//		emptyCausedBys);
+//
+//											//state.flushCausedBy();
+//										}
+//									}
+//								}
+//
+//							}
 								
 							break;
 							
@@ -391,14 +396,15 @@ public class CausalityAnalyser implements Runnable {
 									Signal.insertInWM_Clear(state);
 								}
 							}
-							else
-							{
-								if (logger.isDebugEnabled())
-									logger.debug("Other state on same node:[" + state.getLinkKey() + "]-" +  state.getCategories());
-								HashSet<State> emptyCausedBys = new HashSet<State>();
-								Signal.raising(state,
-										emptyCausedBys);
-							}
+							// Remed out 2016-11-05 done by CausalityAnalyser.drl State ServiceConsumer-ServiceProvider dependency
+//							else
+//							{
+//								if (logger.isDebugEnabled())
+//									logger.debug("Other state on same node:[" + state.getLinkKey() + "]-" +  state.getCategories());
+//								HashSet<State> emptyCausedBys = new HashSet<State>();
+//								Signal.raising(state,
+//										emptyCausedBys);
+//							}
 						}
 					}
 					

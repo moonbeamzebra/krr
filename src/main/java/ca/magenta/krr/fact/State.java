@@ -365,6 +365,23 @@ public class State extends NormalizedProperties {
 		State state;
 		HashSet<String> stateChangeList;
 	}
+	
+	synchronized public void setSameCauseBys(State target)
+	{
+		boolean changed = false;
+		
+		FactHandle targetHandle = Engine.getStreamKS().getFactHandle(target);
+		if (targetHandle != null)
+			changed = State.localCauseEffectRelation.replaceLowerWith(targetHandle, this.getCausedBy());
+		
+		if (changed)
+		{
+			HashSet<String> changes = new HashSet<String>();
+			changes.add(State.CAUSED_BY_LABEL);
+			Engine.getStreamKS().update(targetHandle, target);
+			StateUpdate.insertInWM(target, changes);
+		}
+	}
 
 	// This function is static and synchronized
 	// This transaction must be complete in total before changing any
@@ -594,7 +611,7 @@ public class State extends NormalizedProperties {
 
 			HashSet<String> stateChangeList = new HashSet<String>();
 
-			logger.trace("In updateCausedByAndCauses CLEAR");
+			logger.trace(String.format("In updateCausedByAndCauses CLEAR [%s]", state.getLinkKey()));
 
 			boolean changed;
 			changed = localCauseEffectRelation.removeAllRelationsWhereUpperIs(stateFactHandle);
@@ -652,6 +669,8 @@ public class State extends NormalizedProperties {
 
 	synchronized public static void updateGoingCleared(Signal newSignal, State currentState) {
 		long now = System.currentTimeMillis();
+
+		logger.debug(String.format("updateGoingCleared  : [%s]", currentState.getLinkKey()));
 
 		State updatedState = new State(newSignal);
 		Engine.getStreamKS().delete(newSignal);
@@ -787,7 +806,7 @@ public class State extends NormalizedProperties {
 	}
 
 
-	synchronized private HashSet<FactHandle> getCausedBy() {
+	synchronized public HashSet<FactHandle> getCausedBy() {
 
 		HashSet<FactHandle> total = new HashSet<FactHandle>();
 
@@ -893,7 +912,7 @@ public class State extends NormalizedProperties {
 				result = Engine.getDB().executeQuery("select linkKey from STATE where linkKey='" + this.linkKey + "';");
 
 				if (!result.isBeforeFirst()) {
-					//logger.debug(String.format("DB INSERT:[%s]", this.linkKey));
+					logger.debug(String.format("DB INSERT:[%s];CLEARED[%s]", this.linkKey, Boolean.toString(this.cleared)));
 					Engine.getDB()
 							.executeUpdate(
 									"insert into STATE (id,linkKey,sourceName,sourceType,managedEntityChain,managedNodeChain,cleared,severity,stateDescr,shortDescr,descr,count,categories,isRoot,causedBy,causes,isConsumerView,isProviderView,aggregatedBy,aggregates,meLastUpdateTime,meFirstRaiseTime,meLastRaiseTime,meLastClearTime,lastUpdateTime,firstRaiseTime,lastRaiseTime,lastClearTime,specificProperties,timestamp) VALUES ("
@@ -971,7 +990,7 @@ public class State extends NormalizedProperties {
 											+ this.specificProperties + "'," + this.getTimestamp() + ");");
 				} else {
 
-					//logger.debug(String.format("DB UPDATE:[%s]", this.linkKey));
+					logger.debug(String.format("DB UPDATE:[%s];CLEARED[%s]", this.linkKey, Boolean.toString(this.cleared)));
 					Engine.getDB().executeUpdate(
 							"update STATE " + "set " + "id = '" + this.getId() + "', " + "linkKey = '" + this.linkKey + "', " + "sourceName = '"
 									+ this.getSourceName() + "', " + "sourceType = '" + this.sourceType + "', " + "managedEntityChain = '"

@@ -31,7 +31,31 @@ salience 1
     when
         su : StateUpdate(    )
     then
+        Engine.logger.debug("Got StateUpdate: " + su.toString(false) );
         CausalityAnalyser.check4RootCauseAndDispatch(su);
+
+end
+
+rule "StateUpdate Causes"
+salience 1
+    when
+        su : StateUpdate( 
+        					getChanges().contains(State.CAUSES_LABEL) == true
+            )
+    then
+        Engine.logger.debug("Got Causes StateUpdate: " + su.toString(false) );
+
+end
+
+rule "StateUpdate CausedBy"
+salience 1
+    when
+        su : StateUpdate( 
+        					getChanges().contains(State.CAUSED_BY_LABEL) == true,
+        					getStateRef().isProviderView() == true
+            )
+    then
+        Engine.logger.debug("Got CausedBy StateUpdate: " + su.toString(false) );
 
 end
 
@@ -40,9 +64,34 @@ salience 1
     when
         sc : StateClear(    )
     then
+    
         CausalityAnalyser.check4RootCauseAndDispatch(sc);
 
 end
+
+rule "State ServiceConsumer-ServiceProvider dependency"
+salience 0
+    when
+        consumerState : State( 	
+        						isCleared() == false,
+        						isConsumerView(),
+        						$consumerNodeFqdName : getMostSpecificManagedNode().getFqdName(),
+        						$consumerLinkKey : getLinkKey() 			 
+        					)
+       	providerState : State(	
+       							isProviderView(),
+        						$consumerNodeFqdName.equals(getMostSpecificManagedNode().getFqdName()),
+        						areSharingSameCategory(consumerState),
+        						$providerLinkKey : getLinkKey(),
+        						consumerState.getCausedBy().equals(getCausedBy()) == false
+        					)
+        
+    then
+        providerState.setSameCauseBys(consumerState);
+        Engine.logger.debug("Hit for is causedByEquals:" +  consumerState.getCausedBy().equals(providerState.getCausedBy()) + ":[" + $consumerNodeFqdName + " : "+$consumerLinkKey+" ] and [" + $providerLinkKey + "]"  );
+        
+end 
+
 
 
 

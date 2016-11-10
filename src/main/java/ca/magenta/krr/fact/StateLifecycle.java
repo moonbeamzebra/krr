@@ -50,7 +50,9 @@ public abstract class StateLifecycle implements Fact {
 	
 	public String toString(boolean pretty)		
 	{
-		return  Utils.toJsonG(this, this.getClass(), pretty);
+		String string = stateRef.getLinkKey() + ":" + Utils.toJsonG(this, this.getClass(), pretty) ;
+		
+		return string;
 	}
 
 	@Override
