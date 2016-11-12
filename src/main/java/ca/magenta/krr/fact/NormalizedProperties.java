@@ -11,13 +11,11 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.apache.log4j.Logger;
 import org.kie.api.runtime.rule.FactHandle;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-
 import ca.magenta.krr.common.Severity;
 import ca.magenta.krr.data.Chain;
 import ca.magenta.krr.data.ManagedEntity;
 import ca.magenta.krr.data.ManagedNode;
+import ca.magenta.krr.tools.Utils;
 
 /**
  * @author jean-paul.laberge <jplaberge@magenta.ca>
@@ -78,10 +76,10 @@ public abstract class NormalizedProperties implements Fact{
 		aggregatedBy = normalizedProperties.aggregatedBy;
 		aggregates = normalizedProperties.aggregates;
 		
-		causedByLocal = normalizedProperties.causedByLocal;
-		causesLocal = normalizedProperties.causesLocal;
-		causedByExtern = normalizedProperties.causedByExtern;
-		causesExtern = normalizedProperties.causesExtern;
+		//causedByLocal = normalizedProperties.causedByLocal;
+		//causesLocal = normalizedProperties.causesLocal;
+		//causedByExtern = normalizedProperties.causedByExtern;
+		//causesExtern = normalizedProperties.causesExtern;
 		
 		isConsumerView = normalizedProperties.isConsumerView;
 		isProviderView = normalizedProperties.isProviderView;
@@ -104,8 +102,8 @@ public abstract class NormalizedProperties implements Fact{
 	protected String source = null;
 	//protected String sourceName = null;
 	protected String sourceType = null;
-	protected Chain<ManagedEntity> managedEntityChain = new Chain<ManagedEntity>();
-	protected Chain<ManagedNode> managedNodeChain = null;
+	protected transient Chain<ManagedEntity> managedEntityChain = new Chain<ManagedEntity>();
+	protected transient Chain<ManagedNode> managedNodeChain = null;
 
 	protected boolean cleared = true;
 	protected Severity severity = Severity.OK;
@@ -131,10 +129,10 @@ public abstract class NormalizedProperties implements Fact{
 
 
 	
-	protected transient Set<FactHandle> causedByLocal = Collections.newSetFromMap(new ConcurrentHashMap<FactHandle, Boolean>());
-	protected transient Set<FactHandle> causesLocal = Collections.newSetFromMap(new ConcurrentHashMap<FactHandle, Boolean>());
-	protected transient Set<FactHandle> causedByExtern = Collections.newSetFromMap(new ConcurrentHashMap<FactHandle, Boolean>());
-	protected transient Set<FactHandle> causesExtern = Collections.newSetFromMap(new ConcurrentHashMap<FactHandle, Boolean>());
+	//protected transient Set<FactHandle> causedByLocal = Collections.newSetFromMap(new ConcurrentHashMap<FactHandle, Boolean>());
+	//protected transient Set<FactHandle> causesLocal = Collections.newSetFromMap(new ConcurrentHashMap<FactHandle, Boolean>());
+	//protected transient Set<FactHandle> causedByExtern = Collections.newSetFromMap(new ConcurrentHashMap<FactHandle, Boolean>());
+	//protected transient Set<FactHandle> causesExtern = Collections.newSetFromMap(new ConcurrentHashMap<FactHandle, Boolean>());
 	
 	protected boolean isConsumerView = false;
 	protected boolean isProviderView = false;
@@ -399,14 +397,7 @@ public abstract class NormalizedProperties implements Fact{
 	
 	public String toString(boolean pretty)		
 	{
-		if (pretty)
-		{
-			return (new GsonBuilder().setPrettyPrinting().create()).toJson(this);
-		}
-		else
-		{
-			return (new Gson()).toJson(this);
-		}
+		return  Utils.toJsonE(this, this.getClass(), pretty);
 	}
 
 	@Override

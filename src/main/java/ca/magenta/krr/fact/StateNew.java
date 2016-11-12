@@ -3,6 +3,7 @@ package ca.magenta.krr.fact;
 import java.util.HashSet;
 
 import org.apache.log4j.Logger;
+import org.kie.api.runtime.rule.FactHandle;
 
 import ca.magenta.krr.engine.Engine;
 
@@ -15,9 +16,9 @@ final public class StateNew extends StateLifecycle{
 	
 	private static Logger logger = Logger.getLogger(StateNew.class);
 	
-	public static void insertInWM(State newState, State oldState, boolean veryNew)
+	public static void insertInWM(FactHandle factHandle, State newState, State oldState, boolean veryNew)
 	{
-		StateNew stateNew = new StateNew(newState, oldState, veryNew);
+		StateNew stateNew = new StateNew(factHandle, newState, oldState, new HashSet<String>(), veryNew);
 		
 		Engine.getStreamKS().insert(stateNew);
 	}
@@ -26,14 +27,26 @@ final public class StateNew extends StateLifecycle{
 		super();
 	}
 
-	private StateNew(State stateNew, State stateOld, boolean veryNew) {
+	private StateNew(FactHandle factHandle, State stateNew, State stateOld, HashSet<String> stateChangeList, boolean veryNew) {
 		super();
 		
-		this.setStateRef(stateNew);
+		this.setFactHandleRef(factHandle);
+		this.setLinkKeyRef(stateNew.getLinkKey());
 		
 		if (veryNew)
-			this.setChanges(new HashSet<String>());
+			this.setChanges(stateChangeList);
 		else
-			this.setChanges(stateNew.getChanges(stateOld));
+		{
+			HashSet<String> changes = stateNew.getChanges(stateOld);
+			changes.addAll(stateChangeList);
+			this.setChanges(changes);
+		}
+	}
+
+	public static void insertInWM(FactHandle factHandle, State newState, State oldState, HashSet<String> stateChangeList, boolean veryNew) {
+		
+		StateNew stateNew = new StateNew(factHandle, newState, oldState, stateChangeList, veryNew);
+		
+		Engine.getStreamKS().insert(stateNew);
 	}
 }

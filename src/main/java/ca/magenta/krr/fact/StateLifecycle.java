@@ -3,8 +3,13 @@ package ca.magenta.krr.fact;
 
 import java.util.HashSet;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
+import org.apache.log4j.Logger;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+
+import ca.magenta.krr.test.TopologyBasedCorrelationFT;
+import ca.magenta.krr.tools.Utils;
+import org.kie.api.runtime.rule.FactHandle;
 
 /**
  * @author jean-paul.laberge <jplaberge@magenta.ca>
@@ -12,10 +17,16 @@ import com.google.gson.GsonBuilder;
  * @since 2014-03-16
  */
 public abstract class StateLifecycle implements Fact {
+	
+	private static Logger logger = Logger.getLogger(TopologyBasedCorrelationFT.class);
 
 	private HashSet<String> changes = new HashSet<String>();
-	private State stateRef = null;
+	//private transient State stateRef = null;
+	private String linkKeyRef = null;
+	private transient FactHandle factHandleRef= null; 
 	
+	
+
 	public StateLifecycle() {
 		super();
 	}	
@@ -35,23 +46,14 @@ public abstract class StateLifecycle implements Fact {
 	}
 
 	public State getStateRef() {
-		return stateRef;
+		return State.getState(factHandleRef);
 	}
 
-	public void setStateRef(State stateRef) {
-		this.stateRef = stateRef;
-	}
-	
 	public String toString(boolean pretty)		
 	{
-		if (pretty)
-		{
-			return (new GsonBuilder().setPrettyPrinting().create()).toJson(this);
-		}
-		else
-		{
-			return (new Gson()).toJson(this);
-		}
+		String string = linkKeyRef + ":" + Utils.toJsonJ2(changes, changes.getClass(), pretty) ;
+		
+		return string;
 	}
 
 	@Override
@@ -59,5 +61,17 @@ public abstract class StateLifecycle implements Fact {
 	{
 		return  toString(false);
 	}
+
+	public String getLinkKeyRef() {
+		return linkKeyRef;
+	}
+
+	public void setLinkKeyRef(String linkKeyRef) {
+		this.linkKeyRef = linkKeyRef;
+	}
 	
+	public void setFactHandleRef(FactHandle factHandleRef) {
+		this.factHandleRef = factHandleRef;
+	}
+
 }

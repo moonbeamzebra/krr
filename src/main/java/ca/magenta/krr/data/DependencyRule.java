@@ -4,9 +4,8 @@ import java.util.HashMap;
 
 import ca.magenta.krr.common.LogicalOperator;
 import ca.magenta.krr.common.Severity;
+import ca.magenta.krr.tools.Utils;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 
 /**
  * @author jean-paul.laberge <jplaberge@magenta.ca>
@@ -80,14 +79,7 @@ public class DependencyRule {
 	
 	public String toString(boolean pretty)		
 	{
-		if (pretty)
-		{
-			return (new GsonBuilder().setPrettyPrinting().create()).toJson(this);
-		}
-		else
-		{
-			return (new Gson()).toJson(this);
-		}
+		return  Utils.toJsonG(this, this.getClass(), pretty);
 	}
 
 	@Override

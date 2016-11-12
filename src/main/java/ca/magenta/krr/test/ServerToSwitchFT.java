@@ -69,6 +69,7 @@ public class ServerToSwitchFT {
 
 				logger.info("Sleep ...");
 				Thread.sleep(3000);
+				
 
 				resultOK = TestToolKit.testForTotalCount_NOT_CLEARED(2 /* expectedCount */);
 
@@ -83,34 +84,19 @@ public class ServerToSwitchFT {
 			}
 
 			if (resultOK) {
+				// 35 KrrSimple Smarts MGTA-AM-PM :::Switch::switch01 Down CRITICAL 0 Switch::switch01::Unresponsive, Host::server01::Unresponsive,
 				TestToolKit.sendMessage_simpleFormat(35, Globals.CLEARING);
-
-				logger.info("Sleep ...");
-				Thread.sleep(1000);
-
-				resultOK = TestToolKit.testIsCleared("Smarts::MGTA-AM-PM:::Switch::switch01::Down" /* linkKey */);
-
-				if (resultOK) {
-
-					logger.info("-->> Test CausalityAnalyser did not change causedBy of server01::Unresponsive");
-					resultOK = TestToolKit
-							.testForOnlyOneNotCleared("Smarts::MGTA-AM-PM:::Host::server01::Unresponsive,MAJOR,[Availability],isRoot=false,CausedBy=[switch01::Down],Causes=[],AggregatedBy=[],Aggregates=[],[Unresponsive]");
-
-				}
-			}
-
-			if (resultOK) {
-				logger.info("-->> Simulate update of causedBy field of server01::Unresponsive");
 				// 13 KrrSimple Smarts MGTA-AM-PM :::Host::server01 Unresponsive MAJOR
 				TestToolKit.sendMessage_simpleFormat(13, Globals.RAISING);
 
 				logger.info("Sleep ...");
 				Thread.sleep(1000);
 
-				logger.info("-->> Test causedBy of server01::Unresponsive is now empty");
-				resultOK = TestToolKit
-						.testForOnlyOneNotCleared("Smarts::MGTA-AM-PM:::Host::server01::Unresponsive,MAJOR,[Availability],isRoot=true,CausedBy=[],Causes=[],AggregatedBy=[],Aggregates=[],[Unresponsive]");
+				expectedResults.clear();
+				
+				expectedResults.add("Smarts::MGTA-AM-PM:::Host::server01::Unresponsive,MAJOR,[Availability],isRoot=true,CausedBy=[],Causes=[],AggregatedBy=[],Aggregates=[],[Unresponsive]");
 
+				resultOK = TestToolKit.testEachExistOnceNotCleared(expectedResults, expectedResults.size());
 			}
 
 			if (resultOK) {
@@ -136,14 +122,13 @@ public class ServerToSwitchFT {
 				logger.info("Sleep ...");
 				Thread.sleep(2000);
 
-				if (resultOK) {
-					expectedResults
-							.add("Smarts::MGTA-AM-PM:::Switch::switch01::Down,CRITICAL,[Availability],isRoot=true,CausedBy=[],Causes=[server01::Unresponsive],AggregatedBy=[],Aggregates=[],[Down]");
-					expectedResults
-							.add("Smarts::MGTA-AM-PM:::Host::server01::Unresponsive,MAJOR,[Availability],isRoot=false,CausedBy=[switch01::Down],Causes=[],AggregatedBy=[],Aggregates=[],[Unresponsive]");
-					resultOK = TestToolKit.testEachExistOnceNotCleared(expectedResults);
+				expectedResults.clear();
+				
+				expectedResults.add("Smarts::MGTA-AM-PM:::Host::server01::Unresponsive,MAJOR,[Availability],isRoot=false,CausedBy=[switch01::Down],Causes=[],AggregatedBy=[],Aggregates=[],[Unresponsive]");
+				expectedResults.add("Smarts::MGTA-AM-PM:::Switch::switch01::Down,CRITICAL,[Availability],isRoot=true,CausedBy=[],Causes=[server01::Unresponsive],AggregatedBy=[],Aggregates=[],[Down]");
 
-				}
+				resultOK = TestToolKit.testEachExistOnceNotCleared(expectedResults, expectedResults.size());
+
 			}
 
 			if (resultOK) {

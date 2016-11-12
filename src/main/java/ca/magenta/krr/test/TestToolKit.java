@@ -16,8 +16,6 @@ import java.util.regex.Pattern;
 
 import org.apache.log4j.Logger;
 
-import com.google.gson.Gson;
-
 import ca.magenta.krr.fact.Message;
 import ca.magenta.krr.tools.SendMessage;
 import ca.magenta.utils.HashMapVector;

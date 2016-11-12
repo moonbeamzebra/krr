@@ -2,6 +2,8 @@ package ca.magenta.krr.fact;
 
 import java.util.HashSet;
 
+import org.kie.api.runtime.rule.FactHandle;
+
 import ca.magenta.krr.engine.Engine;
 
 
@@ -12,16 +14,16 @@ import ca.magenta.krr.engine.Engine;
  */
 final public class StateUpdate extends StateLifecycle{
 	
-	public static void insertInWM(State newState, State oldState)
+	public static void insertInWM(FactHandle factHandle, State newState, State oldState)
 	{
-		StateUpdate stateUpdate = new StateUpdate(newState, oldState);
+		StateUpdate stateUpdate = new StateUpdate(factHandle, newState, oldState);
 		
 		Engine.getStreamKS().insert(stateUpdate);
 	}
 
-	public static void insertInWM(State newState,  HashSet<String> changes)
+	public static void insertInWM(FactHandle factHandle, State newState,  HashSet<String> changes)
 	{
-		StateUpdate stateUpdate = new StateUpdate(newState, changes);
+		StateUpdate stateUpdate = new StateUpdate(factHandle, newState, changes);
 		
 		Engine.getStreamKS().insert(stateUpdate);
 	}
@@ -30,13 +32,19 @@ final public class StateUpdate extends StateLifecycle{
 		super();
 	}
 	
-	private StateUpdate(State stateNew, HashSet<String> changes) {
+	private StateUpdate(FactHandle factHandle, State stateNew, HashSet<String> changes) {
 		super(changes);
 		
-		this.setStateRef(stateNew);
+		this.setFactHandleRef(factHandle);
+		this.setLinkKeyRef(stateNew.getLinkKey());
 	}
 
-	private StateUpdate(State stateNew, State stateOld) {
-		this(stateNew, stateNew.getChanges(stateOld));
+	private StateUpdate(FactHandle factHandle, State stateNew, State stateOld) {
+		this(factHandle, stateNew, stateNew.getChanges(stateOld));
+	}
+
+	public static void insertInWM(FactHandle factHandle, State stateNew, State stateOld, HashSet<String> stateChangeList) {
+		stateChangeList.addAll(stateNew.getChanges(stateOld));
+		insertInWM(factHandle, stateNew, stateChangeList);
 	}
 }
