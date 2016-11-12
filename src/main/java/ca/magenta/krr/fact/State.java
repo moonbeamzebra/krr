@@ -216,10 +216,10 @@ public class State extends NormalizedProperties {
 		}
 		
 		Engine.getStreamKS().update(newStateFactHandle, newState);
-		StateNew.insertInWM(newState, null, true /* veryNew */);
+		StateNew.insertInWM(newStateFactHandle, newState, null, true /* veryNew */);
 
 		if (newState.isCleared()) {
-			StateClear.insertInWM(newState, null, null, true /* firstEnteredCleared */);
+			StateClear.insertInWM(newStateFactHandle, newState, null, null, true /* firstEnteredCleared */);
 		}
 
 	}
@@ -256,7 +256,7 @@ public class State extends NormalizedProperties {
 				HashSet<String> changes = new HashSet<String>();
 				changes.add(State.CAUSED_BY_LABEL);
 				Engine.getStreamKS().update(impactedStateFactHandle, impactedState);
-				StateUpdate.insertInWM(impactedState, changes);
+				StateUpdate.insertInWM(impactedStateFactHandle, impactedState, changes);
 			}
 		}
 		
@@ -267,7 +267,7 @@ public class State extends NormalizedProperties {
 				HashSet<String> changes = new HashSet<String>();
 				changes.add(State.CAUSES_LABEL);
 				Engine.getStreamKS().update(impactingStateFactHandle, impactingState);
-				StateUpdate.insertInWM(impactingState, changes);
+				StateUpdate.insertInWM(impactingStateFactHandle, impactingState, changes);
 			}
 		}
 	}
@@ -294,7 +294,7 @@ public class State extends NormalizedProperties {
 				if (changed) {
 					Engine.getStreamKS().update(aggregatedByHdle,
 							aggregatedByState);
-					StateUpdate.insertInWM(aggregatedByState,
+					StateUpdate.insertInWM(aggregatedByHdle, aggregatedByState,
 							aggregatedbyChanges);
 					anyChanges = true;
 				}
@@ -309,7 +309,7 @@ public class State extends NormalizedProperties {
 				if (changed) {
 					Engine.getStreamKS().update(aggregateHdle,
 							aggregateState);
-					StateUpdate.insertInWM(aggregateState,
+					StateUpdate.insertInWM(aggregateHdle, aggregateState,
 							aggregateChanges);
 					anyChanges = true;
 				}
@@ -319,7 +319,7 @@ public class State extends NormalizedProperties {
 
 		if (updateAggregateInWM && anyChanges) {
 			Engine.getStreamKS().update(clearedStateFactHandle, clearedState);
-			StateUpdate.insertInWM(clearedState, aggregateChanges);
+			StateUpdate.insertInWM(clearedStateFactHandle, clearedState, aggregateChanges);
 		}
 
 		return clearedState;
@@ -349,7 +349,7 @@ public class State extends NormalizedProperties {
 			for (SimpleImmutableEntry<FactHandle, State> aggregate : toUpdate )
 			{
 				Engine.getStreamKS().update(aggregate.getKey(), aggregate.getValue());
-				StateUpdate.insertInWM(aggregate.getValue(), changes);
+				StateUpdate.insertInWM(aggregate.getKey(), aggregate.getValue(), changes);
 			}
 		}
 		
@@ -379,7 +379,7 @@ public class State extends NormalizedProperties {
 			HashSet<String> changes = new HashSet<String>();
 			changes.add(State.CAUSED_BY_LABEL);
 			Engine.getStreamKS().update(targetHandle, target);
-			StateUpdate.insertInWM(target, changes);
+			StateUpdate.insertInWM(targetHandle, target, changes);
 		}
 	}
 
@@ -422,7 +422,7 @@ public class State extends NormalizedProperties {
 						HashSet<String> changes = new HashSet<String>();
 						changes.add(State.CAUSES_LABEL);
 						Engine.getStreamKS().update(causedByHdle, causedByState);
-						StateUpdate.insertInWM(causedByState, changes);
+						StateUpdate.insertInWM(causedByHdle, causedByState, changes);
 					}
 				}
 			}
@@ -444,7 +444,7 @@ public class State extends NormalizedProperties {
 						HashSet<String> changes = new HashSet<String>();
 						changes.add(State.CAUSED_BY_LABEL);
 						Engine.getStreamKS().update(causesHdle, causesState);
-						StateUpdate.insertInWM(causesState, changes);
+						StateUpdate.insertInWM(causesHdle, causesState, changes);
 					}
 				}
 			}
@@ -457,121 +457,121 @@ public class State extends NormalizedProperties {
 	// This function is static and synchronized
 	// This transaction must be complete in total before changing any
 	// CausedByAndCauses of any other States
-	synchronized private static StateAndChanges updateCausedByAndCausesOld(	State state, 
-																FactHandle stateFactHandle, 
-																HashSet<String> causedByStrs, 
-																HashSet<FactHandle> causedByHdles,
-																HashSet<String> causesStrs, 
-																HashSet<FactHandle> causesHdles) {
-		
-		boolean stateHasChanged = false;
-		HashSet<String> stateChangeList = new HashSet<String>();
-
-		if (causedByHdles != null) {
-			logger.debug(String.format("State:[%s]; causedByHdles.size():[%d]", state.getLinkKey(), causedByHdles.size()));
-			if (causedByHdles.size() > 0)
-			{
-				for (FactHandle causedByHdle : causedByHdles) {
-					State causedByState = State.getState(causedByHdle);
-					logger.debug(String.format("State:[%s]; causedByState:[%s]", state.getLinkKey(), causedByState.getLinkKey()));
-					if (causedByState != null) {
-						stateHasChanged = state.addCausedBy_local(causedByHdle);
-						if (stateHasChanged)
-						{
-							stateChangeList.add(State.CAUSED_BY_LABEL);
-							HashSet<String> changes = new HashSet<String>();
-							changes.add(State.CAUSES_LABEL);
-							Engine.getStreamKS().update(causedByHdle, causedByState);
-							logger.debug(String.format("StateUpdate.insertInWM: [%s]", causedByState.getLinkKey()));
-							StateUpdate.insertInWM(causedByState, changes);
-						}
-					}
-				}
-			}
-			else
-			{
-				stateHasChanged = State.localCauseEffectRelation.removeAllRelationsWhereUpperIs(stateFactHandle);
-				if (stateHasChanged)
-					stateChangeList.add(State.CAUSED_BY_LABEL);
-				logger.debug(String.format("State:[%s]; stateHasChanged:[%s]", state.getLinkKey(), Boolean.toString(stateHasChanged)));
-			}
-		}
-
-		if (causesHdles != null) {
-			logger.debug(String.format("State:[%s]; causedByHdles.size():[%d]", state.getLinkKey(), causesHdles.size()));
-			if (causesHdles.size() > 0)
-			{
-				for (FactHandle causesHdle : causesHdles) {
-					State causesState = State.getState(causesHdle);
-					if (causesState != null) {
-						stateHasChanged = state.addCauses_local(causesHdle);
-						if (stateHasChanged)
-						{
-							stateChangeList.add(State.CAUSES_LABEL);
-							HashSet<String> changes = new HashSet<String>();
-							changes.add(State.CAUSED_BY_LABEL);
-							Engine.getStreamKS().update(causesHdle, causesState);
-							StateUpdate.insertInWM(causesState, changes);
-						}
-					}
-				}
-			}
-			else
-			{
-				stateHasChanged = State.localCauseEffectRelation.removeAllRelationsWhereLowerIs(stateFactHandle);
-				if (stateHasChanged)
-					stateChangeList.add(State.CAUSES_LABEL);
-				logger.debug(String.format("State:[%s]; stateHasChanged:[%s]", state.getLinkKey(), Boolean.toString(stateHasChanged)));
-			}
-		}
-		
-		for (String causedByStr : causedByStrs)
-		{
-			logger.debug("causedByStr:" + causedByStr);
-			FactHandle causedByHdle = Engine.getStateByLinkKey(causedByStr);
-			if (causedByHdle != null)
-			{
-				logger.debug("Found");
-				State causedByState = State.getState(causedByHdle);
-				if (causedByState != null) {
-					stateHasChanged = state.addCausedBy_extern(causedByHdle);
-					if (stateHasChanged)
-					{
-						stateChangeList.add(State.CAUSED_BY_LABEL);
-						HashSet<String> changes = new HashSet<String>();
-						changes.add(State.CAUSES_LABEL);
-						Engine.getStreamKS().update(causedByHdle, causedByState);
-						StateUpdate.insertInWM(causedByState, changes);
-					}
-				}
-			}
-		}
-		
-		for (String causesStr : causesStrs)
-		{
-			logger.debug("causesStr:" + causesStr);
-			FactHandle causesHdle = Engine.getStateByLinkKey(causesStr);
-			if (causesHdle != null)
-			{
-				logger.debug("Found");
-				State causesState = State.getState(causesHdle);
-				if (causesState != null) {
-					stateHasChanged = state.addCauses_extern(causesHdle);
-					if (stateHasChanged)
-					{
-						stateChangeList.add(State.CAUSES_LABEL);
-						HashSet<String> changes = new HashSet<String>();
-						changes.add(State.CAUSED_BY_LABEL);
-						Engine.getStreamKS().update(causesHdle, causesState);
-						StateUpdate.insertInWM(causesState, changes);
-					}
-				}
-			}
-		}
-		
-
-		return new StateAndChanges(state, stateChangeList);
-	}
+//	synchronized private static StateAndChanges updateCausedByAndCausesOld(	State state, 
+//																FactHandle stateFactHandle, 
+//																HashSet<String> causedByStrs, 
+//																HashSet<FactHandle> causedByHdles,
+//																HashSet<String> causesStrs, 
+//																HashSet<FactHandle> causesHdles) {
+//		
+//		boolean stateHasChanged = false;
+//		HashSet<String> stateChangeList = new HashSet<String>();
+//
+//		if (causedByHdles != null) {
+//			logger.debug(String.format("State:[%s]; causedByHdles.size():[%d]", state.getLinkKey(), causedByHdles.size()));
+//			if (causedByHdles.size() > 0)
+//			{
+//				for (FactHandle causedByHdle : causedByHdles) {
+//					State causedByState = State.getState(causedByHdle);
+//					logger.debug(String.format("State:[%s]; causedByState:[%s]", state.getLinkKey(), causedByState.getLinkKey()));
+//					if (causedByState != null) {
+//						stateHasChanged = state.addCausedBy_local(causedByHdle);
+//						if (stateHasChanged)
+//						{
+//							stateChangeList.add(State.CAUSED_BY_LABEL);
+//							HashSet<String> changes = new HashSet<String>();
+//							changes.add(State.CAUSES_LABEL);
+//							Engine.getStreamKS().update(causedByHdle, causedByState);
+//							logger.debug(String.format("StateUpdate.insertInWM: [%s]", causedByState.getLinkKey()));
+//							StateUpdate.insertInWM(causedByHdle, causedByState, changes);
+//						}
+//					}
+//				}
+//			}
+//			else
+//			{
+//				stateHasChanged = State.localCauseEffectRelation.removeAllRelationsWhereUpperIs(stateFactHandle);
+//				if (stateHasChanged)
+//					stateChangeList.add(State.CAUSED_BY_LABEL);
+//				logger.debug(String.format("State:[%s]; stateHasChanged:[%s]", state.getLinkKey(), Boolean.toString(stateHasChanged)));
+//			}
+//		}
+//
+//		if (causesHdles != null) {
+//			logger.debug(String.format("State:[%s]; causedByHdles.size():[%d]", state.getLinkKey(), causesHdles.size()));
+//			if (causesHdles.size() > 0)
+//			{
+//				for (FactHandle causesHdle : causesHdles) {
+//					State causesState = State.getState(causesHdle);
+//					if (causesState != null) {
+//						stateHasChanged = state.addCauses_local(causesHdle);
+//						if (stateHasChanged)
+//						{
+//							stateChangeList.add(State.CAUSES_LABEL);
+//							HashSet<String> changes = new HashSet<String>();
+//							changes.add(State.CAUSED_BY_LABEL);
+//							Engine.getStreamKS().update(causesHdle, causesState);
+//							StateUpdate.insertInWM(causesHdle, causesState, changes);
+//						}
+//					}
+//				}
+//			}
+//			else
+//			{
+//				stateHasChanged = State.localCauseEffectRelation.removeAllRelationsWhereLowerIs(stateFactHandle);
+//				if (stateHasChanged)
+//					stateChangeList.add(State.CAUSES_LABEL);
+//				logger.debug(String.format("State:[%s]; stateHasChanged:[%s]", state.getLinkKey(), Boolean.toString(stateHasChanged)));
+//			}
+//		}
+//		
+//		for (String causedByStr : causedByStrs)
+//		{
+//			logger.debug("causedByStr:" + causedByStr);
+//			FactHandle causedByHdle = Engine.getStateByLinkKey(causedByStr);
+//			if (causedByHdle != null)
+//			{
+//				logger.debug("Found");
+//				State causedByState = State.getState(causedByHdle);
+//				if (causedByState != null) {
+//					stateHasChanged = state.addCausedBy_extern(causedByHdle);
+//					if (stateHasChanged)
+//					{
+//						stateChangeList.add(State.CAUSED_BY_LABEL);
+//						HashSet<String> changes = new HashSet<String>();
+//						changes.add(State.CAUSES_LABEL);
+//						Engine.getStreamKS().update(causedByHdle, causedByState);
+//						StateUpdate.insertInWM(causedByHdle, causedByState, changes);
+//					}
+//				}
+//			}
+//		}
+//		
+//		for (String causesStr : causesStrs)
+//		{
+//			logger.debug("causesStr:" + causesStr);
+//			FactHandle causesHdle = Engine.getStateByLinkKey(causesStr);
+//			if (causesHdle != null)
+//			{
+//				logger.debug("Found");
+//				State causesState = State.getState(causesHdle);
+//				if (causesState != null) {
+//					stateHasChanged = state.addCauses_extern(causesHdle);
+//					if (stateHasChanged)
+//					{
+//						stateChangeList.add(State.CAUSES_LABEL);
+//						HashSet<String> changes = new HashSet<String>();
+//						changes.add(State.CAUSED_BY_LABEL);
+//						Engine.getStreamKS().update(causesHdle, causesState);
+//						StateUpdate.insertInWM(causesHdle, causesState, changes);
+//					}
+//				}
+//			}
+//		}
+//		
+//
+//		return new StateAndChanges(state, stateChangeList);
+//	}
 	
 	synchronized public boolean areSharingSameCategory(State comparedState)
 	{
@@ -622,9 +622,17 @@ public class State extends NormalizedProperties {
 			if (changed)
 				stateChangeList.add(State.CAUSES_LABEL);
 
+			changed = externCauseEffectRelation.removeAllRelationsWhereUpperIs(stateFactHandle);
+			if (changed)
+				stateChangeList.add(State.CAUSED_BY_LABEL);
+
+			changed = externCauseEffectRelation.removeAllRelationsWhereLowerIs(stateFactHandle);
+			if (changed)
+				stateChangeList.add(State.CAUSES_LABEL);
+			
 			if (stateChangeList.size() > 0) {
 				Engine.getStreamKS().update(stateFactHandle, state);
-				StateUpdate.insertInWM(state, stateChangeList);
+				StateUpdate.insertInWM(stateFactHandle, state, stateChangeList);
 			}
 		}
 
@@ -658,12 +666,12 @@ public class State extends NormalizedProperties {
 			updatedState = State.addAggregatesToAggregator(updatedState, currentStateFactHandle, newSignal.getAggregateHdles());
 
 			Engine.getStreamKS().update(currentStateFactHandle, updatedState);
-			StateUpdate.insertInWM(updatedState, currentState, stateAndChanges.stateChangeList);
+			StateUpdate.insertInWM(currentStateFactHandle, updatedState, currentState, stateAndChanges.stateChangeList);
 		}
 		else
 		{
 			Engine.getStreamKS().update(currentStateFactHandle, updatedState);
-			StateUpdate.insertInWM(updatedState, currentState);
+			StateUpdate.insertInWM(currentStateFactHandle, updatedState, currentState);
 		}
 	}
 
@@ -701,7 +709,7 @@ public class State extends NormalizedProperties {
 
 		Engine.getStreamKS().update(currentStateFactHandle, updatedState);
 
-		StateClear.insertInWM(updatedState, currentState, currentCauses, false /*
+		StateClear.insertInWM(currentStateFactHandle, updatedState, currentState, currentCauses, false /*
 																 * not
 																 * firstEnteredCleared
 																 */);
@@ -739,9 +747,9 @@ public class State extends NormalizedProperties {
 		
 		
 		if (!updatedState.isCleared())
-			StateNew.insertInWM(updatedState, currentState, stateAndChanges.stateChangeList, false /* not veryNew */);
+			StateNew.insertInWM(currentStateFactHandle, updatedState, currentState, stateAndChanges.stateChangeList, false /* not veryNew */);
 		else
-			StateNew.insertInWM(updatedState, currentState, false /* not veryNew */);
+			StateNew.insertInWM(currentStateFactHandle, updatedState, currentState, false /* not veryNew */);
 	}
 
 	public State(Signal as) {

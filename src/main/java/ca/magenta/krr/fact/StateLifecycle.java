@@ -9,6 +9,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 
 import ca.magenta.krr.test.TopologyBasedCorrelationFT;
 import ca.magenta.krr.tools.Utils;
+import org.kie.api.runtime.rule.FactHandle;
 
 /**
  * @author jean-paul.laberge <jplaberge@magenta.ca>
@@ -20,8 +21,12 @@ public abstract class StateLifecycle implements Fact {
 	private static Logger logger = Logger.getLogger(TopologyBasedCorrelationFT.class);
 
 	private HashSet<String> changes = new HashSet<String>();
-	private transient State stateRef = null;
+	//private transient State stateRef = null;
+	private String linkKeyRef = null;
+	private transient FactHandle factHandleRef= null; 
 	
+	
+
 	public StateLifecycle() {
 		super();
 	}	
@@ -41,16 +46,12 @@ public abstract class StateLifecycle implements Fact {
 	}
 
 	public State getStateRef() {
-		return stateRef;
+		return State.getState(factHandleRef);
 	}
 
-	public void setStateRef(State stateRef) {
-		this.stateRef = stateRef;
-	}
-	
 	public String toString(boolean pretty)		
 	{
-		String string = stateRef.getLinkKey() + ":" + Utils.toJsonG(this, this.getClass(), pretty) ;
+		String string = linkKeyRef + ":" + Utils.toJsonJ2(changes, changes.getClass(), pretty) ;
 		
 		return string;
 	}
@@ -60,5 +61,17 @@ public abstract class StateLifecycle implements Fact {
 	{
 		return  toString(false);
 	}
+
+	public String getLinkKeyRef() {
+		return linkKeyRef;
+	}
+
+	public void setLinkKeyRef(String linkKeyRef) {
+		this.linkKeyRef = linkKeyRef;
+	}
 	
+	public void setFactHandleRef(FactHandle factHandleRef) {
+		this.factHandleRef = factHandleRef;
+	}
+
 }

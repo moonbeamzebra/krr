@@ -328,7 +328,7 @@ public class StateRelations {
 			changes.add(label);
 			
 			Engine.getStreamKS().update(factHandle , state);
-			StateUpdate.insertInWM(state,changes);
+			StateUpdate.insertInWM(factHandle, state,changes);
 		}
 	}
 

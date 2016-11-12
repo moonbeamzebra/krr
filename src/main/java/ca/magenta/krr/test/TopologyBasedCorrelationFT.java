@@ -991,9 +991,9 @@ public class TopologyBasedCorrelationFT {
 				logger.info("Sleep ...");
 				Thread.sleep(2000);
 				
-				linkKeyList.clear();
+				expectedResults.clear();
 				
-				linkKeyList.add("Nimsoft::Nim01:::URL::www.magenta.ca|order::NoAnswer,MAJOR,[Availability],isRoot=true,CausedBy=[],Causes=[],AggregatedBy=[],Aggregates=[],[NoAnswer]");
+				expectedResults.add("Nimsoft::Nim01:::URL::www.magenta.ca|order::NoAnswer,MAJOR,[Availability],isRoot=true,CausedBy=[],Causes=[],AggregatedBy=[],Aggregates=[],[NoAnswer]");
 
 				resultOK = TestToolKit.testEachExistOnceNotCleared(expectedResults, expectedResults.size());
 

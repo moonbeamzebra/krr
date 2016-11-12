@@ -15,9 +15,9 @@ final public class StateClear extends StateLifecycle{
 	
 	private transient HashSet<FactHandle> lastCauses = new HashSet<FactHandle>();
 	
-	public static void insertInWM(State newState, State oldState, HashSet<FactHandle> oldCauses, boolean firstEnteredCleared)
+	public static void insertInWM(FactHandle factHandle, State newState, State oldState, HashSet<FactHandle> oldCauses, boolean firstEnteredCleared)
 	{
-		StateClear stateClear = new StateClear(newState, oldState, oldCauses, firstEnteredCleared);
+		StateClear stateClear = new StateClear(factHandle, newState, oldState, oldCauses, firstEnteredCleared);
 		
 		Engine.getStreamKS().insert(stateClear);
 	}
@@ -26,13 +26,14 @@ final public class StateClear extends StateLifecycle{
 		super();
 	}
 
-	private StateClear(State stateNew, State stateOld, HashSet<FactHandle> oldCauses, boolean firstEnteredCleared) {
+	private StateClear(FactHandle factHandle, State stateNew, State stateOld, HashSet<FactHandle> oldCauses, boolean firstEnteredCleared) {
 		super();
 		
 		if (oldCauses != null)
 			lastCauses = oldCauses;
 		
-		this.setStateRef(stateNew);
+		this.setFactHandleRef(factHandle);
+		this.setLinkKeyRef(stateNew.getLinkKey());
 		
 		if (firstEnteredCleared)
 			this.setChanges(new HashSet<String>());
