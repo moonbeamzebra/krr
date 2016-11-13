@@ -13,11 +13,11 @@ import ca.magenta.krr.engine.Engine;
  */
 final public class StateClear extends StateLifecycle{
 	
-	private transient HashSet<FactHandle> lastCauses = new HashSet<FactHandle>();
+	//private transient HashSet<FactHandle> lastCauses = new HashSet<FactHandle>();
 	
-	public static void insertInWM(FactHandle factHandle, State newState, State oldState, HashSet<FactHandle> oldCauses, boolean firstEnteredCleared)
+	public static void insertInWM(FactHandle factHandle, State newState, State oldState, boolean firstEnteredCleared)
 	{
-		StateClear stateClear = new StateClear(factHandle, newState, oldState, oldCauses, firstEnteredCleared);
+		StateClear stateClear = new StateClear(factHandle, newState, oldState, firstEnteredCleared);
 		
 		Engine.getStreamKS().insert(stateClear);
 	}
@@ -26,11 +26,11 @@ final public class StateClear extends StateLifecycle{
 		super();
 	}
 
-	private StateClear(FactHandle factHandle, State stateNew, State stateOld, HashSet<FactHandle> oldCauses, boolean firstEnteredCleared) {
+	private StateClear(FactHandle factHandle, State stateNew, State stateOld, boolean firstEnteredCleared) {
 		super();
 		
-		if (oldCauses != null)
-			lastCauses = oldCauses;
+//		if (oldCauses != null)
+//			lastCauses = oldCauses;
 		
 		this.setFactHandleRef(factHandle);
 		this.setLinkKeyRef(stateNew.getLinkKey());
@@ -41,7 +41,7 @@ final public class StateClear extends StateLifecycle{
 			this.setChanges(stateNew.getChanges(stateOld));
 	}
 
-	public HashSet<FactHandle> getLastCauses() {
-		return lastCauses;
-	}
+//	public HashSet<FactHandle> getLastCauses() {
+//		return lastCauses;
+//	}
 }

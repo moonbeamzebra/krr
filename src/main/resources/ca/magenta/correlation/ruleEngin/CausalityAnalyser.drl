@@ -31,31 +31,7 @@ salience 1
     when
         su : StateUpdate(    )
     then
-        Engine.logger.debug("Got StateUpdate: " + su.toString(false) );
         CausalityAnalyser.check4RootCauseAndDispatch(su);
-
-end
-
-rule "StateUpdate Causes"
-salience 1
-    when
-        su : StateUpdate( 
-        					getChanges().contains(State.CAUSES_LABEL) == true
-            )
-    then
-        Engine.logger.debug("Got Causes StateUpdate: " + su.toString(false) );
-
-end
-
-rule "StateUpdate CausedBy"
-salience 1
-    when
-        su : StateUpdate( 
-        					getChanges().contains(State.CAUSED_BY_LABEL) == true,
-        					getStateRef().isProviderView() == true
-            )
-    then
-        Engine.logger.debug("Got CausedBy StateUpdate: " + su.toString(false) );
 
 end
 
@@ -81,8 +57,8 @@ salience 0
        	providerState : State(	
        							isProviderView(),
         						$consumerNodeFqdName.equals(getMostSpecificManagedNode().getFqdName()),
-        						areSharingSameCategory(consumerState),
         						$providerLinkKey : getLinkKey(),
+        						areSharingSameCategory(consumerState),
         						consumerState.getCausedBy().equals(getCausedBy()) == false
         					)
         
@@ -92,6 +68,27 @@ salience 0
         
 end 
 
+rule "State ServiceConsumer-ServiceProvider dependency; no more ServiceProvider with same category"
+salience 0
+    when
+        consumerState : State( 	
+        						isCleared() == false,
+        						isConsumerView(),
+        						$consumerNodeFqdName : getMostSpecificManagedNode().getFqdName(),
+        						getCausedBy().size() != 0,
+        						$consumerLinkKey : getLinkKey() 			 
+        					)
+       	not State(	
+       							isProviderView(),
+        						$consumerNodeFqdName.equals(getMostSpecificManagedNode().getFqdName()),
+        						areSharingSameCategory(consumerState)
+        					)
+        
+    then
+        consumerState.flushCausedBys();
+        Engine.logger.debug("Hit ServiceConsumer state with no ServiceProvider with same category:[" + $consumerLinkKey+"]"  );
+        
+end 
 
 
 

@@ -43,26 +43,3 @@ salience 0
         nimsoftState.addCausedBy(smartsState);
 end 
 
-/*
-rule "State ServiceConsumer-ServiceProvider dependency"
-salience 0
-    when
-        consumerState : State( 	
-        						isCleared() == false,
-        						isConsumerView(),
-        						$consumerNodeFqdName : getMostSpecificManagedNode().getFqdName(),
-        						$consumerLinkKey : getLinkKey() 			 
-        					)
-       	providerState : State(	
-       							isCleared() == false, 	
-        						isProviderView(),
-        						$consumerNodeFqdName.equals(getMostSpecificManagedNode().getFqdName()),
-        						areSharingSameCategory(consumerState),
-        						$providerLinkKey : getLinkKey()
-        					)
-        
-    then
-        Engine.logger.trace("Hit for  [" + $consumerNodeFqdName + " : "+$consumerLinkKey+" ] and [" + $providerLinkKey + "]" );
-        consumerState.addCausedBy(providerState);
-end 
-*/

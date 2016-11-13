@@ -16,7 +16,7 @@ import ca.magenta.utils.HashMapVector;
 /**
  * @author jean-paul.laberge <jplaberge@magenta.ca>
  * @version 0.1
- * @since 2014-12-07
+ * @since 2016-11-12
  */
 public class NetworkTopoNoToolFT {
 
@@ -141,7 +141,6 @@ public class NetworkTopoNoToolFT {
 			}
 
 			if (resultOK) {
-				System.exit(0);
 
 				// 43	KrrSimple	Pinger	Pinger01	:::Switch::switch07	Unresponsive	MAJOR
 				TestToolKit.sendMessage_simpleFormat(43, Globals.CLEARING);
@@ -170,7 +169,35 @@ public class NetworkTopoNoToolFT {
 
 				resultOK = TestToolKit.testForTotalCount_NOT_CLEARED(0 /* expectedCount */);
 				
-			}			
+			}	
+			
+			if (resultOK) {
+
+				// 43	KrrSimple	Pinger	Pinger01	:::Switch::switch07	Unresponsive	MAJOR
+				TestToolKit.sendMessage_simpleFormat(43, Globals.RAISING);
+				// 44	KrrSimple	Pinger	Pinger01	:::Switch::switch08	Unresponsive	MAJOR
+				TestToolKit.sendMessage_simpleFormat(44, Globals.RAISING);
+
+				logger.info("Sleep ...");
+				Thread.sleep(2000);
+				
+				expectedResults.clear();								
+				
+				expectedResults
+				.add("CausalityAnalyser::local:::Host::server12::Impacted,CRITICAL,[Availability],isRoot=false,"
+						+ "CausedBy=[switch07::Unresponsive switch08::Unresponsive],Causes=[],AggregatedBy=[],Aggregates=[],[Losing resource]");
+				expectedResults
+				.add("Pinger::Pinger01:::Switch::switch07::Unresponsive,MAJOR,[Availability],isRoot=true,"
+						+ "CausedBy=[],Causes=[server12::Impacted],AggregatedBy=[],Aggregates=[],[Unresponsive]");
+				expectedResults
+				.add("Pinger::Pinger01:::Switch::switch08::Unresponsive,MAJOR,[Availability],isRoot=true,"
+						+ "CausedBy=[],Causes=[server12::Impacted],AggregatedBy=[],Aggregates=[],[Unresponsive]");
+				
+				
+				resultOK = TestToolKit.testEachExistOnceNotCleared(expectedResults, expectedResults.size());
+				
+			}
+
 			
 			/////////////////////////////////////////////////
 			// Reverse the order now
@@ -180,8 +207,8 @@ public class NetworkTopoNoToolFT {
 			
 			if (resultOK) {
 
-				// 43	KrrSimple	Pinger	Pinger01	:::Switch::switch07	Unresponsive	MAJOR
-				TestToolKit.sendMessage_simpleFormat(43, Globals.RAISING);
+				// 44	KrrSimple	Pinger	Pinger01	:::Switch::switch08	Unresponsive	MAJOR
+				TestToolKit.sendMessage_simpleFormat(44, Globals.CLEARING);
 
 				logger.info("Sleep ...");
 				Thread.sleep(2000);
@@ -309,8 +336,229 @@ public class NetworkTopoNoToolFT {
 
 			}
 			
+			// Introduce the core switch
+			if (resultOK) {
 
+				// 43	KrrSimple	Pinger	Pinger01	:::Switch::switch07	Unresponsive	MAJOR
+				TestToolKit.sendMessage_simpleFormat(43, Globals.RAISING);
+				// 44	KrrSimple	Pinger	Pinger01	:::Switch::switch08	Unresponsive	MAJOR
+				TestToolKit.sendMessage_simpleFormat(44, Globals.RAISING);
+
+				logger.info("Sleep ...");
+				Thread.sleep(2000);
+				
+				expectedResults.clear();								
+				
+				expectedResults
+				.add("CausalityAnalyser::local:::Host::server12::Impacted,CRITICAL,[Availability],isRoot=false,"
+						+ "CausedBy=[switch07::Unresponsive switch08::Unresponsive],Causes=[],AggregatedBy=[],Aggregates=[],[Losing resource]");
+				expectedResults
+				.add("Pinger::Pinger01:::Switch::switch07::Unresponsive,MAJOR,[Availability],isRoot=true,"
+						+ "CausedBy=[],Causes=[server12::Impacted],AggregatedBy=[],Aggregates=[],[Unresponsive]");
+				expectedResults
+				.add("Pinger::Pinger01:::Switch::switch08::Unresponsive,MAJOR,[Availability],isRoot=true,"
+						+ "CausedBy=[],Causes=[server12::Impacted],AggregatedBy=[],Aggregates=[],[Unresponsive]");
+				
+				
+				resultOK = TestToolKit.testEachExistOnceNotCleared(expectedResults, expectedResults.size());
+				
+			}
 			
+			if (resultOK) {
+
+				// 46	KrrSimple	Pinger	Pinger01	:::Switch::coresw01	Unresponsive	MAJOR
+				TestToolKit.sendMessage_simpleFormat(46, Globals.RAISING);
+
+				logger.info("Sleep ...");
+				Thread.sleep(2000);
+
+				
+				expectedResults.clear();	
+				
+				expectedResults
+				.add("Pinger::Pinger01:::Switch::coresw01::Unresponsive,MAJOR,[Availability],isRoot=true,CausedBy=[],Causes=[switch07::Unresponsive switch08::Unresponsive server12::Impacted switch07::Impacted switch08::Impacted],AggregatedBy=[],Aggregates=[],[Unresponsive]");
+				expectedResults
+				.add("CausalityAnalyser::local:::Host::server12::Impacted,CRITICAL,[Availability],isRoot=false,CausedBy=[coresw01::Unresponsive],Causes=[],AggregatedBy=[],Aggregates=[],[Losing resource]");
+				expectedResults
+				.add("CausalityAnalyser::local:::Switch::switch07::Impacted,CRITICAL,[Availability],isRoot=false,CausedBy=[coresw01::Unresponsive],Causes=[],AggregatedBy=[],Aggregates=[],[Losing resource]");
+				expectedResults
+				.add("CausalityAnalyser::local:::Switch::switch08::Impacted,CRITICAL,[Availability],isRoot=false,CausedBy=[coresw01::Unresponsive],Causes=[],AggregatedBy=[],Aggregates=[],[Losing resource]");
+				expectedResults
+				.add("Pinger::Pinger01:::Switch::switch07::Unresponsive,MAJOR,[Availability],isRoot=false,CausedBy=[coresw01::Unresponsive],Causes=[],AggregatedBy=[],Aggregates=[],[Unresponsive]");
+				expectedResults
+				.add("Pinger::Pinger01:::Switch::switch08::Unresponsive,MAJOR,[Availability],isRoot=false,CausedBy=[coresw01::Unresponsive],Causes=[],AggregatedBy=[],Aggregates=[],[Unresponsive]");
+				
+				
+				resultOK = TestToolKit.testEachExistOnceNotCleared(expectedResults, expectedResults.size());
+				
+			}
+			
+			if (resultOK) {
+
+				// 45	KrrSimple	Pinger	Pinger01	:::Host::server12	Unresponsive	MAJOR
+				TestToolKit.sendMessage_simpleFormat(45, Globals.RAISING);
+
+				logger.info("Sleep ...");
+				Thread.sleep(2000);
+
+
+				expectedResults.clear();
+				
+				expectedResults
+				.add("Pinger::Pinger01:::Switch::coresw01::Unresponsive,MAJOR,[Availability],isRoot=true,CausedBy=[],Causes=[switch07::Unresponsive switch08::Unresponsive server12::Impacted server12::Unresponsive switch07::Impacted switch08::Impacted],AggregatedBy=[],Aggregates=[],[Unresponsive]");
+				expectedResults
+				.add("CausalityAnalyser::local:::Host::server12::Impacted,CRITICAL,[Availability],isRoot=false,CausedBy=[coresw01::Unresponsive],Causes=[],AggregatedBy=[],Aggregates=[],[Losing resource]");
+				expectedResults
+				.add("CausalityAnalyser::local:::Switch::switch07::Impacted,CRITICAL,[Availability],isRoot=false,CausedBy=[coresw01::Unresponsive],Causes=[],AggregatedBy=[],Aggregates=[],[Losing resource]");
+				expectedResults
+				.add("CausalityAnalyser::local:::Switch::switch08::Impacted,CRITICAL,[Availability],isRoot=false,CausedBy=[coresw01::Unresponsive],Causes=[],AggregatedBy=[],Aggregates=[],[Losing resource]");
+				expectedResults
+				.add("Pinger::Pinger01:::Host::server12::Unresponsive,MAJOR,[Availability],isRoot=false,CausedBy=[coresw01::Unresponsive],Causes=[],AggregatedBy=[],Aggregates=[],[Unresponsive]");
+				expectedResults
+				.add("Pinger::Pinger01:::Switch::switch07::Unresponsive,MAJOR,[Availability],isRoot=false,CausedBy=[coresw01::Unresponsive],Causes=[],AggregatedBy=[],Aggregates=[],[Unresponsive]");
+				expectedResults
+				.add("Pinger::Pinger01:::Switch::switch08::Unresponsive,MAJOR,[Availability],isRoot=false,CausedBy=[coresw01::Unresponsive],Causes=[],AggregatedBy=[],Aggregates=[],[Unresponsive]");
+
+				resultOK = TestToolKit.testEachExistOnceNotCleared(expectedResults, expectedResults.size());
+
+
+			}
+
+			if (resultOK) {
+				// 43	KrrSimple	Pinger	Pinger01	:::Switch::switch07	Unresponsive	MAJOR
+				TestToolKit.sendMessage_simpleFormat(43, Globals.CLEARING);
+
+				logger.info("Sleep ...");
+				Thread.sleep(2000);
+
+				expectedResults.clear();
+				
+				expectedResults
+				.add("Pinger::Pinger01:::Switch::coresw01::Unresponsive,MAJOR,[Availability],isRoot=true,CausedBy=[],Causes=[switch08::Unresponsive server12::Impacted server12::Unresponsive switch07::Impacted switch08::Impacted],AggregatedBy=[],Aggregates=[],[Unresponsive]");
+				expectedResults
+				.add("CausalityAnalyser::local:::Host::server12::Impacted,CRITICAL,[Availability],isRoot=false,CausedBy=[coresw01::Unresponsive],Causes=[],AggregatedBy=[],Aggregates=[],[Losing resource]");
+				expectedResults
+				.add("CausalityAnalyser::local:::Switch::switch07::Impacted,CRITICAL,[Availability],isRoot=false,CausedBy=[coresw01::Unresponsive],Causes=[],AggregatedBy=[],Aggregates=[],[Losing resource]");
+				expectedResults
+				.add("CausalityAnalyser::local:::Switch::switch08::Impacted,CRITICAL,[Availability],isRoot=false,CausedBy=[coresw01::Unresponsive],Causes=[],AggregatedBy=[],Aggregates=[],[Losing resource]");
+				expectedResults
+				.add("Pinger::Pinger01:::Host::server12::Unresponsive,MAJOR,[Availability],isRoot=false,CausedBy=[coresw01::Unresponsive],Causes=[],AggregatedBy=[],Aggregates=[],[Unresponsive]");
+				expectedResults
+				.add("Pinger::Pinger01:::Switch::switch08::Unresponsive,MAJOR,[Availability],isRoot=false,CausedBy=[coresw01::Unresponsive],Causes=[],AggregatedBy=[],Aggregates=[],[Unresponsive]");
+
+				resultOK = TestToolKit.testEachExistOnceNotCleared(expectedResults, expectedResults.size());
+
+
+			}
+			
+			if (resultOK) {
+				// 44	KrrSimple	Pinger	Pinger01	:::Switch::switch08	Unresponsive	MAJOR
+				TestToolKit.sendMessage_simpleFormat(44, Globals.CLEARING);
+
+				logger.info("Sleep ...");
+				Thread.sleep(2000);
+
+				expectedResults.clear();
+				
+				expectedResults
+				.add("Pinger::Pinger01:::Switch::coresw01::Unresponsive,MAJOR,[Availability],isRoot=true,CausedBy=[],Causes=[server12::Impacted server12::Unresponsive switch07::Impacted switch08::Impacted],AggregatedBy=[],Aggregates=[],[Unresponsive]");
+				expectedResults
+				.add("CausalityAnalyser::local:::Host::server12::Impacted,CRITICAL,[Availability],isRoot=false,CausedBy=[coresw01::Unresponsive],Causes=[],AggregatedBy=[],Aggregates=[],[Losing resource]");
+				expectedResults
+				.add("CausalityAnalyser::local:::Switch::switch07::Impacted,CRITICAL,[Availability],isRoot=false,CausedBy=[coresw01::Unresponsive],Causes=[],AggregatedBy=[],Aggregates=[],[Losing resource]");
+				expectedResults
+				.add("CausalityAnalyser::local:::Switch::switch08::Impacted,CRITICAL,[Availability],isRoot=false,CausedBy=[coresw01::Unresponsive],Causes=[],AggregatedBy=[],Aggregates=[],[Losing resource]");
+				expectedResults
+				.add("Pinger::Pinger01:::Host::server12::Unresponsive,MAJOR,[Availability],isRoot=false,CausedBy=[coresw01::Unresponsive],Causes=[],AggregatedBy=[],Aggregates=[],[Unresponsive]");
+
+				resultOK = TestToolKit.testEachExistOnceNotCleared(expectedResults, expectedResults.size());
+
+
+			}
+			
+			if (resultOK) {
+				// 46	KrrSimple	Pinger	Pinger01	:::Switch::coresw01	Unresponsive	MAJOR
+				TestToolKit.sendMessage_simpleFormat(46, Globals.CLEARING);
+				// 43	KrrSimple	Pinger	Pinger01	:::Switch::switch07	Unresponsive	MAJOR
+				TestToolKit.sendMessage_simpleFormat(43, Globals.RAISING);
+				// 44	KrrSimple	Pinger	Pinger01	:::Switch::switch08	Unresponsive	MAJOR
+				TestToolKit.sendMessage_simpleFormat(44, Globals.RAISING);
+
+				logger.info("Sleep ...");
+				Thread.sleep(2000);
+
+				expectedResults.clear();
+				
+				expectedResults
+				.add("Pinger::Pinger01:::Switch::switch07::Unresponsive,MAJOR,[Availability],isRoot=true,CausedBy=[],Causes=[server12::Impacted server12::Unresponsive],AggregatedBy=[],Aggregates=[],[Unresponsive]");
+				expectedResults
+				.add("Pinger::Pinger01:::Switch::switch08::Unresponsive,MAJOR,[Availability],isRoot=true,CausedBy=[],Causes=[server12::Impacted server12::Unresponsive],AggregatedBy=[],Aggregates=[],[Unresponsive]");
+				expectedResults
+				.add("CausalityAnalyser::local:::Host::server12::Impacted,CRITICAL,[Availability],isRoot=false,CausedBy=[switch07::Unresponsive switch08::Unresponsive],Causes=[],AggregatedBy=[],Aggregates=[],[Losing resource]");
+				expectedResults
+				.add("Pinger::Pinger01:::Host::server12::Unresponsive,MAJOR,[Availability],isRoot=false,CausedBy=[switch07::Unresponsive switch08::Unresponsive],Causes=[],AggregatedBy=[],Aggregates=[],[Unresponsive]");
+
+				resultOK = TestToolKit.testEachExistOnceNotCleared(expectedResults, expectedResults.size());
+			}
+
+			if (resultOK) {
+
+				// 46	KrrSimple	Pinger	Pinger01	:::Switch::coresw01	Unresponsive	MAJOR
+				TestToolKit.sendMessage_simpleFormat(46, Globals.RAISING);
+
+				logger.info("Sleep ...");
+				Thread.sleep(2000);
+
+				expectedResults.clear();
+				
+				expectedResults
+				.add("Pinger::Pinger01:::Switch::coresw01::Unresponsive,MAJOR,[Availability],isRoot=true,CausedBy=[],Causes=[switch07::Unresponsive switch08::Unresponsive server12::Impacted server12::Unresponsive switch07::Impacted switch08::Impacted],AggregatedBy=[],Aggregates=[],[Unresponsive]");
+				expectedResults
+				.add("CausalityAnalyser::local:::Host::server12::Impacted,CRITICAL,[Availability],isRoot=false,CausedBy=[coresw01::Unresponsive],Causes=[],AggregatedBy=[],Aggregates=[],[Losing resource]");
+				expectedResults
+				.add("CausalityAnalyser::local:::Switch::switch07::Impacted,CRITICAL,[Availability],isRoot=false,CausedBy=[coresw01::Unresponsive],Causes=[],AggregatedBy=[],Aggregates=[],[Losing resource]");
+				expectedResults
+				.add("CausalityAnalyser::local:::Switch::switch08::Impacted,CRITICAL,[Availability],isRoot=false,CausedBy=[coresw01::Unresponsive],Causes=[],AggregatedBy=[],Aggregates=[],[Losing resource]");
+				expectedResults
+				.add("Pinger::Pinger01:::Host::server12::Unresponsive,MAJOR,[Availability],isRoot=false,CausedBy=[coresw01::Unresponsive],Causes=[],AggregatedBy=[],Aggregates=[],[Unresponsive]");
+				expectedResults
+				.add("Pinger::Pinger01:::Switch::switch07::Unresponsive,MAJOR,[Availability],isRoot=false,CausedBy=[coresw01::Unresponsive],Causes=[],AggregatedBy=[],Aggregates=[],[Unresponsive]");
+				expectedResults
+				.add("Pinger::Pinger01:::Switch::switch08::Unresponsive,MAJOR,[Availability],isRoot=false,CausedBy=[coresw01::Unresponsive],Causes=[],AggregatedBy=[],Aggregates=[],[Unresponsive]");
+
+				resultOK = TestToolKit.testEachExistOnceNotCleared(expectedResults, expectedResults.size());
+
+			}
+			
+			if (resultOK) {
+				// 46	KrrSimple	Pinger	Pinger01	:::Switch::coresw01	Unresponsive	MAJOR
+				TestToolKit.sendMessage_simpleFormat(46, Globals.CLEARING);
+				// 43	KrrSimple	Pinger	Pinger01	:::Switch::switch07	Unresponsive	MAJOR
+				TestToolKit.sendMessage_simpleFormat(43, Globals.CLEARING);
+				// 44	KrrSimple	Pinger	Pinger01	:::Switch::switch08	Unresponsive	MAJOR
+				TestToolKit.sendMessage_simpleFormat(44, Globals.CLEARING);
+
+				logger.info("Sleep ...");
+				Thread.sleep(2000);
+
+				expectedResults.clear();
+				
+				expectedResults
+				.add("Pinger::Pinger01:::Host::server12::Unresponsive,MAJOR,[Availability],isRoot=true,CausedBy=[],Causes=[],AggregatedBy=[],Aggregates=[],[Unresponsive]");
+
+				resultOK = TestToolKit.testEachExistOnceNotCleared(expectedResults, expectedResults.size());
+			}
+			
+			if (resultOK) {
+				// 45	KrrSimple	Pinger	Pinger01	:::Host::server12	Unresponsive	MAJOR
+				TestToolKit.sendMessage_simpleFormat(45, Globals.CLEARING);
+
+				logger.info("Sleep ...");
+				Thread.sleep(2000);
+				
+				resultOK = TestToolKit.testForTotalCount_NOT_CLEARED(0 /* expectedCount */);
+
+			}
 			
 			// ///////////////
 			// END of testing
