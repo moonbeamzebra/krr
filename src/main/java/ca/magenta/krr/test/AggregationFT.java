@@ -61,179 +61,87 @@ public class AggregationFT {
 
 			if (resultOK) {
 
-				// 5 KrrSimple Nimsoft Nim01 :::Host::server01:::Application::pied AvoirMal MAJOR
+				// 5	KrrSimple	SweetHome	DrMaman	:::Human::jpl:::Application::pied	AvoirMal	MAJOR
 				TestToolKit.sendMessage_simpleFormat(5, Globals.RAISING);
 
 				logger.info("Sleep ...");
 				Thread.sleep(2000);
+				
 
-				resultOK = TestToolKit
-						.testForOnlyOneNotCleared("Nimsoft::Nim01:::Application::pied::AvoirMal,MAJOR,[],isRoot=true,CausedBy=[],Causes=[],AggregatedBy=[],Aggregates=[],[AvoirMal]");
+				expectedResults.clear();
+				
+				expectedResults
+				.add("SweetHome::DrMaman:::Application::pied::AvoirMal,MAJOR,[],isRoot=true,CausedBy=[],Causes=[],AggregatedBy=[],Aggregates=[],[AvoirMal]");
 
-				if (resultOK)
-					resultOK = TestToolKit.testIsClearedOrNotExist("Aggregator::local:::Human::jpl::IsAggregating");
+				resultOK = TestToolKit.testEachExistOnceNotCleared(expectedResults, expectedResults.size());
+						
 
 			}
 
 			if (resultOK) {
 
-				// 6 KrrSimple Nimsoft Nim01 :::Host::server01:::Application::tete AvoirMal MAJOR
+				// 6	KrrSimple	SweetHome	DrMaman	:::Human::jpl:::Application::tete	AvoirMal	MAJOR
 				TestToolKit.sendMessage_simpleFormat(6, Globals.RAISING);
 
 				logger.info("Sleep ...");
 				Thread.sleep(2000);
 
 				expectedResults.clear();
-				expectedResults
-						.add("Nimsoft::Nim01:::Application::tete::AvoirMal,MAJOR,[],isRoot=true,CausedBy=[],Causes=[],AggregatedBy=[jpl::IsAggregating],Aggregates=[],[AvoirMal]");
-				expectedResults
-						.add("Nimsoft::Nim01:::Application::pied::AvoirMal,MAJOR,[],isRoot=true,CausedBy=[],Causes=[],AggregatedBy=[jpl::IsAggregating],Aggregates=[],[AvoirMal]");
-				expectedResults
-						.add("Aggregator::local:::Human::jpl::IsAggregating,CRITICAL,[],isRoot=true,CausedBy=[],Causes=[],AggregatedBy=[],Aggregates=[tete::AvoirMal pied::AvoirMal],[It Is Aggregation]");
 
-				resultOK = TestToolKit.testEachExistOnceNotCleared(expectedResults);
+				expectedResults
+				.add("Aggregator::local:::Human::jpl::IsAggregating,CRITICAL,[],isRoot=true,CausedBy=[],Causes=[],AggregatedBy=[],Aggregates=[tete::AvoirMal pied::AvoirMal],[It Is Aggregation]");
+				expectedResults
+				.add("SweetHome::DrMaman:::Application::pied::AvoirMal,MAJOR,[],isRoot=true,CausedBy=[],Causes=[],AggregatedBy=[jpl::IsAggregating],Aggregates=[],[AvoirMal]");
+				expectedResults
+				.add("SweetHome::DrMaman:::Application::tete::AvoirMal,MAJOR,[],isRoot=true,CausedBy=[],Causes=[],AggregatedBy=[jpl::IsAggregating],Aggregates=[],[AvoirMal]");
+
+				resultOK = TestToolKit.testEachExistOnceNotCleared(expectedResults, expectedResults.size());
 
 			}
 
 			if (resultOK) {
-				// 5 KrrSimple Nimsoft Nim01 :::Host::server01:::Application::pied AvoirMal MAJOR
+				// 5	KrrSimple	SweetHome	DrMaman	:::Human::jpl:::Application::pied	AvoirMal	MAJOR
 				TestToolKit.sendMessage_simpleFormat(5, Globals.CLEARING);
 
 				logger.info("Sleep ...");
 				Thread.sleep(2000);
 
-				resultOK = TestToolKit.testIsCleared("Nimsoft::Nim01:::Application::pied::AvoirMal" /* linkKey */);
+				expectedResults.clear();
 
-				if (resultOK)
-					resultOK = TestToolKit.testIsCleared("Aggregator::local:::Human::jpl::IsAggregating" /* linkKey */);
+				expectedResults
+				.add("SweetHome::DrMaman:::Application::tete::AvoirMal,MAJOR,[],isRoot=true,CausedBy=[],Causes=[],AggregatedBy=[],Aggregates=[],[AvoirMal]");
 
-				if (resultOK)
-					resultOK = TestToolKit
-							.testForOnlyOneNotCleared("Nimsoft::Nim01:::Application::tete::AvoirMal,MAJOR,[],isRoot=true,CausedBy=[],Causes=[],AggregatedBy=[],Aggregates=[],[AvoirMal]");
+				resultOK = TestToolKit.testEachExistOnceNotCleared(expectedResults, expectedResults.size());
+
 
 			}
 
 			if (resultOK) {
-				// 5 KrrSimple Nimsoft Nim01 :::Host::server01:::Application::pied AvoirMal MAJOR
+				// 5	KrrSimple	SweetHome	DrMaman	:::Human::jpl:::Application::pied	AvoirMal	MAJOR
 				TestToolKit.sendMessage_simpleFormat(5, Globals.RAISING);
-
+				
+				
 				logger.info("Sleep ...");
 				Thread.sleep(2000);
 
 				expectedResults.clear();
-				expectedResults
-						.add("Nimsoft::Nim01:::Application::tete::AvoirMal,MAJOR,[],isRoot=true,CausedBy=[],Causes=[],AggregatedBy=[jpl::IsAggregating],Aggregates=[],[AvoirMal]");
-				expectedResults
-						.add("Nimsoft::Nim01:::Application::pied::AvoirMal,MAJOR,[],isRoot=true,CausedBy=[],Causes=[],AggregatedBy=[jpl::IsAggregating],Aggregates=[],[AvoirMal]");
-				expectedResults
-						.add("Aggregator::local:::Human::jpl::IsAggregating,CRITICAL,[],isRoot=true,CausedBy=[],Causes=[],AggregatedBy=[],Aggregates=[tete::AvoirMal pied::AvoirMal],[It Is Aggregation]");
 
-				resultOK = TestToolKit.testEachExistOnceNotCleared(expectedResults);
+				expectedResults
+				.add("Aggregator::local:::Human::jpl::IsAggregating,CRITICAL,[],isRoot=true,CausedBy=[],Causes=[],AggregatedBy=[],Aggregates=[tete::AvoirMal pied::AvoirMal],[It Is Aggregation]");
+				expectedResults
+				.add("SweetHome::DrMaman:::Application::pied::AvoirMal,MAJOR,[],isRoot=true,CausedBy=[],Causes=[],AggregatedBy=[jpl::IsAggregating],Aggregates=[],[AvoirMal]");
+				expectedResults
+				.add("SweetHome::DrMaman:::Application::tete::AvoirMal,MAJOR,[],isRoot=true,CausedBy=[],Causes=[],AggregatedBy=[jpl::IsAggregating],Aggregates=[],[AvoirMal]");
+
+				resultOK = TestToolKit.testEachExistOnceNotCleared(expectedResults, expectedResults.size());
 
 			}
 
 			if (resultOK) {
 
 				logger.info("Test if aggregates go into root cause situation they leave aggregator");
-				// 7 KrrSimple Nimsoft Nim01 :::Host::server01:::Application::ventre AvoirMal MAJOR
+				// 7	KrrSimple	SweetHome	DrMaman	:::Human::jpl:::Application::ventre	AvoirMal	MAJOR
 				TestToolKit.sendMessage_simpleFormat(7, Globals.RAISING);
-
-				logger.info("Sleep ...");
-				Thread.sleep(2000);
-
-				expectedResults.clear();
-				expectedResults
-						.add("Nimsoft::Nim01:::Application::ventre::AvoirMal,MAJOR,[],isRoot=false,CausedBy=[jpl::Hypochondriac],Causes=[],AggregatedBy=[],Aggregates=[],[AvoirMal]");
-				expectedResults
-						.add("Nimsoft::Nim01:::Application::tete::AvoirMal,MAJOR,[],isRoot=false,CausedBy=[jpl::Hypochondriac],Causes=[],AggregatedBy=[],Aggregates=[],[AvoirMal]");
-				expectedResults
-						.add("Nimsoft::Nim01:::Application::pied::AvoirMal,MAJOR,[],isRoot=false,CausedBy=[jpl::Hypochondriac],Causes=[],AggregatedBy=[],Aggregates=[],[AvoirMal]");
-				expectedResults
-						.add("CausalityAnalyser::local:::Human::jpl::Hypochondriac,MINOR,[],isRoot=true,CausedBy=[],Causes=[ventre::AvoirMal pied::AvoirMal tete::AvoirMal],AggregatedBy=[],Aggregates=[],[Very Hypochondriac]");
-
-				resultOK = TestToolKit.testEachExistOnceNotCleared(expectedResults);
-
-			}
-
-			if (resultOK) {
-
-				// 6 KrrSimple Nimsoft Nim01 :::Host::server01:::Application::tete AvoirMal MAJOR
-				TestToolKit.sendMessage_simpleFormat(6, Globals.CLEARING);
-
-				logger.info("Sleep ...");
-				Thread.sleep(2000);
-
-				expectedResults.clear();
-				expectedResults
-						.add("Nimsoft::Nim01:::Application::ventre::AvoirMal,MAJOR,[],isRoot=true,CausedBy=[],Causes=[],AggregatedBy=[jpl::IsAggregating],Aggregates=[],[AvoirMal]");
-				expectedResults
-						.add("Nimsoft::Nim01:::Application::pied::AvoirMal,MAJOR,[],isRoot=true,CausedBy=[],Causes=[],AggregatedBy=[jpl::IsAggregating],Aggregates=[],[AvoirMal]");
-				expectedResults
-						.add("Aggregator::local:::Human::jpl::IsAggregating,CRITICAL,[],isRoot=true,CausedBy=[],Causes=[],AggregatedBy=[],Aggregates=[pied::AvoirMal ventre::AvoirMal],[It Is Aggregation]");
-
-				resultOK = TestToolKit.testEachExistOnceNotCleared(expectedResults);
-
-			}
-
-			if (resultOK) {
-
-				// 2 KrrSimple Nimsoft DrMaman :::Human::jpl:::Region::Dos Courbatureux MAJOR
-				TestToolKit.sendMessage_simpleFormat(2, Globals.RAISING);
-				// 3 KrrSimple Nimsoft DrMaman :::Human::jpl:::Region::Nez Congestionneux MAJOR
-				TestToolKit.sendMessage_simpleFormat(3, Globals.RAISING);
-
-				logger.info("Sleep ...");
-				Thread.sleep(2000);
-
-				expectedResults.clear();
-				expectedResults
-						.add("Nimsoft::Nim01:::Application::ventre::AvoirMal,MAJOR,[],isRoot=true,CausedBy=[],Causes=[],AggregatedBy=[jpl::IsAggregating],Aggregates=[],[AvoirMal]");
-				expectedResults
-						.add("Nimsoft::Nim01:::Application::pied::AvoirMal,MAJOR,[],isRoot=true,CausedBy=[],Causes=[],AggregatedBy=[jpl::IsAggregating],Aggregates=[],[AvoirMal]");
-				expectedResults
-						.add("Nimsoft::DrMaman:::Region::Dos::Courbatureux,MAJOR,[],isRoot=true,CausedBy=[],Causes=[],AggregatedBy=[jpl::IsAggregating],Aggregates=[],[Courbatureux]");
-				expectedResults
-						.add("Nimsoft::DrMaman:::Region::Nez::Congestionneux,MAJOR,[],isRoot=true,CausedBy=[],Causes=[],AggregatedBy=[jpl::IsAggregating],Aggregates=[],[Congestionneux]");
-				expectedResults
-						.add("Aggregator::local:::Human::jpl::IsAggregating,CRITICAL,[],isRoot=true,CausedBy=[],Causes=[],AggregatedBy=[],Aggregates=[Nez::Congestionneux Dos::Courbatureux pied::AvoirMal ventre::AvoirMal],[It Is Aggregation]");
-
-				resultOK = TestToolKit.testEachExistOnceNotCleared(expectedResults);
-
-			}
-
-			if (resultOK) {
-
-				// 6 KrrSimple Nimsoft Nim01 :::Human::jpl:::Application::tete AvoirMal MAJOR
-				TestToolKit.sendMessage_simpleFormat(6, Globals.RAISING);
-
-				logger.info("Sleep ...");
-				Thread.sleep(2000);
-
-				expectedResults.clear();
-				expectedResults
-						.add("Nimsoft::Nim01:::Application::ventre::AvoirMal,MAJOR,[],isRoot=false,CausedBy=[jpl::Hypochondriac],Causes=[],AggregatedBy=[],Aggregates=[],[AvoirMal]");
-				expectedResults
-						.add("Nimsoft::Nim01:::Application::tete::AvoirMal,MAJOR,[],isRoot=false,CausedBy=[jpl::Hypochondriac],Causes=[],AggregatedBy=[],Aggregates=[],[AvoirMal]");
-				expectedResults
-						.add("Nimsoft::Nim01:::Application::pied::AvoirMal,MAJOR,[],isRoot=false,CausedBy=[jpl::Hypochondriac],Causes=[],AggregatedBy=[],Aggregates=[],[AvoirMal]");
-				expectedResults
-						.add("CausalityAnalyser::local:::Human::jpl::Hypochondriac,MINOR,[],isRoot=true,CausedBy=[],Causes=[ventre::AvoirMal pied::AvoirMal tete::AvoirMal],AggregatedBy=[],Aggregates=[],[Very Hypochondriac]");
-
-				expectedResults
-						.add("Nimsoft::DrMaman:::Region::Dos::Courbatureux,MAJOR,[],isRoot=true,CausedBy=[],Causes=[],AggregatedBy=[jpl::IsAggregating],Aggregates=[],[Courbatureux]");
-				expectedResults
-						.add("Nimsoft::DrMaman:::Region::Nez::Congestionneux,MAJOR,[],isRoot=true,CausedBy=[],Causes=[],AggregatedBy=[jpl::IsAggregating],Aggregates=[],[Congestionneux]");
-				expectedResults
-						.add("Aggregator::local:::Human::jpl::IsAggregating,CRITICAL,[],isRoot=true,CausedBy=[],Causes=[],AggregatedBy=[],Aggregates=[Nez::Congestionneux Dos::Courbatureux],[It Is Aggregation]");
-
-				resultOK = TestToolKit.testEachExistOnceNotCleared(expectedResults);
-
-			}
-
-			if (resultOK) {
-
-				// 4	KrrSimple	Nimsoft	DrMaman	:::Human::jpl:::Region::Yeux	Fievreux	MAJOR
-				TestToolKit.sendMessage_simpleFormat(4, Globals.RAISING);
 
 				logger.info("Sleep ...");
 				Thread.sleep(2000);
@@ -241,83 +149,218 @@ public class AggregationFT {
 
 				expectedResults.clear();
 				expectedResults
-						.add("Nimsoft::Nim01:::Application::ventre::AvoirMal,MAJOR,[],isRoot=false,CausedBy=[jpl::Hypochondriac],Causes=[],AggregatedBy=[],Aggregates=[],[AvoirMal]");
+						.add("SweetHome::DrMaman:::Application::ventre::AvoirMal,MAJOR,[],isRoot=false,CausedBy=[jpl::Hypochondriac],Causes=[],AggregatedBy=[],Aggregates=[],[AvoirMal]");
 				expectedResults
-						.add("Nimsoft::Nim01:::Application::tete::AvoirMal,MAJOR,[],isRoot=false,CausedBy=[jpl::Hypochondriac],Causes=[],AggregatedBy=[],Aggregates=[],[AvoirMal]");
+						.add("SweetHome::DrMaman:::Application::tete::AvoirMal,MAJOR,[],isRoot=false,CausedBy=[jpl::Hypochondriac],Causes=[],AggregatedBy=[],Aggregates=[],[AvoirMal]");
 				expectedResults
-						.add("Nimsoft::Nim01:::Application::pied::AvoirMal,MAJOR,[],isRoot=false,CausedBy=[jpl::Hypochondriac],Causes=[],AggregatedBy=[],Aggregates=[],[AvoirMal]");
+						.add("SweetHome::DrMaman:::Application::pied::AvoirMal,MAJOR,[],isRoot=false,CausedBy=[jpl::Hypochondriac],Causes=[],AggregatedBy=[],Aggregates=[],[AvoirMal]");
 				expectedResults
 						.add("CausalityAnalyser::local:::Human::jpl::Hypochondriac,MINOR,[],isRoot=true,CausedBy=[],Causes=[ventre::AvoirMal pied::AvoirMal tete::AvoirMal],AggregatedBy=[],Aggregates=[],[Very Hypochondriac]");
 
-				expectedResults
-						.add("Nimsoft::DrMaman:::Region::Dos::Courbatureux,MAJOR,[],isRoot=false,CausedBy=[jpl::Grippeux],Causes=[],AggregatedBy=[],Aggregates=[],[Courbatureux]");
-				expectedResults
-						.add("Nimsoft::DrMaman:::Region::Nez::Congestionneux,MAJOR,[],isRoot=false,CausedBy=[jpl::Grippeux],Causes=[],AggregatedBy=[],Aggregates=[],[Congestionneux]");
-				expectedResults
-						.add("Nimsoft::DrMaman:::Region::Yeux::Fievreux,MAJOR,[],isRoot=false,CausedBy=[jpl::Grippeux],Causes=[],AggregatedBy=[],Aggregates=[],[Fievreux]");
-				expectedResults
-						.add("CausalityAnalyser::local:::Human::jpl::Grippeux,MINOR,[],isRoot=true,CausedBy=[],Causes=[Nez::Congestionneux Yeux::Fievreux Dos::Courbatureux],AggregatedBy=[],Aggregates=[],[Very Grippeux]");
+				resultOK = TestToolKit.testEachExistOnceNotCleared(expectedResults, expectedResults.size());
 
-				resultOK = TestToolKit.testEachExistOnceNotCleared(expectedResults);
+			}
+
+			if (resultOK) {
+
+				// 6 KrrSimple SweetHome DrMaman :::Human::jpl:::Application::tete AvoirMal MAJOR
+				TestToolKit.sendMessage_simpleFormat(6, Globals.CLEARING);
+
+				logger.info("Sleep ...");
+				Thread.sleep(2000);
+
+
+				expectedResults.clear();
+				expectedResults
+						.add("SweetHome::DrMaman:::Application::ventre::AvoirMal,MAJOR,[],isRoot=true,CausedBy=[],Causes=[],AggregatedBy=[jpl::IsAggregating],Aggregates=[],[AvoirMal]");
+				expectedResults
+						.add("SweetHome::DrMaman:::Application::pied::AvoirMal,MAJOR,[],isRoot=true,CausedBy=[],Causes=[],AggregatedBy=[jpl::IsAggregating],Aggregates=[],[AvoirMal]");
+				expectedResults
+						.add("Aggregator::local:::Human::jpl::IsAggregating,CRITICAL,[],isRoot=true,CausedBy=[],Causes=[],AggregatedBy=[],Aggregates=[pied::AvoirMal ventre::AvoirMal],[It Is Aggregation]");
+
+				resultOK = TestToolKit.testEachExistOnceNotCleared(expectedResults, expectedResults.size());
+
+			}
+
+			if (resultOK) {
+
+				// 2 KrrSimple SweetHome DrMaman :::Human::jpl:::Region::Dos Courbatureux MAJOR
+				TestToolKit.sendMessage_simpleFormat(2, Globals.RAISING);
+				// 3 KrrSimple SweetHome DrMaman :::Human::jpl:::Region::Nez Congestionneux MAJOR
+				TestToolKit.sendMessage_simpleFormat(3, Globals.RAISING);
+
+				logger.info("Sleep ...");
+				Thread.sleep(2000);
+
+
+				
+				expectedResults.clear();
+				expectedResults
+						.add("SweetHome::DrMaman:::Application::ventre::AvoirMal,MAJOR,[],isRoot=true,CausedBy=[],Causes=[],AggregatedBy=[jpl::IsAggregating],Aggregates=[],[AvoirMal]");
+				expectedResults
+						.add("SweetHome::DrMaman:::Application::pied::AvoirMal,MAJOR,[],isRoot=true,CausedBy=[],Causes=[],AggregatedBy=[jpl::IsAggregating],Aggregates=[],[AvoirMal]");
+				expectedResults
+						.add("SweetHome::DrMaman:::Region::Dos::Courbatureux,MAJOR,[],isRoot=true,CausedBy=[],Causes=[],AggregatedBy=[jpl::IsAggregating],Aggregates=[],[Courbatureux]");
+				expectedResults
+						.add("SweetHome::DrMaman:::Region::Nez::Congestionneux,MAJOR,[],isRoot=true,CausedBy=[],Causes=[],AggregatedBy=[jpl::IsAggregating],Aggregates=[],[Congestionneux]");
+				expectedResults
+						.add("Aggregator::local:::Human::jpl::IsAggregating,CRITICAL,[],isRoot=true,CausedBy=[],Causes=[],AggregatedBy=[],Aggregates=[Nez::Congestionneux Dos::Courbatureux pied::AvoirMal ventre::AvoirMal],[It Is Aggregation]");
+
+				resultOK = TestToolKit.testEachExistOnceNotCleared(expectedResults, expectedResults.size());
+
+			}
+
+			if (resultOK) {
+
+				// 6 KrrSimple SweetHome DrMaman :::Human::jpl:::Application::tete AvoirMal MAJOR
+				TestToolKit.sendMessage_simpleFormat(6, Globals.RAISING);
+
+				logger.info("Sleep ...");
+				Thread.sleep(2000);
+
+				expectedResults.clear();
+				expectedResults
+				.add("Aggregator::local:::Human::jpl::IsAggregating,CRITICAL,[],isRoot=true,CausedBy=[],Causes=[],AggregatedBy=[],Aggregates=[Dos::Courbatureux Nez::Congestionneux],[It Is Aggregation]");
+				expectedResults
+				.add("CausalityAnalyser::local:::Human::jpl::Hypochondriac,MINOR,[],isRoot=true,CausedBy=[],Causes=[tete::AvoirMal ventre::AvoirMal pied::AvoirMal],AggregatedBy=[],Aggregates=[],[Very Hypochondriac]");
+				expectedResults
+				.add("SweetHome::DrMaman:::Application::pied::AvoirMal,MAJOR,[],isRoot=false,CausedBy=[jpl::Hypochondriac],Causes=[],AggregatedBy=[],Aggregates=[],[AvoirMal]");
+				expectedResults
+				.add("SweetHome::DrMaman:::Application::tete::AvoirMal,MAJOR,[],isRoot=false,CausedBy=[jpl::Hypochondriac],Causes=[],AggregatedBy=[],Aggregates=[],[AvoirMal]");
+				expectedResults
+				.add("SweetHome::DrMaman:::Application::ventre::AvoirMal,MAJOR,[],isRoot=false,CausedBy=[jpl::Hypochondriac],Causes=[],AggregatedBy=[],Aggregates=[],[AvoirMal]");
+				expectedResults
+				.add("SweetHome::DrMaman:::Region::Dos::Courbatureux,MAJOR,[],isRoot=true,CausedBy=[],Causes=[],AggregatedBy=[jpl::IsAggregating],Aggregates=[],[Courbatureux]");
+				expectedResults
+				.add("SweetHome::DrMaman:::Region::Nez::Congestionneux,MAJOR,[],isRoot=true,CausedBy=[],Causes=[],AggregatedBy=[jpl::IsAggregating],Aggregates=[],[Congestionneux]");
+				
+				resultOK = TestToolKit.testEachExistOnceNotCleared(expectedResults, expectedResults.size());
+
+			}
+
+			if (resultOK) {
+
+				// 4	KrrSimple	SweetHome	DrMaman	:::Human::jpl:::Region::Yeux	Fievreux	MAJOR
+				TestToolKit.sendMessage_simpleFormat(4, Globals.RAISING);
+
+				logger.info("Sleep ...");
+				Thread.sleep(2000);
+
+				expectedResults.clear();
+				
+				expectedResults
+				.add("CausalityAnalyser::local:::Human::jpl::Grippeux,MINOR,[],isRoot=true,CausedBy=[],Causes=[Dos::Courbatureux Nez::Congestionneux Yeux::Fievreux],AggregatedBy=[],Aggregates=[],[Very Grippeux]");
+				expectedResults
+				.add("CausalityAnalyser::local:::Human::jpl::Hypochondriac,MINOR,[],isRoot=true,CausedBy=[],Causes=[tete::AvoirMal ventre::AvoirMal pied::AvoirMal],AggregatedBy=[],Aggregates=[],[Very Hypochondriac]");
+				expectedResults
+				.add("SweetHome::DrMaman:::Application::pied::AvoirMal,MAJOR,[],isRoot=false,CausedBy=[jpl::Hypochondriac],Causes=[],AggregatedBy=[],Aggregates=[],[AvoirMal]");
+				expectedResults
+				.add("SweetHome::DrMaman:::Application::tete::AvoirMal,MAJOR,[],isRoot=false,CausedBy=[jpl::Hypochondriac],Causes=[],AggregatedBy=[],Aggregates=[],[AvoirMal]");
+				expectedResults
+				.add("SweetHome::DrMaman:::Application::ventre::AvoirMal,MAJOR,[],isRoot=false,CausedBy=[jpl::Hypochondriac],Causes=[],AggregatedBy=[],Aggregates=[],[AvoirMal]");
+				expectedResults
+				.add("SweetHome::DrMaman:::Region::Dos::Courbatureux,MAJOR,[],isRoot=false,CausedBy=[jpl::Grippeux],Causes=[],AggregatedBy=[],Aggregates=[],[Courbatureux]");
+				expectedResults
+				.add("SweetHome::DrMaman:::Region::Nez::Congestionneux,MAJOR,[],isRoot=false,CausedBy=[jpl::Grippeux],Causes=[],AggregatedBy=[],Aggregates=[],[Congestionneux]");
+				expectedResults
+				.add("SweetHome::DrMaman:::Region::Yeux::Fievreux,MAJOR,[],isRoot=false,CausedBy=[jpl::Grippeux],Causes=[],AggregatedBy=[],Aggregates=[],[Fievreux]");
+				
+				resultOK = TestToolKit.testEachExistOnceNotCleared(expectedResults, expectedResults.size());
 
 			}
 
 			
 			if (resultOK) {
 
-				// 7 KrrSimple Nimsoft Nim01 :::Host::server01:::Application::ventre AvoirMal MAJOR
+				// 7	KrrSimple	SweetHome	DrMaman	:::Human::jpl:::Application::ventre	AvoirMal	MAJOR
 				TestToolKit.sendMessage_simpleFormat(7, Globals.CLEARING);
 
 				logger.info("Sleep ...");
 				Thread.sleep(2000);
-
+				
 				expectedResults.clear();
+				
 				expectedResults
-						.add("Nimsoft::Nim01:::Application::tete::AvoirMal,MAJOR,[],isRoot=true,CausedBy=[],Causes=[],AggregatedBy=[jpl::IsAggregating],Aggregates=[],[AvoirMal]");
+				.add("Aggregator::local:::Human::jpl::IsAggregating,CRITICAL,[],isRoot=true,CausedBy=[],Causes=[],AggregatedBy=[],Aggregates=[tete::AvoirMal pied::AvoirMal],[It Is Aggregation]");
 				expectedResults
-						.add("Nimsoft::Nim01:::Application::pied::AvoirMal,MAJOR,[],isRoot=true,CausedBy=[],Causes=[],AggregatedBy=[jpl::IsAggregating],Aggregates=[],[AvoirMal]");
+				.add("CausalityAnalyser::local:::Human::jpl::Grippeux,MINOR,[],isRoot=true,CausedBy=[],Causes=[Dos::Courbatureux Nez::Congestionneux Yeux::Fievreux],AggregatedBy=[],Aggregates=[],[Very Grippeux]");
 				expectedResults
-						.add("Aggregator::local:::Human::jpl::IsAggregating,CRITICAL,[],isRoot=true,CausedBy=[],Causes=[],AggregatedBy=[],Aggregates=[tete::AvoirMal pied::AvoirMal],[It Is Aggregation]");
+				.add("SweetHome::DrMaman:::Application::pied::AvoirMal,MAJOR,[],isRoot=true,CausedBy=[],Causes=[],AggregatedBy=[jpl::IsAggregating],Aggregates=[],[AvoirMal]");
+				expectedResults
+				.add("SweetHome::DrMaman:::Application::tete::AvoirMal,MAJOR,[],isRoot=true,CausedBy=[],Causes=[],AggregatedBy=[jpl::IsAggregating],Aggregates=[],[AvoirMal]");
+				expectedResults
+				.add("SweetHome::DrMaman:::Region::Dos::Courbatureux,MAJOR,[],isRoot=false,CausedBy=[jpl::Grippeux],Causes=[],AggregatedBy=[],Aggregates=[],[Courbatureux]");
+				expectedResults
+				.add("SweetHome::DrMaman:::Region::Nez::Congestionneux,MAJOR,[],isRoot=false,CausedBy=[jpl::Grippeux],Causes=[],AggregatedBy=[],Aggregates=[],[Congestionneux]");
+				expectedResults
+				.add("SweetHome::DrMaman:::Region::Yeux::Fievreux,MAJOR,[],isRoot=false,CausedBy=[jpl::Grippeux],Causes=[],AggregatedBy=[],Aggregates=[],[Fievreux]");
+				
 
-				expectedResults
-						.add("Nimsoft::DrMaman:::Region::Dos::Courbatureux,MAJOR,[],isRoot=false,CausedBy=[jpl::Grippeux],Causes=[],AggregatedBy=[],Aggregates=[],[Courbatureux]");
-				expectedResults
-						.add("Nimsoft::DrMaman:::Region::Nez::Congestionneux,MAJOR,[],isRoot=false,CausedBy=[jpl::Grippeux],Causes=[],AggregatedBy=[],Aggregates=[],[Congestionneux]");
-				expectedResults
-						.add("Nimsoft::DrMaman:::Region::Yeux::Fievreux,MAJOR,[],isRoot=false,CausedBy=[jpl::Grippeux],Causes=[],AggregatedBy=[],Aggregates=[],[Fievreux]");
-				expectedResults
-						.add("CausalityAnalyser::local:::Human::jpl::Grippeux,MINOR,[],isRoot=true,CausedBy=[],Causes=[Nez::Congestionneux Yeux::Fievreux Dos::Courbatureux],AggregatedBy=[],Aggregates=[],[Very Grippeux]");
-
-				resultOK = TestToolKit.testEachExistOnceNotCleared(expectedResults);
+				resultOK = TestToolKit.testEachExistOnceNotCleared(expectedResults, expectedResults.size());
 
 			}
 
 			if (resultOK) {
 
-				// 3	KrrSimple	Nimsoft	DrMaman	:::Human::jpl:::Region::Nez	Congestionneux	MAJOR
+				// 3	KrrSimple	SweetHome	DrMaman	:::Human::jpl:::Region::Nez	Congestionneux	MAJOR
 				TestToolKit.sendMessage_simpleFormat(3, Globals.CLEARING);
+
+				logger.info("Sleep ...");
+				Thread.sleep(2000);
+				
+				expectedResults.clear();
+
+				expectedResults
+				.add("Aggregator::local:::Human::jpl::IsAggregating,CRITICAL,[],isRoot=true,CausedBy=[],Causes=[],AggregatedBy=[],Aggregates=[tete::AvoirMal Dos::Courbatureux Yeux::Fievreux pied::AvoirMal],[It Is Aggregation]");
+				expectedResults
+				.add("SweetHome::DrMaman:::Application::pied::AvoirMal,MAJOR,[],isRoot=true,CausedBy=[],Causes=[],AggregatedBy=[jpl::IsAggregating],Aggregates=[],[AvoirMal]");
+				expectedResults
+				.add("SweetHome::DrMaman:::Application::tete::AvoirMal,MAJOR,[],isRoot=true,CausedBy=[],Causes=[],AggregatedBy=[jpl::IsAggregating],Aggregates=[],[AvoirMal]");
+				expectedResults
+				.add("SweetHome::DrMaman:::Region::Dos::Courbatureux,MAJOR,[],isRoot=true,CausedBy=[],Causes=[],AggregatedBy=[jpl::IsAggregating],Aggregates=[],[Courbatureux]");
+				expectedResults
+				.add("SweetHome::DrMaman:::Region::Yeux::Fievreux,MAJOR,[],isRoot=true,CausedBy=[],Causes=[],AggregatedBy=[jpl::IsAggregating],Aggregates=[],[Fievreux]");
+
+				resultOK = TestToolKit.testEachExistOnceNotCleared(expectedResults, expectedResults.size());
+
+			}
+
+
+			if (resultOK) {
+
+				// 2 KrrSimple SweetHome DrMaman :::Human::jpl:::Region::Dos Courbatureux MAJOR
+				TestToolKit.sendMessage_simpleFormat(2, Globals.CLEARING);
+				// 5	KrrSimple	SweetHome	DrMaman	:::Human::jpl:::Application::pied	AvoirMal	MAJOR
+				TestToolKit.sendMessage_simpleFormat(5, Globals.CLEARING);
+				// 6	KrrSimple	SweetHome	DrMaman	:::Human::jpl:::Application::tete	AvoirMal	MAJOR
+				TestToolKit.sendMessage_simpleFormat(6, Globals.CLEARING);
+
 
 				logger.info("Sleep ...");
 				Thread.sleep(2000);
 
 				expectedResults.clear();
+				
 				expectedResults
-						.add("Nimsoft::DrMaman:::Region::Yeux::Fievreux,MAJOR,[],isRoot=true,CausedBy=[],Causes=[],AggregatedBy=[jpl::IsAggregating],Aggregates=[],[Fievreux]");
-				expectedResults
-						.add("Nimsoft::DrMaman:::Region::Dos::Courbatureux,MAJOR,[],isRoot=true,CausedBy=[],Causes=[],AggregatedBy=[jpl::IsAggregating],Aggregates=[],[Courbatureux]");
-				expectedResults
-						.add("Nimsoft::Nim01:::Application::pied::AvoirMal,MAJOR,[],isRoot=true,CausedBy=[],Causes=[],AggregatedBy=[jpl::IsAggregating],Aggregates=[],[AvoirMal]");
-				expectedResults
-						.add("Nimsoft::Nim01:::Application::tete::AvoirMal,MAJOR,[],isRoot=true,CausedBy=[],Causes=[],AggregatedBy=[jpl::IsAggregating],Aggregates=[],[AvoirMal]");
-				expectedResults
-						.add("Aggregator::local:::Human::jpl::IsAggregating,CRITICAL,[],isRoot=true,CausedBy=[],Causes=[],AggregatedBy=[],Aggregates=[tete::AvoirMal Yeux::Fievreux Dos::Courbatureux pied::AvoirMal],[It Is Aggregation]");
+				.add("SweetHome::DrMaman:::Region::Yeux::Fievreux,MAJOR,[],isRoot=true,CausedBy=[],Causes=[],AggregatedBy=[],Aggregates=[],[Fievreux]");
 
-				resultOK = TestToolKit.testEachExistOnceNotCleared(expectedResults);
+				resultOK = TestToolKit.testEachExistOnceNotCleared(expectedResults, expectedResults.size());
 
 			}
 
 			
-			
+			if (resultOK) {
+
+				// 4	KrrSimple	SweetHome	DrMaman	:::Human::jpl:::Region::Yeux	Fievreux	MAJOR
+				TestToolKit.sendMessage_simpleFormat(4, Globals.CLEARING);
+
+				logger.info("Sleep ...");
+				Thread.sleep(2000);
+				
+				resultOK = TestToolKit.testForTotalCount_NOT_CLEARED(0 /* expectedCount */);
+
+			}
+
 			// ///////////////
 			// END of testing
 			// ///////////////
