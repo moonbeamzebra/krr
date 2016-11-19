@@ -93,7 +93,7 @@
 	
 	<!-- Logs from Drools rules -->
 	<logger name="ca.magenta.krr.engine" additivity="false">
-		<level value="info" />
+		<level value="all" />
 		<appender-ref ref="stderr" />
 		<appender-ref ref="stdout" />
 	</logger>

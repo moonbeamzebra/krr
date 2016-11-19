@@ -73,8 +73,8 @@ public abstract class NormalizedProperties implements Fact{
 		
 		timestamp = normalizedProperties.timestamp;	
 		
-		aggregatedBy = normalizedProperties.aggregatedBy;
-		aggregates = normalizedProperties.aggregates;
+		//aggregatedBy = normalizedProperties.aggregatedBy;
+		//aggregates = normalizedProperties.aggregates;
 		
 		//causedByLocal = normalizedProperties.causedByLocal;
 		//causesLocal = normalizedProperties.causesLocal;
@@ -124,8 +124,8 @@ public abstract class NormalizedProperties implements Fact{
 	
 	protected long timestamp = 0;
 	
-	protected transient Set<FactHandle> aggregatedBy = Collections.newSetFromMap(new ConcurrentHashMap<FactHandle, Boolean>());
-	protected transient Set<FactHandle> aggregates = Collections.newSetFromMap(new ConcurrentHashMap<FactHandle, Boolean>());
+	//protected transient Set<FactHandle> aggregatedBy = Collections.newSetFromMap(new ConcurrentHashMap<FactHandle, Boolean>());
+	//protected transient Set<FactHandle> aggregates = Collections.newSetFromMap(new ConcurrentHashMap<FactHandle, Boolean>());
 
 
 	
@@ -334,13 +334,13 @@ public abstract class NormalizedProperties implements Fact{
 		this.timestamp = timestamp;
 	}
 	
-	public Set<FactHandle> getAggregatedBy() {
-		return aggregatedBy;
-	}
-
-	public Set<FactHandle> getAggregates() {
-		return aggregates;
-	}
+//	public Set<FactHandle> getAggregatedBy() {
+//		return aggregatedBy;
+//	}
+//
+//	public Set<FactHandle> getAggregates() {
+//		return aggregates;
+//	}
 
 	public boolean isConsumerView() {
 		return isConsumerView;

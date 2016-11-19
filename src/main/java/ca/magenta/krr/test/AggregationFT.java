@@ -145,6 +145,8 @@ public class AggregationFT {
 
 				logger.info("Sleep ...");
 				Thread.sleep(2000);
+
+				//System.exit(0);
 				
 
 				expectedResults.clear();

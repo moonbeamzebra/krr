@@ -28,6 +28,7 @@ public class State extends NormalizedProperties {
 
 	private static Logger logger = Logger.getLogger(State.class);
 	
+	private static StateRelations localAggregateRelation = new StateRelations();
 	private static StateRelations externCauseEffectRelation = new StateRelations();
 	private static StateRelations localCauseEffectRelation = new StateRelations();
 	
@@ -53,6 +54,24 @@ public class State extends NormalizedProperties {
 		}
 		return rIsRoot;
 	}
+
+	synchronized public boolean hasAggregate() {
+		boolean hasAggregate = true;
+		if (this.getSelfFactHandle() != null)
+		{
+			hasAggregate = ( localAggregateRelation.upperContains(this.selfFactHandle) );
+		}
+		return hasAggregate;
+	}
+
+	synchronized public boolean isAggregated() {
+		boolean isAggregated = true;
+		if (this.getSelfFactHandle() != null)
+		{
+			isAggregated = ( localAggregateRelation.lowerContains(this.selfFactHandle) );
+		}
+		return isAggregated;
+	}
 	
 	public long raisedDuration()
 	{
@@ -63,76 +82,27 @@ public class State extends NormalizedProperties {
 		logger.debug("Duration:[" + duration + "]" + this.getLinkKey());
 		return duration;
 	}
-	
-	synchronized public boolean hasAggregate() {
-		boolean hasAggregate = (aggregates.size() > 0);
-		logger.trace("in hasAggregate:[" + hasAggregate + "];" + aggregates.size() + ":" + getLinkKey());
-		return hasAggregate;
-	}
 
 	@Override
 	public boolean isAggregator() {
 		return super.isAggregator();
 	}
-
-	
-	synchronized public boolean isAggregated() {
-		boolean isAggregated = (aggregatedBy.size() > 0);
-		logger.trace("in isAggregated:[" + isAggregated + "];" + aggregatedBy.size() + ":" + getLinkKey());
-		return isAggregated;
-	}
-	
 	
 	synchronized public boolean addAggregate(FactHandle factHandle) {
-		boolean changed = false;
-
-		if (factHandle != null) {
-			if (!aggregates.contains(factHandle)) {
-				aggregates.add(factHandle);
-				changed = true;
-			}
-		}
-
-		return changed;
+		return localAggregateRelation.modify(ModifyMode.PUT, this.getSelfFactHandle(), factHandle);
 	}
 
-	synchronized private boolean removeAggregate(FactHandle factHandle) {
-		boolean changed = false;
-		if (factHandle != null) {
-			if (aggregates.contains(factHandle)) {
-				aggregates.remove(factHandle);
-				changed = true;
-			}
-		}
-
-		return changed;
+	synchronized public boolean removeAggregate(FactHandle factHandle) {
+		return localAggregateRelation.modify(ModifyMode.REMOVE, this.getSelfFactHandle(), factHandle);
 	}
 
-	synchronized private boolean removeAggregatedBy(FactHandle factHandle) {
-		boolean changed = false;
-		if (factHandle != null) {
-			if (aggregatedBy.contains(factHandle)) {
-				aggregatedBy.remove(factHandle);
-				changed = true;
-			}
-		}
-
-		return changed;
-	}
-	
 	synchronized public boolean addAggregatedBy(FactHandle factHandle) {
-		boolean changed = false;
-
-		if (factHandle != null) {
-			if (!aggregatedBy.contains(factHandle)) {
-				aggregatedBy.add(factHandle);
-				changed = true;
-			}
-		}
-
-		return changed;
+		return localAggregateRelation.modify(ModifyMode.PUT, factHandle, this.getSelfFactHandle() );
 	}
 
+	synchronized public boolean removeAggregatedBy(FactHandle factHandle) {
+		return localAggregateRelation.modify(ModifyMode.REMOVE, factHandle, this.getSelfFactHandle() );
+	}
 
 	synchronized public boolean addCausedBy_local(FactHandle factHandle) {
 		return localCauseEffectRelation.modify(ModifyMode.PUT, this.getSelfFactHandle(), factHandle);
@@ -255,6 +225,43 @@ public class State extends NormalizedProperties {
 			State clearedState, FactHandle clearedStateFactHandle,
 			boolean updateAggregateInWM) {
 
+		logger.debug(String.format("In updateAggregatedAndAggregatesOnClear; cleared: [%s]",
+				Boolean.toString(clearedState.isCleared())));
+
+		//if (clearedState.isCleared()) {
+
+			HashSet<String> stateChangeList = new HashSet<String>();
+
+			logger.debug(String.format("In updateAggregatedAndAggregatesOnClear; linkKey: [%s]",
+					clearedState.getLinkKey()));
+
+			boolean changed;
+			changed = localAggregateRelation.removeAllRelationsWhereUpperIs(clearedStateFactHandle);
+			if (changed)
+				stateChangeList.add(State.AGGREGATES_LABEL);
+
+			changed = localAggregateRelation.removeAllRelationsWhereLowerIs(clearedStateFactHandle);
+			if (changed)
+				stateChangeList.add(State.AGGREGATEDBY_LABEL);
+
+			logger.debug(String.format("In updateAggregatedAndAggregatesOnClear; updateAggregateInWM: [%b]",
+					updateAggregateInWM));
+			logger.debug(String.format("In updateAggregatedAndAggregatesOnClear; updateAggregateInWM: [%d]",
+					stateChangeList.size()));
+
+			if (updateAggregateInWM && (stateChangeList.size() > 0)) {
+				Engine.getStreamKS().update(clearedStateFactHandle, clearedState);
+				StateUpdate.insertInWM(clearedStateFactHandle, clearedState, stateChangeList);
+			}
+		//}
+
+		return clearedState;
+	}
+
+	public synchronized static State updateAggregatedAndAggregatesOnClearOld(
+			State clearedState, FactHandle clearedStateFactHandle,
+			boolean updateAggregateInWM) {
+
 		HashSet<String> aggregatedbyChanges = new HashSet<String>();
 		aggregatedbyChanges.add(State.AGGREGATES_LABEL);
 		HashSet<String> aggregateChanges = new HashSet<String>();
@@ -265,7 +272,7 @@ public class State extends NormalizedProperties {
 
 		boolean anyChanges = false;
 
-		for (FactHandle aggregatedByHdle : clearedState.aggregatedBy) {
+		for (FactHandle aggregatedByHdle : clearedState.getAggregatedBy()) {
 			State aggregatedByState = State.getState(aggregatedByHdle);
 			if (aggregatedByState != null) {
 				boolean changed = aggregatedByState
@@ -280,8 +287,8 @@ public class State extends NormalizedProperties {
 				clearedState.removeAggregatedBy(aggregatedByHdle);
 			}
 		}
-		
-		for (FactHandle aggregateHdle : clearedState.aggregates) {
+
+		for (FactHandle aggregateHdle : clearedState.getAggregates()) {
 			State aggregateState = State.getState(aggregateHdle);
 			if (aggregateState != null) {
 				boolean changed = aggregateState.removeAggregatedBy(clearedStateFactHandle);
@@ -303,33 +310,44 @@ public class State extends NormalizedProperties {
 
 		return clearedState;
 	}
-	
+
 
 	synchronized private static State addAggregatesToAggregator(	State aggregator,
-														FactHandle stateFactHandle,
+														FactHandle aggregatorFactHandle,
 														HashSet<FactHandle> aggregateHdles) {
+
+
+		logger.debug(String.format("In addAggregatesToAggregator [%s]", aggregator.getLinkKey()));
 
 		HashSet<String> changes = new HashSet<String>();
 		changes.add(State.AGGREGATEDBY_LABEL);
 		Vector<SimpleImmutableEntry<FactHandle, State>> toUpdate = new Vector<SimpleImmutableEntry<FactHandle, State>>();
 		if (aggregateHdles != null) {
+			logger.debug(String.format("aggregateHdles.size() [%d]", aggregateHdles.size()));
 			for (FactHandle  aggregateHdle : aggregateHdles) {
 				State aggregateState = State.getState(aggregateHdle);
 				if (aggregateState != null) {
-					aggregator.addAggregate(aggregateHdle);
-					boolean changed = aggregateState.addAggregatedBy(stateFactHandle);
+					boolean changed = aggregator.addAggregate(aggregateHdle);
+					//boolean changed = aggregateState.addAggregatedBy(aggregatorFactHandle);
 					if (changed) {
 						SimpleImmutableEntry<FactHandle, State> entry = new SimpleImmutableEntry<FactHandle, State>(aggregateHdle,aggregateState);
 						toUpdate.add(entry);
 					}
 				}
 			}
-			
+
 			for (SimpleImmutableEntry<FactHandle, State> aggregate : toUpdate )
 			{
 				Engine.getStreamKS().update(aggregate.getKey(), aggregate.getValue());
 				StateUpdate.insertInWM(aggregate.getKey(), aggregate.getValue(), changes);
 			}
+			logger.debug(String.format("aggregator.isAggregator() [%b]", aggregator.isAggregator()));
+			logger.debug(String.format("aggregator.hasAggregate() [%b]", aggregator.hasAggregate()));
+			logger.debug(String.format("aggregator.getAggregates().size() [%d]", aggregator.getAggregates().size()));
+			logger.debug(String.format("aggregator.isAggregated() [%b]", aggregator.isAggregated()));
+			logger.debug(String.format("aggregator.getAggregatedBy().size() [%d]", aggregator.getAggregatedBy().size()));
+
+
 		}
 		
 		return aggregator;
@@ -529,9 +547,6 @@ public class State extends NormalizedProperties {
 		Engine.getStreamKS().delete(newSignal);
 		FactHandle currentStateFactHandle = Engine.getStreamKS().getFactHandle(currentState);
 		updatedState.count = currentState.count;
-		
-		updatedState.aggregates = currentState.aggregates;
-		updatedState.aggregatedBy = currentState.aggregatedBy;
 
 		updatedState.firstRaiseTime = currentState.firstRaiseTime;
 		updatedState.lastRaiseTime = currentState.lastRaiseTime;
@@ -567,8 +582,6 @@ public class State extends NormalizedProperties {
 		updatedState.count = currentState.count;
 		updatedState.firstRaiseTime = currentState.firstRaiseTime;
 		updatedState.lastRaiseTime = currentState.lastRaiseTime;
-		updatedState.aggregates = currentState.aggregates;
-		updatedState.aggregatedBy = currentState.aggregatedBy;
 		updatedState.lastClearTime = now;
 		updatedState.lastUpdateTime = now;
 
@@ -577,6 +590,7 @@ public class State extends NormalizedProperties {
 		if (updatedState.isCleared()) {
 			updatedState = State.updateCausedByAndCauses_goingClear(updatedState, currentStateFactHandle);
 			updatedState = updateAggregatedAndAggregatesOnClear(updatedState, currentStateFactHandle, false /* NO updateAggregateInWM*/);
+			//updatedState = updateAggregatedAndAggregatesOnClear(updatedState, currentStateFactHandle, true /* updateAggregateInWM*/);
 		}
 
 		Engine.getStreamKS().update(currentStateFactHandle, updatedState);
@@ -595,8 +609,6 @@ public class State extends NormalizedProperties {
 		FactHandle currentStateFactHandle = Engine.getStreamKS().getFactHandle(currentState);
 		updatedState.count = currentState.count;
 		updatedState.count++;
-		updatedState.aggregates = currentState.aggregates;
-		updatedState.aggregatedBy = currentState.aggregatedBy;
 		updatedState.firstRaiseTime = currentState.firstRaiseTime;
 		updatedState.lastClearTime = currentState.lastClearTime;
 		updatedState.lastRaiseTime = now;
@@ -686,6 +698,42 @@ public class State extends NormalizedProperties {
 	}
 
 
+	synchronized public HashSet<FactHandle> getAggregatedBy() {
+
+		HashSet<FactHandle> total = new HashSet<FactHandle>();
+
+		if (this.getSelfFactHandle() != null )
+		{
+			ConcurrentHashMap<FactHandle, Boolean> aggregatedBys = localAggregateRelation.getUpperStateHdles(this.selfFactHandle);
+			if (aggregatedBys != null)
+			{
+				for (Entry<FactHandle, Boolean> e : aggregatedBys.entrySet()) {
+					total.add(e.getKey());
+				}
+			}
+		}
+
+		return total;
+	}
+
+	synchronized public HashSet<FactHandle> getAggregates() {
+
+		HashSet<FactHandle> total = new HashSet<FactHandle>();
+
+		if (this.getSelfFactHandle() != null )
+		{
+			ConcurrentHashMap<FactHandle, Boolean> aggregates = localAggregateRelation.getLowerStateHdles(this.selfFactHandle);
+			if (aggregates != null)
+			{
+				for (Entry<FactHandle, Boolean> e : aggregates.entrySet()) {
+					total.add(e.getKey());
+				}
+			}
+		}
+
+		return total;
+	}
+	
 	synchronized public HashSet<FactHandle> getCausedBy() {
 
 		HashSet<FactHandle> total = new HashSet<FactHandle>();

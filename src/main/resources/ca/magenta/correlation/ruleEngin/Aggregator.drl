@@ -110,6 +110,8 @@ salience 0
             		)
     then
         Engine.logger.trace("Update Aggregator Got Hit" );
+        Engine.logger.trace("aggregator.getLinkKey(): " + aggregator.getLinkKey() );
+        Engine.logger.trace("newAggregate.getLinkKey(): " + newAggregate.getLinkKey() );
     	Aggregator.addAggregate(aggregator, newAggregate);
 
 end
