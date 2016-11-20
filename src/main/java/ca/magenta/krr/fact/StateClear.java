@@ -12,9 +12,7 @@ import ca.magenta.krr.engine.Engine;
  * @since 2014-03-16
  */
 final public class StateClear extends StateLifecycle{
-	
-	//private transient HashSet<FactHandle> lastCauses = new HashSet<FactHandle>();
-	
+
 	public static void insertInWM(FactHandle factHandle, State newState, State oldState, boolean firstEnteredCleared)
 	{
 		StateClear stateClear = new StateClear(factHandle, newState, oldState, firstEnteredCleared);
@@ -29,9 +27,7 @@ final public class StateClear extends StateLifecycle{
 	private StateClear(FactHandle factHandle, State stateNew, State stateOld, boolean firstEnteredCleared) {
 		super();
 		
-//		if (oldCauses != null)
-//			lastCauses = oldCauses;
-		
+
 		this.setFactHandleRef(factHandle);
 		this.setLinkKeyRef(stateNew.getLinkKey());
 		
@@ -40,8 +36,4 @@ final public class StateClear extends StateLifecycle{
 		else
 			this.setChanges(stateNew.getChanges(stateOld));
 	}
-
-//	public HashSet<FactHandle> getLastCauses() {
-//		return lastCauses;
-//	}
 }

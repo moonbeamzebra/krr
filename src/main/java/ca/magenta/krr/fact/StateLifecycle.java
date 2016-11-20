@@ -21,7 +21,6 @@ public abstract class StateLifecycle implements Fact {
 	private static Logger logger = Logger.getLogger(TopologyBasedCorrelationFT.class);
 
 	private HashSet<String> changes = new HashSet<String>();
-	//private transient State stateRef = null;
 	private String linkKeyRef = null;
 	private transient FactHandle factHandleRef= null; 
 	

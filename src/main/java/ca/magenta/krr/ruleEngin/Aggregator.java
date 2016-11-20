@@ -108,35 +108,17 @@ public class Aggregator {
 		
 		if (aggregateFactHandle != null)
 		{
-			State.updateAggregatedAndAggregatesOnClear(aggregate, aggregateFactHandle, true /* updateAggregateInWM*/);
+			State.removeAllAggregateRelationsOf(aggregate, aggregateFactHandle, true /* updateAggregateInWM*/);
 		}
 	}
 
 	public static void doClear(State aggregator)
 	{
-		//HashSet<State> aggregates = new HashSet<State>();
-		//Vector<State> aggregates = new Vector<State>();
-		
+
 		Chain<ManagedNode> managedNodeChain = new Chain<ManagedNode>();
 		managedNodeChain.addMostSpecific(aggregator.getGroundManagedNode());
 		
 		Signal.insertInWM_Clear(aggregator);
-/*		
-		Signal.insertInWM(Aggregator.SOURCE_TYPE,
-				Aggregator.SOURCE, 
-				managedNodeChain,
-				Signal.CLEARING,
-				NormalizedProperties.AGGREGATOR_STATE_DESCR,
-				aggregator.getSeverity(), 
-				aggregator.getShortDescr(),
-				aggregator.getShortDescr() /* TODO descr /, 
-				aggregator.getCategories(), 
-				aggregator.isConsumerView(),
-				aggregator.isProviderView(),
-				null /* causedBy /, 
-				null /* causes /, 
-				aggregates,
-				null /* specificProperties /); */  
 	}
 	
 	public static String getSourceName()

@@ -382,7 +382,6 @@ final public class Signal extends NormalizedProperties {
 		as.linkKey = linkKey;
 		as.source = source;
 		as.sourceType = sourceType;
-		//as.managedEntityChain = managedEntityChain;
 		as.cleared = clearing;
 		as.severity = severity;
 		as.stateDescr = stateDescr;

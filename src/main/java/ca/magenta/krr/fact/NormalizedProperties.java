@@ -72,15 +72,7 @@ public abstract class NormalizedProperties implements Fact{
 		lastClearTime = normalizedProperties.lastClearTime;
 		
 		timestamp = normalizedProperties.timestamp;	
-		
-		//aggregatedBy = normalizedProperties.aggregatedBy;
-		//aggregates = normalizedProperties.aggregates;
-		
-		//causedByLocal = normalizedProperties.causedByLocal;
-		//causesLocal = normalizedProperties.causesLocal;
-		//causedByExtern = normalizedProperties.causedByExtern;
-		//causesExtern = normalizedProperties.causesExtern;
-		
+
 		isConsumerView = normalizedProperties.isConsumerView;
 		isProviderView = normalizedProperties.isProviderView;
 		
@@ -100,7 +92,6 @@ public abstract class NormalizedProperties implements Fact{
 	protected String id = null;
 	protected String linkKey = null;
 	protected String source = null;
-	//protected String sourceName = null;
 	protected String sourceType = null;
 	protected transient Chain<ManagedEntity> managedEntityChain = new Chain<ManagedEntity>();
 	protected transient Chain<ManagedNode> managedNodeChain = null;
@@ -123,17 +114,7 @@ public abstract class NormalizedProperties implements Fact{
 	protected long lastClearTime = 0;
 	
 	protected long timestamp = 0;
-	
-	//protected transient Set<FactHandle> aggregatedBy = Collections.newSetFromMap(new ConcurrentHashMap<FactHandle, Boolean>());
-	//protected transient Set<FactHandle> aggregates = Collections.newSetFromMap(new ConcurrentHashMap<FactHandle, Boolean>());
 
-
-	
-	//protected transient Set<FactHandle> causedByLocal = Collections.newSetFromMap(new ConcurrentHashMap<FactHandle, Boolean>());
-	//protected transient Set<FactHandle> causesLocal = Collections.newSetFromMap(new ConcurrentHashMap<FactHandle, Boolean>());
-	//protected transient Set<FactHandle> causedByExtern = Collections.newSetFromMap(new ConcurrentHashMap<FactHandle, Boolean>());
-	//protected transient Set<FactHandle> causesExtern = Collections.newSetFromMap(new ConcurrentHashMap<FactHandle, Boolean>());
-	
 	protected boolean isConsumerView = false;
 	protected boolean isProviderView = false;
 	
@@ -333,14 +314,6 @@ public abstract class NormalizedProperties implements Fact{
 	public void setTimestamp(long timestamp) {
 		this.timestamp = timestamp;
 	}
-	
-//	public Set<FactHandle> getAggregatedBy() {
-//		return aggregatedBy;
-//	}
-//
-//	public Set<FactHandle> getAggregates() {
-//		return aggregates;
-//	}
 
 	public boolean isConsumerView() {
 		return isConsumerView;

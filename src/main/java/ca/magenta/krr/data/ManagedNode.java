@@ -117,20 +117,6 @@ public class ManagedNode extends Node implements FqdNamed {
 
 			Object data = inBody.get("data");
 			this.setPropertiesFromJsonData(data);
-/* Commented out by JPL 11 nov 2014
-			if (data != null) {
-				// {fqdName=server01, type=Host}
-				logger.debug(String.format("HASH DATA: [%s]", data.toString()));
-				Type hashMapType = new TypeToken<HashMap<String, String>>() {
-				}.getType();
-				HashMap<String, String> hashMap = (new Gson()).fromJson(data.toString(), hashMapType);
-
-				String type = hashMap.get("type");
-				if (type != null) {
-					this.setType(type);
-					logger.trace(String.format("Type: [%s]", type));
-				}
-			} */
 		}
 
 	}
@@ -183,35 +169,6 @@ public class ManagedNode extends Node implements FqdNamed {
 
 				Object data = inBody.get("data");
 				this.setPropertiesFromJsonData(data);
-				// if (data != null)
-				// {
-				// // {fqdName=server01, type=Host}
-				// logger.debug(String.format( "HASH DATA: [%s]", data.toString() ));
-				// Type hashMapType = new TypeToken<HashMap<String,Object>>(){}.getType();
-				// HashMap<String,Object> hashMap = (new Gson()).fromJson(data.toString(), hashMapType);
-				//
-				// String type = (String) hashMap.get("type");
-				// if ( type != null )
-				// {
-				// this.setType(type);
-				// logger.trace(String.format( "Type: [%s]", type ));
-				// }
-				//
-				// String fqdName = (String) hashMap.get("fqdName");
-				// if ( fqdName != null )
-				// {
-				// this.setFqdName(fqdName);
-				// logger.trace(String.format( "fqdName: [%s]", fqdName ));
-				// }
-				//
-				// Object dependencyRuleByCathegoryObj = hashMap.get("dependencyRuleByCathegory");
-				// if ( dependencyRuleByCathegoryObj != null )
-				// {
-				// logger.trace(String.format( "dependencyRuleByCathegoryObj: [%s]", dependencyRuleByCathegoryObj.toString() ));
-				// this.setDependencyRuleByCathegoryFromJSON(dependencyRuleByCathegoryObj.toString());
-				// logger.trace(String.format( "dependencyRuleByCathegory: [%s]", dependencyRuleByCathegory ));
-				// }
-				// }
 			}
 
 		}
@@ -315,14 +272,6 @@ public class ManagedNode extends Node implements FqdNamed {
 					logger.error("Bad URI", e);
 				}
 
-				// relation.
-				//
-				// CategorizedRelation cr = new CategorizedRelation(Node start, String type, Node end, float weight, String category, String owner);
-				//
-
-				{
-
-				}
 			}
 
 		}
@@ -351,11 +300,6 @@ public class ManagedNode extends Node implements FqdNamed {
 		// logger.debug(String.format( "toJsonRaw: [%s]", toJsonRaw ));
 		logger.debug(String.format("toJsonReplaced: [%s]", toJsonReplaced));
 
-		// Type dependencyRuleByCathegoryType = new TypeToken<HashMap<String,HashMap<Severity,DependencyRule>>>(){}.getType();
-		// DependencyRuleByCathegory dependencyRuleByCathegory2 = (new Gson()).fromJson(toJsonRaw, DependencyRuleByCathegory.class);
-
-		// DependencyRuleByCathegory dependencyRuleByCathegory3 = (new Gson()).fromJson(toJsonReplaced, DependencyRuleByCathegory.class);
-
 		return toJsonReplaced;
 	}
 
@@ -369,8 +313,6 @@ public class ManagedNode extends Node implements FqdNamed {
 		if (data != null) {
 			// {fqdName=server01, type=Host}
 			logger.debug(String.format("HASH DATA: [%s]", data.toString()));
-
-			// ManagedNodeCypherQueryOutput managedNodeCypherQueryOutput = (new Gson()).fromJson( data.toString(), ManagedNodeCypherQueryOutput.class);
 
 			String dataStr = data.toString().replace("'", "\"");
 			logger.debug(String.format("HASH DATA STR: [%s]", dataStr));
@@ -405,20 +347,6 @@ public class ManagedNode extends Node implements FqdNamed {
 			}
 		}
 	}
-
-	// public static void addDependencyRule(DependencyRule dependencyRule, HashMap<String,HashMap<Severity,DependencyRule>> a_dependencyRuleByCathegory)
-	// {
-	//
-	// HashMap<Severity, DependencyRule> dependencyRuleBySeverity = a_dependencyRuleByCathegory.get(dependencyRule.getDependencyCategory());
-	// if (dependencyRuleBySeverity == null)
-	// {
-	// dependencyRuleBySeverity = new HashMap<Severity,DependencyRule>();
-	// }
-	//
-	// dependencyRuleBySeverity.put(dependencyRule.getSeverity(), dependencyRule);
-	//
-	// a_dependencyRuleByCathegory.put(dependencyRule.getDependencyCategory(), dependencyRuleBySeverity);
-	// }
 
 	public String getFqdName() {
 		return fqdName;

@@ -14,7 +14,6 @@ import org.apache.log4j.Logger;
 import org.kie.api.runtime.rule.FactHandle;
 
 import ca.magenta.krr.data.ManagedNode;
-import ca.magenta.krr.data.StateRelation;
 import ca.magenta.krr.data.StateRelations;
 import ca.magenta.krr.data.StateRelations.ModifyMode;
 import ca.magenta.krr.engine.Engine;
@@ -221,96 +220,40 @@ public class State extends NormalizedProperties {
 		}
 	}
 	
-	public synchronized static State updateAggregatedAndAggregatesOnClear(
+	public synchronized static State removeAllAggregateRelationsOf(
 			State clearedState, FactHandle clearedStateFactHandle,
 			boolean updateAggregateInWM) {
 
-		logger.debug(String.format("In updateAggregatedAndAggregatesOnClear; cleared: [%s]",
+		logger.debug(String.format("In removeAllAggregateRelationsOf; cleared: [%s]",
 				Boolean.toString(clearedState.isCleared())));
 
-		//if (clearedState.isCleared()) {
 
-			HashSet<String> stateChangeList = new HashSet<String>();
+		HashSet<String> stateChangeList = new HashSet<String>();
 
-			logger.debug(String.format("In updateAggregatedAndAggregatesOnClear; linkKey: [%s]",
-					clearedState.getLinkKey()));
+		logger.debug(String.format("In removeAllAggregateRelationsOf; linkKey: [%s]",
+				clearedState.getLinkKey()));
 
-			boolean changed;
-			changed = localAggregateRelation.removeAllRelationsWhereUpperIs(clearedStateFactHandle);
-			if (changed)
-				stateChangeList.add(State.AGGREGATES_LABEL);
+		boolean changed;
+		changed = localAggregateRelation.removeAllRelationsWhereUpperIs(clearedStateFactHandle);
+		if (changed)
+			stateChangeList.add(State.AGGREGATES_LABEL);
 
-			changed = localAggregateRelation.removeAllRelationsWhereLowerIs(clearedStateFactHandle);
-			if (changed)
-				stateChangeList.add(State.AGGREGATEDBY_LABEL);
+		changed = localAggregateRelation.removeAllRelationsWhereLowerIs(clearedStateFactHandle);
+		if (changed)
+			stateChangeList.add(State.AGGREGATEDBY_LABEL);
 
-			logger.debug(String.format("In updateAggregatedAndAggregatesOnClear; updateAggregateInWM: [%b]",
-					updateAggregateInWM));
-			logger.debug(String.format("In updateAggregatedAndAggregatesOnClear; updateAggregateInWM: [%d]",
-					stateChangeList.size()));
+		logger.debug(String.format("In removeAllAggregateRelationsOf; updateAggregateInWM: [%b]",
+				updateAggregateInWM));
+		logger.debug(String.format("In removeAllAggregateRelationsOf; updateAggregateInWM: [%d]",
+				stateChangeList.size()));
 
-			if (updateAggregateInWM && (stateChangeList.size() > 0)) {
-				Engine.getStreamKS().update(clearedStateFactHandle, clearedState);
-				StateUpdate.insertInWM(clearedStateFactHandle, clearedState, stateChangeList);
-			}
-		//}
-
-		return clearedState;
-	}
-
-	public synchronized static State updateAggregatedAndAggregatesOnClearOld(
-			State clearedState, FactHandle clearedStateFactHandle,
-			boolean updateAggregateInWM) {
-
-		HashSet<String> aggregatedbyChanges = new HashSet<String>();
-		aggregatedbyChanges.add(State.AGGREGATES_LABEL);
-		HashSet<String> aggregateChanges = new HashSet<String>();
-		aggregateChanges.add(State.AGGREGATEDBY_LABEL);
-
-		logger.debug("In updateAggregatedAndAggregatesOnClear; linkKey:"
-				+ clearedState.getLinkKey());
-
-		boolean anyChanges = false;
-
-		for (FactHandle aggregatedByHdle : clearedState.getAggregatedBy()) {
-			State aggregatedByState = State.getState(aggregatedByHdle);
-			if (aggregatedByState != null) {
-				boolean changed = aggregatedByState
-						.removeAggregate(clearedStateFactHandle);
-				if (changed) {
-					Engine.getStreamKS().update(aggregatedByHdle,
-							aggregatedByState);
-					StateUpdate.insertInWM(aggregatedByHdle, aggregatedByState,
-							aggregatedbyChanges);
-					anyChanges = true;
-				}
-				clearedState.removeAggregatedBy(aggregatedByHdle);
-			}
-		}
-
-		for (FactHandle aggregateHdle : clearedState.getAggregates()) {
-			State aggregateState = State.getState(aggregateHdle);
-			if (aggregateState != null) {
-				boolean changed = aggregateState.removeAggregatedBy(clearedStateFactHandle);
-				if (changed) {
-					Engine.getStreamKS().update(aggregateHdle,
-							aggregateState);
-					StateUpdate.insertInWM(aggregateHdle, aggregateState,
-							aggregateChanges);
-					anyChanges = true;
-				}
-				clearedState.removeAggregate(aggregateHdle);
-			}
-		}
-
-		if (updateAggregateInWM && anyChanges) {
+		if (updateAggregateInWM && (stateChangeList.size() > 0)) {
 			Engine.getStreamKS().update(clearedStateFactHandle, clearedState);
-			StateUpdate.insertInWM(clearedStateFactHandle, clearedState, aggregateChanges);
+			StateUpdate.insertInWM(clearedStateFactHandle, clearedState, stateChangeList);
 		}
 
 		return clearedState;
 	}
-
 
 	synchronized private static State addAggregatesToAggregator(	State aggregator,
 														FactHandle aggregatorFactHandle,
@@ -589,8 +532,8 @@ public class State extends NormalizedProperties {
 		
 		if (updatedState.isCleared()) {
 			updatedState = State.updateCausedByAndCauses_goingClear(updatedState, currentStateFactHandle);
-			updatedState = updateAggregatedAndAggregatesOnClear(updatedState, currentStateFactHandle, false /* NO updateAggregateInWM*/);
-			//updatedState = updateAggregatedAndAggregatesOnClear(updatedState, currentStateFactHandle, true /* updateAggregateInWM*/);
+			updatedState = removeAllAggregateRelationsOf(updatedState, currentStateFactHandle, false /* NO updateAggregateInWM*/);
+			//updatedState = removeAllAggregateRelationsOf(updatedState, currentStateFactHandle, true /* updateAggregateInWM*/);
 		}
 
 		Engine.getStreamKS().update(currentStateFactHandle, updatedState);

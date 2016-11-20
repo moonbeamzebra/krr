@@ -18,7 +18,6 @@ public class ManagedEntity implements FqdNamed{
 
 	private static final String ME_SEPARATOR = "::";
 
-	//private static final String ME_SEPARATOR_PATTERN_STR = "(:[:g]:)([^:]*).*";
 	private static final String ME_SEPARATOR_PATTERN_STR = "(:[:g]:)(.*)";
 	private static final String ME_TYPE2NAME_SEPARATOR_PATTERN_STR = "([^:]*)::([^:]*)";
 
